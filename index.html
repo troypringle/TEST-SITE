@@ -16,7 +16,7 @@
             margin: 0; padding: 10px;
             font-family: Arial, sans-serif;
             display: flex;
-            flex-direction: column; /* Changed to column for combined layout */
+            flex-direction: column; 
             align-items: center;
             overflow-x: hidden;
         }
@@ -29,7 +29,7 @@
             padding: 12px;
             background: #020202; 
             text-align: center;
-            z-index: 5; /* Keeps content below ghost if needed */
+            z-index: 5; 
         }
 
         .streak-container {
@@ -150,7 +150,7 @@
         }
 
         /* ==================================================== */
-        /* 2. GHOST SECTION START - YOU CAN SAFELY REMOVE THIS  */
+        /* 2. GHOST SECTION START (MINT GREEN GLOW)             */
         /* ==================================================== */
         @keyframes extremeGhostDrift {
             0% { transform: translate(5vw, 5vh) scale(1) rotate(0deg); }
@@ -168,16 +168,19 @@
             position: fixed;
             top: 0; left: 0;
             width: 150px; height: 150px;
-            z-index: 10000; /* Stays above everything */
-            opacity: 0.45;
-            pointer-events: none; /* CLICK-THROUGH ACTIVE */
-            mix-blend-mode: screen;
-            filter: drop-shadow(0 0 15px rgba(255, 0, 150, 0.9)) 
-                    drop-shadow(0 0 30px rgba(255, 0, 150, 0.6));
+            z-index: 10000; 
+            opacity: 0.5; /* Slightly higher for more "pop" */
+            pointer-events: none; 
+            mix-blend-mode: screen; /* Makes black backgrounds on images disappear */
+            
+            /* MINT GREEN GLOW TO MATCH VIDEO */
+            filter: drop-shadow(0 0 10px rgba(0, 255, 136, 0.9)) 
+                    drop-shadow(0 0 25px rgba(0, 255, 136, 0.5));
+            
             animation: extremeGhostDrift 16s linear infinite; 
         }
 
-        .ghost-svg { width: 100%; height: 100%; fill: #ffffff; }
+        .ghost-image { width: 100%; height: 100%; object-fit: contain; }
         /* GHOST SECTION END                                    */
         /* ==================================================== */
     </style>
@@ -185,12 +188,7 @@
 <body>
 
 <div class="ghost-container">
-    <svg class="ghost-svg" viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <path d="M50,5 C30,5,15,20,15,40 C15,50,20,60,20,65 C15,70,10,75,10,80 C10,90,20,95,30,95 C35,95,40,90,40,85 C45,90,50,95,55,95 C65,95,75,90,75,80 C75,75,70,70,65,65 C70,60,75,50,75,40 C75,20,60,5,50,5 Z 
-                 M35,35 C32,35,30,32,30,30 C30,28,32,25,35,25 C38,25,40,28,40,30 C40,32,38,35,35,35 Z 
-                 M65,35 C62,35,60,32,60,30 C60,28,62,25,65,25 C68,25,70,28,70,30 C70,32,68,35,65,35 Z 
-                 M50,55 C40,55,35,50,35,45 C45,45,55,45,65,45 C65,50,60,55,50,55 Z" />
-    </svg>
+    <img src="https://path-to-your-new-ghost-image.png" class="ghost-image" alt="Ghostly Figure">
 </div>
 <div class="page-border">
     <div class="streak-container">
