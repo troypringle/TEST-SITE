@@ -23,9 +23,9 @@
         .cal-check { width: 14px; height: 14px; cursor: pointer; }
         .cal-note { width: 100%; height: 60px; font-size: 11px; border: 1px solid #eee; border-radius: 4px; resize: none; padding: 4px; box-sizing: border-box; }
         
-        /* DELETE BUTTON */
-        .delete-btn { background: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: bold; }
-        .delete-btn:hover { background: #cc0000; }
+        /* DELETE & EDIT STYLES */
+        .delete-btn { background: #ff4d4d; color: white; border: none; padding: 2px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: bold; }
+        .editable-text:hover { background: #fffde7; cursor: text; outline: 1px dashed #ccc; }
 
         @media (max-width: 600px) { .calendar-grid { grid-template-columns: repeat(3, 1fr); } }
     </style>
@@ -100,22 +100,18 @@
 </div>
 
 <script>
-    // --- PERSISTENCE LOGIC FOR TRAFFIC CHECKS ---
+    // --- TRAFFIC ROUTINE PERSISTENCE ---
     function updateProgress() {
         const checks = document.querySelectorAll('.traffic-check');
         const checkedStates = {};
-        
-        checks.forEach(c => {
-            checkedStates[c.id] = c.checked;
-        });
-        
+        checks.forEach(c => checkedStates[c.id] = c.checked);
         localStorage.setItem('trafficCheckmarks', JSON.stringify(checkedStates));
         
-        const checkedCount = Array.from(checks).filter(c => c.checked).length;
-        const percent = Math.round((checkedCount / checks.length) * 100);
+        const checked = Array.from(checks).filter(c => c.checked).length;
+        const percent = Math.round((checked / checks.length) * 100);
         const bar = document.getElementById('progress-bar');
         bar.style.width = percent + '%';
-        bar.innerText = `Daily Goal: ${percent}% (${checkedCount}/${checks.length})`;
+        bar.innerText = `Daily Goal: ${percent}% (${checked}/${checks.length})`;
     }
 
     function loadTrafficChecks() {
@@ -127,13 +123,13 @@
     }
 
     function resetDailyTasks() {
-        if(confirm("Reset all traffic checkmarks?")) {
+        if(confirm("Reset all checkmarks?")) {
             document.querySelectorAll('.traffic-check').forEach(c => c.checked = false);
             updateProgress();
         }
     }
 
-    // --- RESEARCH HUB LOGIC (WITH DELETE) ---
+    // --- LINK WHEEL & EDITABLE NOTES ---
     function renderLinks() {
         const grid = document.getElementById('research-links-grid');
         const links = JSON.parse(localStorage.getItem('researchLinks') || '[]');
@@ -147,13 +143,21 @@
             grid.innerHTML += `
                 <div style="background:#fff; border:1px solid #ddd; padding:15px; border-radius:8px; position:relative;">
                     <button class="delete-btn" onclick="deleteLink(${index})" style="position:absolute; top:5px; right:5px;">X</button>
-                    <strong>${link.name}</strong><br><small>${link.note}</small><br>
+                    <strong class="editable-text" contenteditable="true" onblur="updateLinkData(${index}, 'name', this.innerText)">${link.name}</strong><br>
+                    <small class="editable-text" style="display:block; min-height:1.2em;" contenteditable="true" onblur="updateLinkData(${index}, 'note', this.innerText)">${link.note}</small><br>
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
                         <span style="font-size:10px; background:#eee; padding:2px 5px; border-radius:10px;">${link.status}</span>
                         <a ${target} class="link-btn" style="${btnStyle}">${btnText}</a>
                     </div>
                 </div>`;
         });
+    }
+
+    function updateLinkData(index, field, value) {
+        let links = JSON.parse(localStorage.getItem('researchLinks') || '[]');
+        links[index][field] = value;
+        localStorage.setItem('researchLinks', JSON.stringify(links));
+        if(field === 'name') renderLinks(); // Refresh button text if name changes
     }
 
     function saveNewSource() {
@@ -178,7 +182,7 @@
         renderLinks();
     }
 
-    // --- CALENDAR PERSISTENCE LOGIC ---
+    // --- CALENDAR PERSISTENCE ---
     function saveCalendarData() {
         const calendarData = {};
         for (let i = 1; i <= 31; i++) {
