@@ -27,19 +27,26 @@
         .status-testing { background: #ffc107; color: #333; }
         .status-paused { background: #6c757d; }
 
-        /* CALENDAR STYLING (IMPROVED) */
+        /* CALENDAR STYLING */
         .calendar-section { margin-top: 50px; }
+        .cal-month-title { text-align: center; font-size: 24px; font-weight: bold; margin-bottom: 15px; color: #2c3e50; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
-        .cal-box { border: 1px solid #ddd; background: #fff; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; transition: box-shadow 0.2s; }
+        .weekday-label { text-align: center; font-weight: bold; padding: 10px 0; background: #eee; border-radius: 4px; font-size: 14px; }
+        .cal-box { border: 1px solid #ddd; background: #fff; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; min-height: 110px; transition: box-shadow 0.2s; }
         .cal-box:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-color: #007bff; }
+        .cal-box.empty { background: #f9f9f9; border: 1px dashed #eee; }
         .cal-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 13px; padding: 6px 10px; background: #f8f9fa; border-bottom: 1px solid #eee; }
         .cal-check { width: 16px; height: 16px; cursor: pointer; }
-        .cal-note { width: 100%; height: 70px; font-size: 11px; border: none; outline: none; resize: none; padding: 8px; box-sizing: border-box; background: transparent; }
+        .cal-note { width: 100%; flex-grow: 1; font-size: 11px; border: none; outline: none; resize: none; padding: 8px; box-sizing: border-box; background: transparent; }
         
         /* EDITABLE TEXT */
         .editable-text:hover { background: #fffde7; cursor: text; outline: 1px dashed #ccc; border-radius: 4px; }
 
-        @media (max-width: 600px) { .calendar-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 600px) { 
+            .calendar-grid { grid-template-columns: repeat(7, 1fr); gap: 4px; } 
+            .cal-header { padding: 2px 5px; font-size: 10px; }
+            .cal-box { min-height: 80px; }
+        }
     </style>
 </head>
 <body>
@@ -107,6 +114,7 @@
 
     <div class="calendar-section">
         <h3>Marketing Calendar</h3>
+        <div id="cal-title" class="cal-month-title">Month Year</div>
         <div id="calendar-grid" class="calendar-grid"></div>
     </div>
 </div>
@@ -152,7 +160,6 @@
             const btnText = hasUrl ? link.name.toUpperCase() : "NOTE";
             const target = hasUrl ? `href="${link.url}" target="_blank"` : `href="javascript:void(0)"`;
             
-            // Dynamic Status Class
             let statusClass = "status-active";
             if(link.status === "Testing") statusClass = "status-testing";
             if(link.status === "Paused") statusClass = "status-paused";
@@ -199,31 +206,56 @@
         renderLinks();
     }
 
-    // --- CALENDAR LOGIC ---
-    function saveCalendarData() {
-        const calendarData = {};
-        for (let i = 1; i <= 31; i++) {
-            calendarData[i] = {
-                note: document.getElementById(`cal-note-${i}`).value,
-                checked: document.getElementById(`cal-check-${i}`).checked
-            };
-        }
-        localStorage.setItem('marketingCalendar', JSON.stringify(calendarData));
+    // --- NEW DYNAMIC CALENDAR LOGIC ---
+    function saveCalendarData(id) {
+        const savedData = JSON.parse(localStorage.getItem('marketingCalendar') || '{}');
+        const note = document.getElementById(`cal-note-${id}`).value;
+        const checked = document.getElementById(`cal-check-${id}`).checked;
+        
+        savedData[id] = { note, checked };
+        localStorage.setItem('marketingCalendar', JSON.stringify(savedData));
     }
 
     function generateCalendar() {
         const grid = document.getElementById('calendar-grid');
+        const title = document.getElementById('cal-title');
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth();
+        
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        
+        title.innerText = `${monthNames[month]} ${year}`;
+        
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
         const savedData = JSON.parse(localStorage.getItem('marketingCalendar') || '{}');
+        
         grid.innerHTML = '';
-        for (let i = 1; i <= 31; i++) {
-            const dayData = savedData[i] || { note: '', checked: false };
+        
+        // Weekday Labels
+        dayNames.forEach(day => {
+            grid.innerHTML += `<div class="weekday-label">${day}</div>`;
+        });
+        
+        // Empty boxes for start offset
+        for (let i = 0; i < firstDay; i++) {
+            grid.innerHTML += `<div class="cal-box empty"></div>`;
+        }
+        
+        // Actual days
+        for (let d = 1; d <= daysInMonth; d++) {
+            const dateId = `${year}-${month + 1}-${d}`;
+            const dayData = savedData[dateId] || { note: '', checked: false };
+            
             grid.innerHTML += `
                 <div class="cal-box">
                     <div class="cal-header">
-                        <span>Day ${i}</span>
-                        <input type="checkbox" class="cal-check" id="cal-check-${i}" ${dayData.checked ? 'checked' : ''} onchange="saveCalendarData()">
+                        <span>${d}</span>
+                        <input type="checkbox" class="cal-check" id="cal-check-${dateId}" ${dayData.checked ? 'checked' : ''} onchange="saveCalendarData('${dateId}')">
                     </div>
-                    <textarea class="cal-note" id="cal-note-${i}" placeholder="Notes..." oninput="saveCalendarData()">${dayData.note}</textarea>
+                    <textarea class="cal-note" id="cal-note-${dateId}" placeholder="Notes..." oninput="saveCalendarData('${dateId}')">${dayData.note}</textarea>
                 </div>`;
         }
     }
