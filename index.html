@@ -8,7 +8,6 @@
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.6; margin: 0; padding: 10px; }
         .container { max-width: 1200px; margin: auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         
-        /* ADJUSTED SECTION DIVIDERS */
         .section-header { 
             text-align: center; 
             color: white; 
@@ -28,21 +27,17 @@
         .bg-research { background: #17a2b8; }
         .bg-calendar { background: #343a40; }
 
-        /* PROGRESS BAR */
         #progress-container { background:#e9ecef; border-radius:10px; margin-bottom:30px; overflow:hidden; border: 1px solid #ccc; }
         #progress-bar { background:#007bff; width:0%; height:45px; text-align:center; color:white; font-weight:bold; line-height:45px; transition:width 0.5s; font-size: 18px; }
 
-        /* TASK GRID */
         .task-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
         .task-item { display: flex; align-items: center; background: #fff; padding: 18px; border-radius: 8px; border: 1px solid #eee; transition: all 0.3s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .task-item:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         .task-item input[type="checkbox"] { width: 26px; height: 26px; margin-right: 18px; cursor: pointer; }
         
-        /* COMMAND BUTTONS */
         .link-btn { display: inline-block; padding: 12px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: bold; margin-top: 8px; text-align: center; width: 85%; }
         .link-btn:hover { background: #0056b3; opacity: 0.9; }
         
-        /* RESTORED STATUS COLORS */
         .status-badge { font-size: 10px; padding: 4px 10px; border-radius: 12px; font-weight: bold; text-transform: uppercase; color: white; }
         .status-active { background: #28a745; }
         .status-testing { background: #ffc107; color: #333; }
@@ -50,7 +45,6 @@
 
         .delete-btn { background: #ff4d4d; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: bold; }
 
-        /* CALENDAR */
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
         .weekday-label { text-align: center; font-weight: bold; padding: 10px 0; background: #007bff; color: white; border-radius: 4px; font-size: 14px; }
         .cal-box { border: 1px solid #ddd; background: #b1d8b7; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; min-height: 120px; }
@@ -141,6 +135,24 @@
         const bar = document.getElementById('progress-bar');
         bar.style.width = percent + '%';
         bar.innerText = `Daily Goal: ${percent}% (${checkedCount}/${checks.length})`;
+
+        // AUTO-UPDATE CALENDAR FOR TODAY
+        const now = new Date();
+        const dateId = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+        const calNoteField = document.getElementById(`cal-note-${dateId}`);
+        const calCheckField = document.getElementById(`cal-check-${dateId}`);
+        
+        if (calNoteField) {
+            let currentText = calNoteField.value;
+            // Filter out any previous percentage lines to keep it clean
+            let cleanText = currentText.split('\n').filter(line => !line.startsWith('Progress:')).join('\n');
+            calNoteField.value = `Progress: ${percent}%\n` + cleanText;
+            
+            // Auto-check the calendar box if progress is 100%
+            if (percent === 100 && calCheckField) calCheckField.checked = true;
+            
+            saveCalendarData(dateId);
+        }
     }
 
     function loadTrafficChecks() {
@@ -167,11 +179,7 @@
             const btnStyle = hasUrl ? "background:#007bff;" : "background:linear-gradient(to bottom, #ff8c00, #ff4500);";
             const btnText = hasUrl ? link.name.toUpperCase() : "VIEW NOTE";
             const target = hasUrl ? `href="${link.url}" target="_blank"` : `href="javascript:void(0)"`;
-            
-            // Map status to class
-            let statusClass = "status-active";
-            if(link.status === "Testing") statusClass = "status-testing";
-            if(link.status === "Paused") statusClass = "status-paused";
+            let statusClass = link.status === "Testing" ? "status-testing" : (link.status === "Paused" ? "status-paused" : "status-active");
             
             grid.innerHTML += `
                 <div style="background:#fff; border:1px solid #ddd; padding:15px; border-radius:8px; position:relative;">
@@ -252,9 +260,9 @@
     }
 
     window.onload = function() {
+        generateCalendar(); // Generate calendar first so updateProgress can find the fields
         loadTrafficChecks();
         renderLinks();
-        generateCalendar();
     };
 </script>
 </body>
