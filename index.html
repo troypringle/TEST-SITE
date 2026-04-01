@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Traffic Command Center</title>
+    <title>Traffic Command Center - Wide View</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.6; margin: 0; padding: 20px; }
-        .container { max-width: 1000px; margin: auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        /* WIDER VIEW CONTAINER */
+        .container { max-width: 1400px; margin: auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        
         h2, h3 { color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; }
         
         /* TASK GRID */
-        .task-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .task-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
         .task-item { display: flex; align-items: center; background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #eee; transition: all 0.3s ease; }
         .task-item:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         .task-item input[type="checkbox"] { width: 22px; height: 22px; margin-right: 15px; cursor: pointer; }
@@ -18,7 +20,9 @@
         /* BUTTONS */
         .link-btn { display: inline-block; padding: 8px 15px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; font-size: 13px; font-weight: bold; margin-top: 5px; }
         .link-btn:hover { background: #0056b3; }
-        .delete-btn { background: #ff4d4d; color: white; border: none; padding: 2px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: bold; }
+        
+        /* FULL DELETE BUTTON */
+        .delete-btn { background: #ff4d4d; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; text-transform: uppercase; }
         .delete-btn:hover { background: #cc0000; }
         
         /* STATUS BADGES */
@@ -35,35 +39,28 @@
         /* BLUE DAYS OF WEEK */
         .weekday-label { text-align: center; font-weight: bold; padding: 10px 0; background: #007bff; color: white; border-radius: 4px; font-size: 14px; }
         
-        /* DARKER GREEN DAY BOXES */
+        /* GREEN DAY BOXES */
         .cal-box { border: 1px solid #ddd; background: #b1d8b7; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; min-height: 110px; transition: box-shadow 0.2s; }
         .cal-box:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-color: #007bff; }
         .cal-box.empty { background: #f9f9f9; border: 1px dashed #eee; }
         
         .cal-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 13px; padding: 6px 10px; background: rgba(0,0,0,0.05); border-bottom: 1px solid rgba(0,0,0,0.1); }
-        
-        /* BLUE CHECKMARK */
         .cal-check { width: 18px; height: 18px; cursor: pointer; accent-color: blue; }
-        
         .cal-note { width: 100%; flex-grow: 1; font-size: 11px; border: none; outline: none; resize: none; padding: 8px; box-sizing: border-box; background: transparent; color: #1b4332; }
-        .cal-note::placeholder { color: #555; }
         
         /* EDITABLE TEXT */
         .editable-text:hover { background: #fffde7; cursor: text; outline: 1px dashed #ccc; border-radius: 4px; }
 
-        @media (max-width: 600px) { 
-            .calendar-grid { grid-template-columns: repeat(7, 1fr); gap: 4px; } 
-            .cal-header { padding: 2px 5px; font-size: 10px; }
-            .cal-box { min-height: 80px; }
-        }
+        @media (max-width: 800px) { .calendar-grid { grid-template-columns: repeat(7, 1fr); gap: 4px; } }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h2>Daily Traffic Command</h2>
-    <div id="progress-container" style="background:#e9ecef; border-radius:10px; margin-bottom:30px; overflow:hidden;">
-        <div id="progress-bar" style="background:#28a745; width:0%; height:25px; text-align:center; color:white; font-weight:bold; transition:width 0.5s;">0%</div>
+    
+    <div id="progress-container" style="background:#e9ecef; border-radius:10px; margin-bottom:30px; overflow:hidden; border: 1px solid #ccc;">
+        <div id="progress-bar" style="background:#007bff; width:0%; height:35px; text-align:center; color:white; font-weight:bold; line-height:35px; transition:width 0.5s; font-size: 16px;">0%</div>
     </div>
 
     <h3>Daily Traffic Routine</h3>
@@ -85,19 +82,19 @@
 
     <h3>Classified Ads</h3>
     <div class="task-grid">
-        <div class="task-item"><input type="checkbox" id="t10" class="traffic-check" onchange="updateProgress()"><div><strong>10. QuickAds.ai</strong><br><a href="https://quickads.ai/" target="_blank" class="link-btn" style="background:#fd7e14;">QUICKADS.AI</a></div></div>
-        <div class="task-item"><input type="checkbox" id="t11" class="traffic-check" onchange="updateProgress()"><div><strong>11. QwikAd</strong><br><a href="https://qwikad.com/" target="_blank" class="link-btn" style="background:#fd7e14;">QWIKAD POST</a></div></div>
+        <div class="task-item"><input type="checkbox" id="t14" class="traffic-check" onchange="updateProgress()"><div><strong>10. Craigslist</strong><br><a href="https://accounts.craigslist.org/login" target="_blank" class="link-btn" style="background:#008080;">CRAIGSLIST</a></div></div>
+        <div class="task-item"><input type="checkbox" id="t10" class="traffic-check" onchange="updateProgress()"><div><strong>11. QuickAds.ai</strong><br><a href="https://quickads.ai/" target="_blank" class="link-btn" style="background:#fd7e14;">QUICKADS.AI</a></div></div>
+        <div class="task-item"><input type="checkbox" id="t11" class="traffic-check" onchange="updateProgress()"><div><strong>12. QwikAd</strong><br><a href="https://qwikad.com/" target="_blank" class="link-btn" style="background:#fd7e14;">QWIKAD POST</a></div></div>
     </div>
 
     <h3>Secondary Mailers</h3>
     <div class="task-grid">
-        <div class="task-item"><input type="checkbox" id="t12" class="traffic-check" onchange="updateProgress()"><div><strong>12. Referral Frenzy</strong><br><a href="https://www.referralfrenzy.com/login.php" target="_blank" class="link-btn" style="background:#6f42c1;">REFERRAL FRENZY</a></div></div>
-        <div class="task-item"><input type="checkbox" id="t13" class="traffic-check" onchange="updateProgress()"><div><strong>13. SOTAM</strong><br><a href="https://sotam.net/login" target="_blank" class="link-btn" style="background:#6f42c1;">SOTAM LOGIN</a></div></div>
+        <div class="task-item"><input type="checkbox" id="t12" class="traffic-check" onchange="updateProgress()"><div><strong>13. Referral Frenzy</strong><br><a href="https://www.referralfrenzy.com/login.php" target="_blank" class="link-btn" style="background:#6f42c1;">REFERRAL FRENZY</a></div></div>
+        <div class="task-item"><input type="checkbox" id="t13" class="traffic-check" onchange="updateProgress()"><div><strong>14. SOTAM</strong><br><a href="https://sotam.net/login" target="_blank" class="link-btn" style="background:#6f42c1;">SOTAM LOGIN</a></div></div>
     </div>
 
     <h3>Social & Local</h3>
     <div class="task-grid">
-        <div class="task-item"><input type="checkbox" id="t14" class="traffic-check" onchange="updateProgress()"><div><strong>14. Craigslist</strong><br><a href="https://accounts.craigslist.org/login" target="_blank" class="link-btn" style="background:#008080;">CRAIGSLIST</a></div></div>
         <div class="task-item"><input type="checkbox" id="t15" class="traffic-check" onchange="updateProgress()"><div><strong>15. Instagram</strong><br><a href="https://www.instagram.com/" target="_blank" class="link-btn" style="background:#008080;">INSTAGRAM</a></div></div>
     </div>
 
@@ -119,7 +116,7 @@
         <input type="text" id="newLinkNote" placeholder="Quick Notes..." style="width:calc(100% - 145px); padding:10px;">
         <button onclick="saveNewSource()" style="background:#007bff; color:white; padding:10px 20px; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">SAVE SOURCE</button>
     </div>
-    <div id="research-links-grid" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:20px;"></div>
+    <div id="research-links-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:20px;"></div>
 
     <div class="calendar-section">
         <h3>Marketing Calendar</h3>
@@ -165,8 +162,10 @@
         grid.innerHTML = '';
         links.forEach((link, index) => {
             const hasUrl = link.url && link.url.trim() !== "";
-            const btnStyle = hasUrl ? "background:#007bff;" : "background:linear-gradient(to bottom, #ff4d4d, #ffcc00);";
-            const btnText = hasUrl ? link.name.toUpperCase() : "NOTE";
+            
+            // NOTE = ORANGE GRADIENT, LINK = BLUE
+            const btnStyle = hasUrl ? "background:#007bff;" : "background:linear-gradient(to bottom, #ff8c00, #ff4500);";
+            const btnText = hasUrl ? link.name.toUpperCase() : "VIEW NOTE";
             const target = hasUrl ? `href="${link.url}" target="_blank"` : `href="javascript:void(0)"`;
             
             let statusClass = "status-active";
@@ -175,10 +174,10 @@
             
             grid.innerHTML += `
                 <div style="background:#fff; border:1px solid #ddd; padding:15px; border-radius:8px; position:relative;">
-                    <button class="delete-btn" onclick="deleteLink(${index})" style="position:absolute; top:5px; right:5px;">X</button>
+                    <button class="delete-btn" onclick="deleteLink(${index})" style="position:absolute; top:10px; right:10px;">DELETE</button>
                     <strong class="editable-text" contenteditable="true" onblur="updateLinkData(${index}, 'name', this.innerText)">${link.name}</strong><br>
-                    <small class="editable-text" style="display:block; min-height:1.2em; color: #666;" contenteditable="true" onblur="updateLinkData(${index}, 'note', this.innerText)">${link.note}</small><br>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                    <small class="editable-text" style="display:block; min-height:1.2em; color: #666; margin-top:5px;" contenteditable="true" onblur="updateLinkData(${index}, 'note', this.innerText)">${link.note}</small><br>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
                         <span class="status-badge ${statusClass}">${link.status}</span>
                         <a ${target} class="link-btn" style="${btnStyle}">${btnText}</a>
                     </div>
@@ -209,10 +208,12 @@
     }
 
     function deleteLink(index) {
-        let links = JSON.parse(localStorage.getItem('researchLinks') || '[]');
-        links.splice(index, 1);
-        localStorage.setItem('researchLinks', JSON.stringify(links));
-        renderLinks();
+        if(confirm("Delete this link/note?")) {
+            let links = JSON.parse(localStorage.getItem('researchLinks') || '[]');
+            links.splice(index, 1);
+            localStorage.setItem('researchLinks', JSON.stringify(links));
+            renderLinks();
+        }
     }
 
     // --- CALENDAR LOGIC ---
@@ -220,7 +221,6 @@
         const savedData = JSON.parse(localStorage.getItem('marketingCalendar') || '{}');
         const note = document.getElementById(`cal-note-${id}`).value;
         const checked = document.getElementById(`cal-check-${id}`).checked;
-        
         savedData[id] = { note, checked };
         localStorage.setItem('marketingCalendar', JSON.stringify(savedData));
     }
@@ -243,17 +243,14 @@
         
         grid.innerHTML = '';
         
-        // Weekday Labels
         dayNames.forEach(day => {
             grid.innerHTML += `<div class="weekday-label">${day}</div>`;
         });
         
-        // Empty boxes
         for (let i = 0; i < firstDay; i++) {
             grid.innerHTML += `<div class="cal-box empty"></div>`;
         }
         
-        // Actual days
         for (let d = 1; d <= daysInMonth; d++) {
             const dateId = `${year}-${month + 1}-${d}`;
             const dayData = savedData[dateId] || { note: '', checked: false };
