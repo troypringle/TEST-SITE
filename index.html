@@ -31,18 +31,19 @@
         #progress-bar { background:#007bff; width:0%; height:45px; text-align:center; color:white; font-weight:bold; line-height:45px; transition:width 0.5s; font-size: 18px; }
 
         .task-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-        .task-item { display: flex; align-items: center; background: #fff; padding: 18px; border-radius: 8px; border: 1px solid #eee; transition: all 0.3s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative; }
+        .task-item { display: flex; align-items: center; background: #fff; padding: 18px; border-radius: 8px; border: 1px solid #eee; transition: all 0.3s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .task-item:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         .task-item input[type="checkbox"] { width: 26px; height: 26px; margin-right: 18px; cursor: pointer; }
         
-        .link-btn { display: inline-block; padding: 10px 15px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: bold; margin-top: 8px; text-align: center; width: 80%; }
+        .link-btn { display: inline-block; padding: 12px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: bold; margin-top: 8px; text-align: center; width: 85%; }
         .link-btn:hover { background: #0056b3; opacity: 0.9; }
         
-        .delete-btn { background: #ff4d4d; color: white; border: none; padding: 3px 7px; border-radius: 4px; cursor: pointer; font-size: 9px; font-weight: bold; position: absolute; top: 5px; right: 5px; }
+        .status-badge { font-size: 10px; padding: 4px 10px; border-radius: 12px; font-weight: bold; text-transform: uppercase; color: white; }
+        .status-active { background: #28a745; }
+        .status-testing { background: #ffc107; color: #333; }
+        .status-paused { background: #6c757d; }
 
-        .add-zone { background:#f9f9f9; padding:15px; border-radius:10px; border:1px dashed #ccc; margin: 10px 0 25px 0; display: flex; gap: 5px; }
-        .add-zone input { padding: 8px; flex: 1; border: 1px solid #ddd; border-radius: 4px; }
-        .add-zone button { background: #333; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .delete-btn { background: #ff4d4d; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: bold; }
 
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
         .weekday-label { text-align: center; font-weight: bold; padding: 10px 0; background: #007bff; color: white; border-radius: 4px; font-size: 14px; }
@@ -50,6 +51,7 @@
         .cal-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; padding: 6px 10px; background: rgba(0,0,0,0.08); }
         .cal-check { width: 18px; height: 18px; accent-color: blue; }
         
+        /* UPDATED CALENDAR NOTE STYLE */
         .cal-note-container { flex-grow: 1; display: flex; flex-direction: column; padding: 5px; }
         .cal-progress-display { color: #d00000; font-weight: bold; font-size: 12px; margin-bottom: 2px; display: block; }
         .cal-note { width: 100%; border: none; outline: none; resize: none; padding: 0px; background: transparent; color: #1b4332; font-size: 11px; flex-grow: 1; }
@@ -60,6 +62,12 @@
 <body>
 
 <div class="container">
+    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-bottom: -10px;">
+        <button onclick="exportBackup()" style="background:#28a745; color:white; border:none; padding:8px 15px; border-radius:4px; cursor:pointer; font-weight:bold; font-size:12px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">💾 Backup Data</button>
+        <input type="file" id="importFile" style="display:none;" accept=".json" onchange="importBackup(event)">
+        <button onclick="document.getElementById('importFile').click()" style="background:#ffc107; color:#333; border:none; padding:8px 15px; border-radius:4px; cursor:pointer; font-weight:bold; font-size:12px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">📂 Restore Data</button>
+    </div>
+
     <h2 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">Traffic Command Center</h2>
     
     <div id="progress-container">
@@ -67,30 +75,57 @@
     </div>
 
     <div class="section-header bg-daily">Daily Traffic Routine</div>
-    <div id="daily-grid" class="task-grid"></div>
-    <div class="add-zone">
-        <input type="text" id="add-daily-name" placeholder="Site Name">
-        <input type="text" id="add-daily-url" placeholder="URL">
-        <button onclick="addNewSource('daily')">ADD</button>
+    <div class="task-grid">
+        <div class="task-item"><input type="checkbox" id="t1" class="traffic-check" onchange="updateProgress()"><div><strong>1. MLGS — Lead mailer</strong><br><a href="https://troypringle.github.io/MLGS-Page/" target="_blank" class="link-btn">OPEN MLGS</a></div></div>
+        <div class="task-item"><input type="checkbox" id="t2" class="traffic-check" onchange="updateProgress()"><div><strong>2. Herculist — Credit zone</strong><br><a href="http://www.herculist.com/cgi-bin/thezoneadsdisplay.cgi?325hv9d2u65hc2z3w7jo5j&8tmjd4w2k9f6bnh7rew7gkg5" target="_blank" class="link-btn">ENTER THE ZONE</a></div></div>
+        <div class="task-item"><input type="checkbox" id="t3" class="traffic-check" onchange="updateProgress()"><div><strong>3. Daily-Ads — Swipes</strong><br><a href="https://daily-ads.com/dashboard" target="_blank" class="link-btn">GET DAILY SWIPES</a></div></div>
+        <div class="task-item"><input type="checkbox" id="t4" class="traffic-check" onchange="updateProgress()"><div><strong>4. TrafficAdBar — Surfing</strong><br><a href="https://trafficadbar.com/main/surf/" target="_blank" class="link-btn">START SURFING</a></div></div>
+        <div class="task-item"><input type="checkbox" id="t5" class="traffic-check" onchange="updateProgress()"><div><strong>5. Easy Hits 4 U — Credits</strong><br><a href="https://www.easyhits4u.com/account/" target="_blank" class="link-btn">BUY CREDITS</a></div></div>
     </div>
 
     <div class="section-header bg-paid">Paid & Hands-Off</div>
-    <div id="paid-grid" class="task-grid"></div>
-    <div class="add-zone">
-        <input type="text" id="add-paid-name" placeholder="Site Name">
-        <input type="text" id="add-paid-url" placeholder="URL">
-        <button onclick="addNewSource('paid')">ADD</button>
+    <div class="task-grid">
+        <div class="task-item"><input type="checkbox" id="t6" class="traffic-check" onchange="updateProgress()"><div><strong>6. Traffic Zest</strong><br><a href="https://trafficzest.com/login" target="_blank" class="link-btn" style="background:#28a745;">TRAFFIC ZEST</a></div></div>
+        <div class="task-item"><input type="checkbox" id="t7" class="traffic-check" onchange="updateProgress()"><div><strong>7. Udimi</strong><br><a href="https://udimi.com/login" target="_blank" class="link-btn" style="background:#28a745;">UDIMI LOGIN</a></div></div>
+        <div class="task-item"><input type="checkbox" id="t8" class="traffic-check" onchange="updateProgress()"><div><strong>8. $10 Solo Ads</strong><br><a href="https://www.10dollarsoloads.com/" target="_blank" class="link-btn" style="background:#28a745;">$10 SOLO ADS</a></div></div>
+        <div class="task-item"><input type="checkbox" id="t9" class="traffic-check" onchange="updateProgress()"><div><strong>9. Easy Solo Ads</strong><br><a href="https://www.easysoloads.com/" target="_blank" class="link-btn" style="background:#28a745;">EASY SOLO ADS</a></div></div>
     </div>
 
     <div class="section-header bg-classified">Classified Ads</div>
-    <div id="classified-grid" class="task-grid"></div>
-    <div class="add-zone">
-        <input type="text" id="add-classified-name" placeholder="Site Name">
-        <input type="text" id="add-classified-url" placeholder="URL">
-        <button onclick="addNewSource('classified')">ADD</button>
+    <div class="task-grid">
+        <div class="task-item"><input type="checkbox" id="t14" class="traffic-check" onchange="updateProgress()"><div><strong>10. Craigslist</strong><br><a href="https://accounts.craigslist.org/login" target="_blank" class="link-btn" style="background:#008080;">CRAIGSLIST</a></div></div>
+        <div class="task-item"><input type="checkbox" id="t10" class="traffic-check" onchange="updateProgress()"><div><strong>11. QuickAds.ai</strong><br><a href="https://quickads.ai/" target="_blank" class="link-btn" style="background:#fd7e14;">QUICKADS.AI</a></div></div>
+        <div class="task-item"><input type="checkbox" id="t11" class="traffic-check" onchange="updateProgress()"><div><strong>12. QwikAd</strong><br><a href="https://qwikad.com/" target="_blank" class="link-btn" style="background:#fd7e14;">QWIKAD POST</a></div></div>
+    </div>
+
+    <div class="section-header bg-secondary">Secondary Mailers</div>
+    <div class="task-grid">
+        <div class="task-item"><input type="checkbox" id="t12" class="traffic-check" onchange="updateProgress()"><div><strong>13. Referral Frenzy</strong><br><a href="https://www.referralfrenzy.com/login.php" target="_blank" class="link-btn" style="background:#6f42c1;">REFERRAL FRENZY</a></div></div>
+        <div class="task-item"><input type="checkbox" id="t13" class="traffic-check" onchange="updateProgress()"><div><strong>14. SOTAM</strong><br><a href="https://sotam.net/login" target="_blank" class="link-btn" style="background:#6f42c1;">SOTAM LOGIN</a></div></div>
+    </div>
+
+    <div class="section-header bg-social">Social Media</div>
+    <div class="task-grid">
+        <div class="task-item"><input type="checkbox" id="t15" class="traffic-check" onchange="updateProgress()"><div><strong>15. Instagram</strong><br><a href="https://www.instagram.com/" target="_blank" class="link-btn" style="background:#e83e8c;">INSTAGRAM</a></div></div>
     </div>
 
     <button onclick="resetDailyTasks()" style="width:50%; display: block; margin: 30px auto; padding:10px; background:#dc3545; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-size: 14px;">Reset All Daily Checkmarks</button>
+
+    <div class="section-header bg-research">Link Wheel & Research Hub</div>
+    <div style="background:#f9f9f9; padding:20px; border-radius:10px; border:2px dashed #ccc; margin-bottom:20px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:10px;">
+            <input type="text" id="newLinkName" placeholder="Site Name" style="padding:10px;">
+            <input type="text" id="newLinkUrl" placeholder="https:// (Leave blank for NOTE)" style="padding:10px;">
+            <select id="newLinkStatus" style="padding:10px;">
+                <option value="Active">Active</option>
+                <option value="Testing">Testing</option>
+                <option value="Paused">Paused</option>
+            </select>
+        </div>
+        <input type="text" id="newLinkNote" placeholder="Quick Notes..." style="width:calc(100% - 150px); padding:10px;">
+        <button onclick="saveNewSource()" style="background:#007bff; color:white; padding:10px 20px; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">SAVE SOURCE</button>
+    </div>
+    <div id="research-links-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:20px;"></div>
 
     <div class="section-header bg-calendar">Marketing Calendar</div>
     <div class="calendar-section">
@@ -100,127 +135,142 @@
 </div>
 
 <script>
-    // Initial data setup if storage is empty
-    const defaultData = {
-        daily: [
-            { id: "d1", name: "MLGS — Lead mailer", url: "https://troypringle.github.io/MLGS-Page/" },
-            { id: "d2", name: "Herculist — Credit zone", url: "http://www.herculist.com/cgi-bin/thezoneadsdisplay.cgi?325hv9d2u65hc2z3w7jo5j" }
-        ],
-        paid: [
-            { id: "p1", name: "Traffic Zest", url: "https://trafficzest.com/login" },
-            { id: "p2", name: "Udimi", url: "https://udimi.com/login" }
-        ],
-        classified: [
-            { id: "c1", name: "Craigslist", url: "https://accounts.craigslist.org/login" }
-        ]
-    };
+    // NEW BACKUP AND RESTORE FUNCTIONS
+    function exportBackup() {
+        const backupData = {
+            trafficCheckmarks: localStorage.getItem('trafficCheckmarks'),
+            researchLinks: localStorage.getItem('researchLinks'),
+            marketingCalendar: localStorage.getItem('marketingCalendar')
+        };
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData));
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", "Traffic_Command_Backup.json");
+        document.body.appendChild(downloadAnchorNode); 
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+    }
 
-    let trafficData = JSON.parse(localStorage.getItem('trafficMasterData')) || defaultData;
-    let checkmarks = JSON.parse(localStorage.getItem('trafficCheckmarks')) || {};
+    function importBackup(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const backupData = JSON.parse(e.target.result);
+                if (backupData.trafficCheckmarks) localStorage.setItem('trafficCheckmarks', backupData.trafficCheckmarks);
+                if (backupData.researchLinks) localStorage.setItem('researchLinks', backupData.researchLinks);
+                if (backupData.marketingCalendar) localStorage.setItem('marketingCalendar', backupData.marketingCalendar);
+                alert("Data restored successfully! The page will now reload.");
+                location.reload();
+            } catch (err) {
+                alert("Error restoring data. Please make sure you selected the correct backup file.");
+            }
+        };
+        reader.readAsText(file);
+    }
 
-    function renderGrids() {
-        renderSection('daily', 'daily-grid');
-        renderSection('paid', 'paid-grid');
-        renderSection('classified', 'classified-grid');
+    // YOUR ORIGINAL FUNCTIONS BELOW
+    function updateProgress() {
+        const checks = document.querySelectorAll('.traffic-check');
+        const checkedStates = {};
+        checks.forEach(c => checkedStates[c.id] = c.checked);
+        localStorage.setItem('trafficCheckmarks', JSON.stringify(checkedStates));
+        const checkedCount = Array.from(checks).filter(c => c.checked).length;
+        const percent = Math.round((checkedCount / checks.length) * 100);
+        const bar = document.getElementById('progress-bar');
+        bar.style.width = percent + '%';
+        bar.innerText = `Daily Goal: ${percent}% (${checkedCount}/${checks.length})`;
+
+        // AUTO-UPDATE RED PROGRESS TEXT IN CALENDAR
+        const now = new Date();
+        const dateId = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+        const calProgDisplay = document.getElementById(`cal-prog-${dateId}`);
+        const calCheckField = document.getElementById(`cal-check-${dateId}`);
+        
+        if (calProgDisplay) {
+            calProgDisplay.innerText = `Progress: ${percent}%`;
+            if (percent === 100 && calCheckField) calCheckField.checked = true;
+            saveCalendarData(dateId);
+        }
+    }
+
+    function loadTrafficChecks() {
+        const saved = JSON.parse(localStorage.getItem('trafficCheckmarks') || '{}');
+        document.querySelectorAll('.traffic-check').forEach(c => {
+            if (saved[c.id] !== undefined) c.checked = saved[c.id];
+        });
         updateProgress();
     }
 
-    function renderSection(category, gridId) {
-        const grid = document.getElementById(gridId);
+    function resetDailyTasks() {
+        if(confirm("Reset all daily checkmarks?")) {
+            document.querySelectorAll('.traffic-check').forEach(c => c.checked = false);
+            updateProgress();
+        }
+    }
+
+    function renderLinks() {
+        const grid = document.getElementById('research-links-grid');
+        const links = JSON.parse(localStorage.getItem('researchLinks') || '[]');
         grid.innerHTML = '';
-        trafficData[category].forEach((item, index) => {
-            const isChecked = checkmarks[item.id] ? 'checked' : '';
+        links.forEach((link, index) => {
+            const hasUrl = link.url && link.url.trim() !== "";
+            const btnStyle = hasUrl ? "background:#007bff;" : "background:linear-gradient(to bottom, #ff8c00, #ff4500);";
+            const btnText = hasUrl ? link.name.toUpperCase() : "VIEW NOTE";
+            const target = hasUrl ? `href="${link.url}" target="_blank"` : `href="javascript:void(0)"`;
+            let statusClass = link.status === "Testing" ? "status-testing" : (link.status === "Paused" ? "status-paused" : "status-active");
+            
             grid.innerHTML += `
-                <div class="task-item">
-                    <button class="delete-btn" onclick="deleteSource('${category}', ${index})">DEL</button>
-                    <input type="checkbox" id="${item.id}" class="traffic-check" ${isChecked} onchange="toggleCheck('${item.id}')">
-                    <div style="width:100%;">
-                        <strong class="editable-text" contenteditable="true" onblur="updateText('${category}', ${index}, 'name', this.innerText)">${item.name}</strong><br>
-                        <a href="${item.url}" target="_blank" class="link-btn">OPEN SITE</a>
-                        <div style="font-size:9px; color:blue; cursor:pointer; margin-top:4px;" onclick="updateUrl('${category}', ${index})">Edit Link</div>
+                <div style="background:#fff; border:1px solid #ddd; padding:15px; border-radius:8px; position:relative;">
+                    <button class="delete-btn" onclick="deleteLink(${index})" style="position:absolute; top:8px; right:8px;">DELETE</button>
+                    <strong class="editable-text" contenteditable="true" onblur="updateLinkData(${index}, 'name', this.innerText)">${link.name}</strong><br>
+                    <small class="editable-text" style="display:block; min-height:1.2em; color: #666; margin-top:5px;" contenteditable="true" onblur="updateLinkData(${index}, 'note', this.innerText)">${link.note}</small><br>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
+                        <span class="status-badge ${statusClass}">${link.status}</span>
+                        <a ${target} class="link-btn" style="${btnStyle}; padding: 8px 12px; width: auto; font-size: 11px;">${btnText}</a>
                     </div>
                 </div>`;
         });
     }
 
-    function toggleCheck(id) {
-        const checkbox = document.getElementById(id);
-        checkmarks[id] = checkbox.checked;
-        localStorage.setItem('trafficCheckmarks', JSON.stringify(checkmarks));
-        updateProgress();
+    function updateLinkData(index, field, value) {
+        let links = JSON.parse(localStorage.getItem('researchLinks') || '[]');
+        links[index][field] = value;
+        localStorage.setItem('researchLinks', JSON.stringify(links));
+        if(field === 'name') renderLinks(); 
     }
 
-    function updateText(cat, index, field, val) {
-        trafficData[cat][index][field] = val;
-        saveData();
-    }
-
-    function updateUrl(cat, index) {
-        const newUrl = prompt("Enter new URL:", trafficData[cat][index].url);
-        if(newUrl) {
-            trafficData[cat][index].url = newUrl;
-            saveData();
-            renderGrids();
-        }
-    }
-
-    function addNewSource(cat) {
-        const name = document.getElementById(`add-${cat}-name`).value;
-        const url = document.getElementById(`add-${cat}-url`).value;
+    function saveNewSource() {
+        const name = document.getElementById('newLinkName').value;
+        const url = document.getElementById('newLinkUrl').value;
+        const status = document.getElementById('newLinkStatus').value;
+        const note = document.getElementById('newLinkNote').value;
         if(!name) return;
-        const newId = 'id' + Date.now();
-        trafficData[cat].push({ id: newId, name, url });
-        saveData();
-        renderGrids();
-        document.getElementById(`add-${cat}-name`).value = '';
-        document.getElementById(`add-${cat}-url`).value = '';
+        const links = JSON.parse(localStorage.getItem('researchLinks') || '[]');
+        links.push({ name, url, status, note });
+        localStorage.setItem('researchLinks', JSON.stringify(links));
+        document.getElementById('newLinkName').value = '';
+        document.getElementById('newLinkUrl').value = '';
+        document.getElementById('newLinkNote').value = '';
+        renderLinks();
     }
 
-    function deleteSource(cat, index) {
-        if(confirm("Delete this source?")) {
-            trafficData[cat].splice(index, 1);
-            saveData();
-            renderGrids();
+    function deleteLink(index) {
+        if(confirm("Delete this?")) {
+            let links = JSON.parse(localStorage.getItem('researchLinks') || '[]');
+            links.splice(index, 1);
+            localStorage.setItem('researchLinks', JSON.stringify(links));
+            renderLinks();
         }
     }
 
-    function saveData() {
-        localStorage.setItem('trafficMasterData', JSON.stringify(trafficData));
-    }
-
-    function updateProgress() {
-        const total = document.querySelectorAll('.traffic-check').length;
-        const checked = Array.from(document.querySelectorAll('.traffic-check')).filter(c => c.checked).length;
-        const percent = total > 0 ? Math.round((checked / total) * 100) : 0;
-        const bar = document.getElementById('progress-bar');
-        bar.style.width = percent + '%';
-        bar.innerText = `Daily Goal: ${percent}% (${checked}/${total})`;
-
-        const now = new Date();
-        const dateId = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
-        const calProgDisplay = document.getElementById(`cal-prog-${dateId}`);
-        if (calProgDisplay) {
-            calProgDisplay.innerText = `Progress: ${percent}%`;
-            saveCalendarData(dateId);
-        }
-    }
-
-    function resetDailyTasks() {
-        if(confirm("Reset all checkmarks?")) {
-            checkmarks = {};
-            localStorage.removeItem('trafficCheckmarks');
-            renderGrids();
-        }
-    }
-
-    // CALENDAR FUNCTIONS (Kept from your original)
     function saveCalendarData(id) {
         const savedData = JSON.parse(localStorage.getItem('marketingCalendar') || '{}');
-        const noteElem = document.getElementById(`cal-note-${id}`);
-        const checkElem = document.getElementById(`cal-check-${id}`);
-        const progElem = document.getElementById(`cal-prog-${id}`);
-        if(!noteElem) return;
-        savedData[id] = { note: noteElem.value, checked: checkElem.checked, progress: progElem.innerText };
+        const note = document.getElementById(`cal-note-${id}`).value;
+        const checked = document.getElementById(`cal-check-${id}`).checked;
+        const progress = document.getElementById(`cal-prog-${id}`).innerText;
+        savedData[id] = { note, checked, progress };
         localStorage.setItem('marketingCalendar', JSON.stringify(savedData));
     }
 
@@ -255,7 +305,8 @@
 
     window.onload = function() {
         generateCalendar();
-        renderGrids();
+        loadTrafficChecks();
+        renderLinks();
     };
 </script>
 </body>
