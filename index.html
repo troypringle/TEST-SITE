@@ -8,14 +8,14 @@
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.6; margin: 0; padding: 10px; }
         .container { max-width: 1200px; margin: auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         
-        /* SECTION DIVIDERS */
+        /* ADJUSTED SECTION DIVIDERS */
         .section-header { 
             text-align: center; 
             color: white; 
-            padding: 12px; 
-            border-radius: 8px; 
-            margin: 35px 0 20px 0; 
-            font-size: 1.4em; 
+            padding: 8px; 
+            border-radius: 6px; 
+            margin: 25px 0 15px 0; 
+            font-size: 1.1em; 
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -38,11 +38,17 @@
         .task-item:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         .task-item input[type="checkbox"] { width: 26px; height: 26px; margin-right: 18px; cursor: pointer; }
         
-        /* LARGER BUTTONS */
+        /* COMMAND BUTTONS */
         .link-btn { display: inline-block; padding: 12px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: bold; margin-top: 8px; text-align: center; width: 85%; }
         .link-btn:hover { background: #0056b3; opacity: 0.9; }
         
-        .delete-btn { background: #ff4d4d; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; }
+        /* RESTORED STATUS COLORS */
+        .status-badge { font-size: 10px; padding: 4px 10px; border-radius: 12px; font-weight: bold; text-transform: uppercase; color: white; }
+        .status-active { background: #28a745; }
+        .status-testing { background: #ffc107; color: #333; }
+        .status-paused { background: #6c757d; }
+
+        .delete-btn { background: #ff4d4d; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: bold; }
 
         /* CALENDAR */
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
@@ -58,7 +64,7 @@
 <body>
 
 <div class="container">
-    <h2 style="text-align: center; color: #2c3e50;">Traffic Command Center</h2>
+    <h2 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">Traffic Command Center</h2>
     
     <div id="progress-container">
         <div id="progress-bar">0%</div>
@@ -99,27 +105,27 @@
         <div class="task-item"><input type="checkbox" id="t15" class="traffic-check" onchange="updateProgress()"><div><strong>15. Instagram</strong><br><a href="https://www.instagram.com/" target="_blank" class="link-btn" style="background:#e83e8c;">INSTAGRAM</a></div></div>
     </div>
 
-    <button onclick="resetDailyTasks()" style="width:100%; padding:15px; background:#dc3545; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer; margin-top:30px; font-size: 16px;">Reset All Daily Checkmarks</button>
+    <button onclick="resetDailyTasks()" style="width:50%; display: block; margin: 30px auto; padding:10px; background:#dc3545; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-size: 14px;">Reset All Daily Checkmarks</button>
 
     <div class="section-header bg-research">Link Wheel & Research Hub</div>
     <div style="background:#f9f9f9; padding:20px; border-radius:10px; border:2px dashed #ccc; margin-bottom:20px;">
         <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:10px;">
-            <input type="text" id="newLinkName" placeholder="Site Name" style="padding:12px;">
-            <input type="text" id="newLinkUrl" placeholder="https:// (Leave blank for NOTE)" style="padding:12px;">
-            <select id="newLinkStatus" style="padding:12px;">
+            <input type="text" id="newLinkName" placeholder="Site Name" style="padding:10px;">
+            <input type="text" id="newLinkUrl" placeholder="https:// (Leave blank for NOTE)" style="padding:10px;">
+            <select id="newLinkStatus" style="padding:10px;">
                 <option value="Active">Active</option>
                 <option value="Testing">Testing</option>
                 <option value="Paused">Paused</option>
             </select>
         </div>
-        <input type="text" id="newLinkNote" placeholder="Quick Notes..." style="width:calc(100% - 150px); padding:12px;">
-        <button onclick="saveNewSource()" style="background:#007bff; color:white; padding:12px 25px; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">SAVE SOURCE</button>
+        <input type="text" id="newLinkNote" placeholder="Quick Notes..." style="width:calc(100% - 150px); padding:10px;">
+        <button onclick="saveNewSource()" style="background:#007bff; color:white; padding:10px 20px; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">SAVE SOURCE</button>
     </div>
-    <div id="research-links-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:20px;"></div>
+    <div id="research-links-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:20px;"></div>
 
     <div class="section-header bg-calendar">Marketing Calendar</div>
     <div class="calendar-section">
-        <div id="cal-title" class="cal-month-title"></div>
+        <div id="cal-title" class="cal-month-title" style="text-align: center; font-size: 1.5em; margin-bottom: 15px;"></div>
         <div id="calendar-grid" class="calendar-grid"></div>
     </div>
 </div>
@@ -162,17 +168,29 @@
             const btnText = hasUrl ? link.name.toUpperCase() : "VIEW NOTE";
             const target = hasUrl ? `href="${link.url}" target="_blank"` : `href="javascript:void(0)"`;
             
+            // Map status to class
+            let statusClass = "status-active";
+            if(link.status === "Testing") statusClass = "status-testing";
+            if(link.status === "Paused") statusClass = "status-paused";
+            
             grid.innerHTML += `
                 <div style="background:#fff; border:1px solid #ddd; padding:15px; border-radius:8px; position:relative;">
-                    <button class="delete-btn" onclick="deleteLink(${index})" style="position:absolute; top:10px; right:10px;">DELETE</button>
+                    <button class="delete-btn" onclick="deleteLink(${index})" style="position:absolute; top:8px; right:8px;">DELETE</button>
                     <strong class="editable-text" contenteditable="true" onblur="updateLinkData(${index}, 'name', this.innerText)">${link.name}</strong><br>
                     <small class="editable-text" style="display:block; min-height:1.2em; color: #666; margin-top:5px;" contenteditable="true" onblur="updateLinkData(${index}, 'note', this.innerText)">${link.note}</small><br>
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
-                        <span style="font-size:10px; font-weight:bold; text-transform:uppercase;">${link.status}</span>
-                        <a ${target} class="link-btn" style="${btnStyle}">${btnText}</a>
+                        <span class="status-badge ${statusClass}">${link.status}</span>
+                        <a ${target} class="link-btn" style="${btnStyle}; padding: 8px 12px; width: auto; font-size: 11px;">${btnText}</a>
                     </div>
                 </div>`;
         });
+    }
+
+    function updateLinkData(index, field, value) {
+        let links = JSON.parse(localStorage.getItem('researchLinks') || '[]');
+        links[index][field] = value;
+        localStorage.setItem('researchLinks', JSON.stringify(links));
+        if(field === 'name') renderLinks(); 
     }
 
     function saveNewSource() {
