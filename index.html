@@ -15,7 +15,7 @@
         .link-btn { display: inline-block; padding: 8px 15px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; font-size: 13px; font-weight: bold; margin-top: 5px; }
         .link-btn:hover { background: #0056b3; }
         
-        /* CALENDAR STYLING (SMALLER & BOTTOM) */
+        /* CALENDAR STYLING */
         .calendar-section { margin-top: 50px; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
         .cal-box { border: 1px solid #ddd; padding: 8px; min-height: 100px; background: #fafafa; border-radius: 6px; position: relative; }
@@ -23,6 +23,10 @@
         .cal-check { width: 14px; height: 14px; cursor: pointer; }
         .cal-note { width: 100%; height: 60px; font-size: 11px; border: 1px solid #eee; border-radius: 4px; resize: none; padding: 4px; box-sizing: border-box; }
         
+        /* DELETE BUTTON */
+        .delete-btn { background: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: bold; }
+        .delete-btn:hover { background: #cc0000; }
+
         @media (max-width: 600px) { .calendar-grid { grid-template-columns: repeat(3, 1fr); } }
     </style>
 </head>
@@ -34,39 +38,39 @@
         <div id="progress-bar" style="background:#28a745; width:0%; height:25px; text-align:center; color:white; font-weight:bold; transition:width 0.5s;">0%</div>
     </div>
 
-    <h3>Daily Workflow</h3>
+    <h3>Daily Traffic Routine</h3>
     <div class="task-grid">
-        <div class="task-item"><input type="checkbox" class="traffic-check" onchange="updateProgress()"><div><strong>1. MLGS — Lead mailer</strong><br><a href="https://troypringle.github.io/MLGS-Page/" target="_blank" class="link-btn">OPEN MLGS</a></div></div>
-        <div class="task-item"><input type="checkbox" class="traffic-check" onchange="updateProgress()"><div><strong>2. Herculist — Credit zone</strong><br><a href="http://www.herculist.com/cgi-bin/thezoneadsdisplay.cgi?325hv9d2u65hc2z3w7jo5j&8tmjd4w2k9f6bnh7rew7gkg5" target="_blank" class="link-btn">ENTER THE ZONE</a></div></div>
-        <div class="task-item"><input type="checkbox" class="traffic-check" onchange="updateProgress()"><div><strong>3. Daily-Ads — Swipes</strong><br><a href="https://daily-ads.com/dashboard" target="_blank" class="link-btn">GET DAILY SWIPES</a></div></div>
-        <div class="task-item"><input type="checkbox" class="traffic-check" onchange="updateProgress()"><div><strong>4. TrafficAdBar — Surfing</strong><br><a href="https://trafficadbar.com/main/surf/" target="_blank" class="link-btn">START SURFING</a></div></div>
-        <div class="task-item"><input type="checkbox" class="traffic-check" onchange="updateProgress()"><div><strong>5. Easy Hits 4 U — Credits</strong><br><a href="https://www.easyhits4u.com/account/" target="_blank" class="link-btn">BUY CREDITS</a></div></div>
+        <div class="task-item"><input type="checkbox" id="t1" class="traffic-check" onchange="updateProgress()"><div><strong>1. MLGS — Lead mailer</strong><br><a href="https://troypringle.github.io/MLGS-Page/" target="_blank" class="link-btn">OPEN MLGS</a></div></div>
+        <div class="task-item"><input type="checkbox" id="t2" class="traffic-check" onchange="updateProgress()"><div><strong>2. Herculist — Credit zone</strong><br><a href="http://www.herculist.com/cgi-bin/thezoneadsdisplay.cgi?325hv9d2u65hc2z3w7jo5j&8tmjd4w2k9f6bnh7rew7gkg5" target="_blank" class="link-btn">ENTER THE ZONE</a></div></div>
+        <div class="task-item"><input type="checkbox" id="t3" class="traffic-check" onchange="updateProgress()"><div><strong>3. Daily-Ads — Swipes</strong><br><a href="https://daily-ads.com/dashboard" target="_blank" class="link-btn">GET DAILY SWIPES</a></div></div>
+        <div class="task-item"><input type="checkbox" id="t4" class="traffic-check" onchange="updateProgress()"><div><strong>4. TrafficAdBar — Surfing</strong><br><a href="https://trafficadbar.com/main/surf/" target="_blank" class="link-btn">START SURFING</a></div></div>
+        <div class="task-item"><input type="checkbox" id="t5" class="traffic-check" onchange="updateProgress()"><div><strong>5. Easy Hits 4 U — Credits</strong><br><a href="https://www.easyhits4u.com/account/" target="_blank" class="link-btn">BUY CREDITS</a></div></div>
     </div>
 
     <h3>Paid & Hands-Off</h3>
     <div class="task-grid">
-        <div class="task-item"><input type="checkbox" class="traffic-check" onchange="updateProgress()"><div><strong>6. Traffic Zest</strong><br><a href="https://trafficzest.com/login" target="_blank" class="link-btn" style="background:#28a745;">TRAFFIC ZEST</a></div></div>
-        <div class="task-item"><input type="checkbox" class="traffic-check" onchange="updateProgress()"><div><strong>7. Udimi</strong><br><a href="https://udimi.com/login" target="_blank" class="link-btn" style="background:#28a745;">UDIMI LOGIN</a></div></div>
-        <div class="task-item"><input type="checkbox" class="traffic-check" onchange="updateProgress()"><div><strong>8. $10 Solo Ads</strong><br><a href="https://www.10dollarsoloads.com/" target="_blank" class="link-btn" style="background:#28a745;">$10 SOLO ADS</a></div></div>
-        <div class="task-item"><input type="checkbox" class="traffic-check" onchange="updateProgress()"><div><strong>9. Easy Solo Ads</strong><br><a href="https://www.easysoloads.com/" target="_blank" class="link-btn" style="background:#28a745;">EASY SOLO ADS</a></div></div>
+        <div class="task-item"><input type="checkbox" id="t6" class="traffic-check" onchange="updateProgress()"><div><strong>6. Traffic Zest</strong><br><a href="https://trafficzest.com/login" target="_blank" class="link-btn" style="background:#28a745;">TRAFFIC ZEST</a></div></div>
+        <div class="task-item"><input type="checkbox" id="t7" class="traffic-check" onchange="updateProgress()"><div><strong>7. Udimi</strong><br><a href="https://udimi.com/login" target="_blank" class="link-btn" style="background:#28a745;">UDIMI LOGIN</a></div></div>
+        <div class="task-item"><input type="checkbox" id="t8" class="traffic-check" onchange="updateProgress()"><div><strong>8. $10 Solo Ads</strong><br><a href="https://www.10dollarsoloads.com/" target="_blank" class="link-btn" style="background:#28a745;">$10 SOLO ADS</a></div></div>
+        <div class="task-item"><input type="checkbox" id="t9" class="traffic-check" onchange="updateProgress()"><div><strong>9. Easy Solo Ads</strong><br><a href="https://www.easysoloads.com/" target="_blank" class="link-btn" style="background:#28a745;">EASY SOLO ADS</a></div></div>
     </div>
 
     <h3>Classified Ads</h3>
     <div class="task-grid">
-        <div class="task-item"><input type="checkbox" class="traffic-check" onchange="updateProgress()"><div><strong>10. QuickAds.ai</strong><br><a href="https://quickads.ai/" target="_blank" class="link-btn" style="background:#fd7e14;">QUICKADS.AI</a></div></div>
-        <div class="task-item"><input type="checkbox" class="traffic-check" onchange="updateProgress()"><div><strong>11. QwikAd</strong><br><a href="https://qwikad.com/" target="_blank" class="link-btn" style="background:#fd7e14;">QWIKAD POST</a></div></div>
+        <div class="task-item"><input type="checkbox" id="t10" class="traffic-check" onchange="updateProgress()"><div><strong>10. QuickAds.ai</strong><br><a href="https://quickads.ai/" target="_blank" class="link-btn" style="background:#fd7e14;">QUICKADS.AI</a></div></div>
+        <div class="task-item"><input type="checkbox" id="t11" class="traffic-check" onchange="updateProgress()"><div><strong>11. QwikAd</strong><br><a href="https://qwikad.com/" target="_blank" class="link-btn" style="background:#fd7e14;">QWIKAD POST</a></div></div>
     </div>
 
     <h3>Secondary Mailers</h3>
     <div class="task-grid">
-        <div class="task-item"><input type="checkbox" class="traffic-check" onchange="updateProgress()"><div><strong>12. Referral Frenzy</strong><br><a href="https://www.referralfrenzy.com/login.php" target="_blank" class="link-btn" style="background:#6f42c1;">REFERRAL FRENZY</a></div></div>
-        <div class="task-item"><input type="checkbox" class="traffic-check" onchange="updateProgress()"><div><strong>13. SOTAM</strong><br><a href="https://sotam.net/login" target="_blank" class="link-btn" style="background:#6f42c1;">SOTAM LOGIN</a></div></div>
+        <div class="task-item"><input type="checkbox" id="t12" class="traffic-check" onchange="updateProgress()"><div><strong>12. Referral Frenzy</strong><br><a href="https://www.referralfrenzy.com/login.php" target="_blank" class="link-btn" style="background:#6f42c1;">REFERRAL FRENZY</a></div></div>
+        <div class="task-item"><input type="checkbox" id="t13" class="traffic-check" onchange="updateProgress()"><div><strong>13. SOTAM</strong><br><a href="https://sotam.net/login" target="_blank" class="link-btn" style="background:#6f42c1;">SOTAM LOGIN</a></div></div>
     </div>
 
     <h3>Social & Local</h3>
     <div class="task-grid">
-        <div class="task-item"><input type="checkbox" class="traffic-check" onchange="updateProgress()"><div><strong>14. Craigslist</strong><br><a href="https://accounts.craigslist.org/login" target="_blank" class="link-btn" style="background:#008080;">CRAIGSLIST</a></div></div>
-        <div class="task-item"><input type="checkbox" class="traffic-check" onchange="updateProgress()"><div><strong>15. Instagram</strong><br><a href="https://www.instagram.com/" target="_blank" class="link-btn" style="background:#008080;">INSTAGRAM</a></div></div>
+        <div class="task-item"><input type="checkbox" id="t14" class="traffic-check" onchange="updateProgress()"><div><strong>14. Craigslist</strong><br><a href="https://accounts.craigslist.org/login" target="_blank" class="link-btn" style="background:#008080;">CRAIGSLIST</a></div></div>
+        <div class="task-item"><input type="checkbox" id="t15" class="traffic-check" onchange="updateProgress()"><div><strong>15. Instagram</strong><br><a href="https://www.instagram.com/" target="_blank" class="link-btn" style="background:#008080;">INSTAGRAM</a></div></div>
     </div>
 
     <button onclick="resetDailyTasks()" style="width:100%; padding:15px; background:#dc3545; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">Reset All Daily Checkmarks</button>
@@ -84,7 +88,7 @@
                 <option value="Paused">Paused</option>
             </select>
         </div>
-        <input type="text" id="newLinkNote" placeholder="Quick Notes..." style="width:calc(100% - 130px); padding:10px;">
+        <input type="text" id="newLinkNote" placeholder="Quick Notes..." style="width:calc(100% - 145px); padding:10px;">
         <button onclick="saveNewSource()" style="background:#007bff; color:white; padding:10px 20px; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">SAVE SOURCE</button>
     </div>
     <div id="research-links-grid" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:20px;"></div>
@@ -96,36 +100,59 @@
 </div>
 
 <script>
+    // --- PERSISTENCE LOGIC FOR TRAFFIC CHECKS ---
     function updateProgress() {
         const checks = document.querySelectorAll('.traffic-check');
-        const checked = Array.from(checks).filter(c => c.checked).length;
-        const percent = Math.round((checked / checks.length) * 100);
+        const checkedStates = {};
+        
+        checks.forEach(c => {
+            checkedStates[c.id] = c.checked;
+        });
+        
+        localStorage.setItem('trafficCheckmarks', JSON.stringify(checkedStates));
+        
+        const checkedCount = Array.from(checks).filter(c => c.checked).length;
+        const percent = Math.round((checkedCount / checks.length) * 100);
         const bar = document.getElementById('progress-bar');
         bar.style.width = percent + '%';
-        bar.innerText = `Daily Goal: ${percent}% (${checked}/${checks.length})`;
+        bar.innerText = `Daily Goal: ${percent}% (${checkedCount}/${checks.length})`;
     }
 
-    function resetDailyTasks() {
-        document.querySelectorAll('.traffic-check').forEach(c => c.checked = false);
+    function loadTrafficChecks() {
+        const saved = JSON.parse(localStorage.getItem('trafficCheckmarks') || '{}');
+        document.querySelectorAll('.traffic-check').forEach(c => {
+            if (saved[c.id] !== undefined) c.checked = saved[c.id];
+        });
         updateProgress();
     }
 
+    function resetDailyTasks() {
+        if(confirm("Reset all traffic checkmarks?")) {
+            document.querySelectorAll('.traffic-check').forEach(c => c.checked = false);
+            updateProgress();
+        }
+    }
+
+    // --- RESEARCH HUB LOGIC (WITH DELETE) ---
     function renderLinks() {
         const grid = document.getElementById('research-links-grid');
         const links = JSON.parse(localStorage.getItem('researchLinks') || '[]');
         grid.innerHTML = '';
-        links.forEach((link) => {
+        links.forEach((link, index) => {
             const hasUrl = link.url && link.url.trim() !== "";
             const btnStyle = hasUrl ? "background:#007bff;" : "background:linear-gradient(to bottom, #ff4d4d, #ffcc00);";
             const btnText = hasUrl ? link.name.toUpperCase() : "NOTE";
             const target = hasUrl ? `href="${link.url}" target="_blank"` : `href="javascript:void(0)"`;
-            grid.innerHTML += `<div style="background:#fff; border:1px solid #ddd; padding:15px; border-radius:8px;">
-                <strong>${link.name}</strong><br><small>${link.note}</small><br>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
-                    <span style="font-size:10px; background:#eee; padding:2px 5px; border-radius:10px;">${link.status}</span>
-                    <a ${target} class="link-btn" style="${btnStyle}">${btnText}</a>
-                </div>
-            </div>`;
+            
+            grid.innerHTML += `
+                <div style="background:#fff; border:1px solid #ddd; padding:15px; border-radius:8px; position:relative;">
+                    <button class="delete-btn" onclick="deleteLink(${index})" style="position:absolute; top:5px; right:5px;">X</button>
+                    <strong>${link.name}</strong><br><small>${link.note}</small><br>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+                        <span style="font-size:10px; background:#eee; padding:2px 5px; border-radius:10px;">${link.status}</span>
+                        <a ${target} class="link-btn" style="${btnStyle}">${btnText}</a>
+                    </div>
+                </div>`;
         });
     }
 
@@ -144,27 +171,47 @@
         renderLinks();
     }
 
+    function deleteLink(index) {
+        let links = JSON.parse(localStorage.getItem('researchLinks') || '[]');
+        links.splice(index, 1);
+        localStorage.setItem('researchLinks', JSON.stringify(links));
+        renderLinks();
+    }
+
+    // --- CALENDAR PERSISTENCE LOGIC ---
+    function saveCalendarData() {
+        const calendarData = {};
+        for (let i = 1; i <= 31; i++) {
+            calendarData[i] = {
+                note: document.getElementById(`cal-note-${i}`).value,
+                checked: document.getElementById(`cal-check-${i}`).checked
+            };
+        }
+        localStorage.setItem('marketingCalendar', JSON.stringify(calendarData));
+    }
+
     function generateCalendar() {
         const grid = document.getElementById('calendar-grid');
+        const savedData = JSON.parse(localStorage.getItem('marketingCalendar') || '{}');
         grid.innerHTML = '';
         for (let i = 1; i <= 31; i++) {
+            const dayData = savedData[i] || { note: '', checked: false };
             grid.innerHTML += `
                 <div class="cal-box">
                     <div class="cal-header">
                         <span>${i}</span>
-                        <input type="checkbox" class="cal-check" id="cal-check-${i}">
+                        <input type="checkbox" class="cal-check" id="cal-check-${i}" ${dayData.checked ? 'checked' : ''} onchange="saveCalendarData()">
                     </div>
-                    <textarea class="cal-note" id="cal-note-${i}" placeholder="Notes..."></textarea>
+                    <textarea class="cal-note" id="cal-note-${i}" placeholder="Notes..." oninput="saveCalendarData()">${dayData.note}</textarea>
                 </div>`;
         }
     }
 
     window.onload = function() {
+        loadTrafficChecks();
         renderLinks();
         generateCalendar();
-        updateProgress();
     };
 </script>
-
 </body>
 </html>
