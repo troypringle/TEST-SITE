@@ -47,10 +47,14 @@
 
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
         .weekday-label { text-align: center; font-weight: bold; padding: 10px 0; background: #007bff; color: white; border-radius: 4px; font-size: 14px; }
-        .cal-box { border: 1px solid #ddd; background: #b1d8b7; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; min-height: 120px; }
+        .cal-box { border: 1px solid #ddd; background: #b1d8b7; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; min-height: 130px; }
         .cal-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; padding: 6px 10px; background: rgba(0,0,0,0.08); }
         .cal-check { width: 18px; height: 18px; accent-color: blue; }
-        .cal-note { width: 100%; flex-grow: 1; font-size: 11px; border: none; outline: none; resize: none; padding: 8px; background: transparent; color: #1b4332; }
+        
+        /* UPDATED CALENDAR NOTE STYLE */
+        .cal-note-container { flex-grow: 1; display: flex; flex-direction: column; padding: 5px; }
+        .cal-progress-display { color: #d00000; font-weight: bold; font-size: 12px; margin-bottom: 2px; display: block; }
+        .cal-note { width: 100%; border: none; outline: none; resize: none; padding: 0px; background: transparent; color: #1b4332; font-size: 11px; flex-grow: 1; }
 
         .editable-text:hover { background: #fffde7; cursor: text; outline: 1px dashed #ccc; }
     </style>
@@ -136,21 +140,15 @@
         bar.style.width = percent + '%';
         bar.innerText = `Daily Goal: ${percent}% (${checkedCount}/${checks.length})`;
 
-        // AUTO-UPDATE CALENDAR FOR TODAY
+        // AUTO-UPDATE RED PROGRESS TEXT IN CALENDAR
         const now = new Date();
         const dateId = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
-        const calNoteField = document.getElementById(`cal-note-${dateId}`);
+        const calProgDisplay = document.getElementById(`cal-prog-${dateId}`);
         const calCheckField = document.getElementById(`cal-check-${dateId}`);
         
-        if (calNoteField) {
-            let currentText = calNoteField.value;
-            // Filter out any previous percentage lines to keep it clean
-            let cleanText = currentText.split('\n').filter(line => !line.startsWith('Progress:')).join('\n');
-            calNoteField.value = `Progress: ${percent}%\n` + cleanText;
-            
-            // Auto-check the calendar box if progress is 100%
+        if (calProgDisplay) {
+            calProgDisplay.innerText = `Progress: ${percent}%`;
             if (percent === 100 && calCheckField) calCheckField.checked = true;
-            
             saveCalendarData(dateId);
         }
     }
@@ -229,7 +227,8 @@
         const savedData = JSON.parse(localStorage.getItem('marketingCalendar') || '{}');
         const note = document.getElementById(`cal-note-${id}`).value;
         const checked = document.getElementById(`cal-check-${id}`).checked;
-        savedData[id] = { note, checked };
+        const progress = document.getElementById(`cal-prog-${id}`).innerText;
+        savedData[id] = { note, checked, progress };
         localStorage.setItem('marketingCalendar', JSON.stringify(savedData));
     }
 
@@ -250,17 +249,20 @@
         for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div class="cal-box empty"></div>`;
         for (let d = 1; d <= daysInMonth; d++) {
             const dateId = `${year}-${month + 1}-${d}`;
-            const dayData = savedData[dateId] || { note: '', checked: false };
+            const dayData = savedData[dateId] || { note: '', checked: false, progress: '' };
             grid.innerHTML += `
                 <div class="cal-box">
                     <div class="cal-header"><span>${d}</span><input type="checkbox" class="cal-check" id="cal-check-${dateId}" ${dayData.checked ? 'checked' : ''} onchange="saveCalendarData('${dateId}')"></div>
-                    <textarea class="cal-note" id="cal-note-${dateId}" placeholder="Notes..." oninput="saveCalendarData('${dateId}')">${dayData.note}</textarea>
+                    <div class="cal-note-container">
+                        <span id="cal-prog-${dateId}" class="cal-progress-display">${dayData.progress}</span>
+                        <textarea class="cal-note" id="cal-note-${dateId}" placeholder="Notes..." oninput="saveCalendarData('${dateId}')">${dayData.note}</textarea>
+                    </div>
                 </div>`;
         }
     }
 
     window.onload = function() {
-        generateCalendar(); // Generate calendar first so updateProgress can find the fields
+        generateCalendar();
         loadTrafficChecks();
         renderLinks();
     };
