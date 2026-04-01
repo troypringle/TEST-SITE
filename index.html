@@ -31,13 +31,22 @@
         .calendar-section { margin-top: 50px; }
         .cal-month-title { text-align: center; font-size: 24px; font-weight: bold; margin-bottom: 15px; color: #2c3e50; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
-        .weekday-label { text-align: center; font-weight: bold; padding: 10px 0; background: #eee; border-radius: 4px; font-size: 14px; }
-        .cal-box { border: 1px solid #ddd; background: #fff; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; min-height: 110px; transition: box-shadow 0.2s; }
+        
+        /* BLUE DAYS OF WEEK */
+        .weekday-label { text-align: center; font-weight: bold; padding: 10px 0; background: #007bff; color: white; border-radius: 4px; font-size: 14px; }
+        
+        /* DARKER GREEN DAY BOXES */
+        .cal-box { border: 1px solid #ddd; background: #b1d8b7; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; min-height: 110px; transition: box-shadow 0.2s; }
         .cal-box:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-color: #007bff; }
         .cal-box.empty { background: #f9f9f9; border: 1px dashed #eee; }
-        .cal-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 13px; padding: 6px 10px; background: #f8f9fa; border-bottom: 1px solid #eee; }
-        .cal-check { width: 16px; height: 16px; cursor: pointer; }
-        .cal-note { width: 100%; flex-grow: 1; font-size: 11px; border: none; outline: none; resize: none; padding: 8px; box-sizing: border-box; background: transparent; }
+        
+        .cal-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 13px; padding: 6px 10px; background: rgba(0,0,0,0.05); border-bottom: 1px solid rgba(0,0,0,0.1); }
+        
+        /* BLUE CHECKMARK */
+        .cal-check { width: 18px; height: 18px; cursor: pointer; accent-color: blue; }
+        
+        .cal-note { width: 100%; flex-grow: 1; font-size: 11px; border: none; outline: none; resize: none; padding: 8px; box-sizing: border-box; background: transparent; color: #1b4332; }
+        .cal-note::placeholder { color: #555; }
         
         /* EDITABLE TEXT */
         .editable-text:hover { background: #fffde7; cursor: text; outline: 1px dashed #ccc; border-radius: 4px; }
@@ -206,7 +215,7 @@
         renderLinks();
     }
 
-    // --- NEW DYNAMIC CALENDAR LOGIC ---
+    // --- CALENDAR LOGIC ---
     function saveCalendarData(id) {
         const savedData = JSON.parse(localStorage.getItem('marketingCalendar') || '{}');
         const note = document.getElementById(`cal-note-${id}`).value;
@@ -239,7 +248,7 @@
             grid.innerHTML += `<div class="weekday-label">${day}</div>`;
         });
         
-        // Empty boxes for start offset
+        // Empty boxes
         for (let i = 0; i < firstDay; i++) {
             grid.innerHTML += `<div class="cal-box empty"></div>`;
         }
