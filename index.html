@@ -3,16 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Traffic Command Center - Wide View</title>
+    <title>Traffic Command Center</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.6; margin: 0; padding: 20px; }
-        /* WIDER VIEW CONTAINER */
-        .container { max-width: 1400px; margin: auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .container { max-width: 1100px; margin: auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h2, h3 { color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 30px; }
         
-        h2, h3 { color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        
+        /* PROGRESS BAR */
+        #progress-container { background:#e9ecef; border-radius:10px; margin-bottom:30px; overflow:hidden; border: 1px solid #ccc; }
+        #progress-bar { background:#007bff; width:0%; height:35px; text-align:center; color:white; font-weight:bold; line-height:35px; transition:width 0.5s; font-size: 16px; }
+
         /* TASK GRID */
-        .task-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .task-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px; }
         .task-item { display: flex; align-items: center; background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #eee; transition: all 0.3s ease; }
         .task-item:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         .task-item input[type="checkbox"] { width: 22px; height: 22px; margin-right: 15px; cursor: pointer; }
@@ -20,8 +22,6 @@
         /* BUTTONS */
         .link-btn { display: inline-block; padding: 8px 15px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; font-size: 13px; font-weight: bold; margin-top: 5px; }
         .link-btn:hover { background: #0056b3; }
-        
-        /* FULL DELETE BUTTON */
         .delete-btn { background: #ff4d4d; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; text-transform: uppercase; }
         .delete-btn:hover { background: #cc0000; }
         
@@ -31,19 +31,13 @@
         .status-testing { background: #ffc107; color: #333; }
         .status-paused { background: #6c757d; }
 
-        /* CALENDAR STYLING */
+        /* CALENDAR */
         .calendar-section { margin-top: 50px; }
         .cal-month-title { text-align: center; font-size: 24px; font-weight: bold; margin-bottom: 15px; color: #2c3e50; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
-        
-        /* BLUE DAYS OF WEEK */
         .weekday-label { text-align: center; font-weight: bold; padding: 10px 0; background: #007bff; color: white; border-radius: 4px; font-size: 14px; }
-        
-        /* GREEN DAY BOXES */
-        .cal-box { border: 1px solid #ddd; background: #b1d8b7; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; min-height: 110px; transition: box-shadow 0.2s; }
-        .cal-box:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-color: #007bff; }
+        .cal-box { border: 1px solid #ddd; background: #b1d8b7; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; min-height: 110px; }
         .cal-box.empty { background: #f9f9f9; border: 1px dashed #eee; }
-        
         .cal-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 13px; padding: 6px 10px; background: rgba(0,0,0,0.05); border-bottom: 1px solid rgba(0,0,0,0.1); }
         .cal-check { width: 18px; height: 18px; cursor: pointer; accent-color: blue; }
         .cal-note { width: 100%; flex-grow: 1; font-size: 11px; border: none; outline: none; resize: none; padding: 8px; box-sizing: border-box; background: transparent; color: #1b4332; }
@@ -51,16 +45,15 @@
         /* EDITABLE TEXT */
         .editable-text:hover { background: #fffde7; cursor: text; outline: 1px dashed #ccc; border-radius: 4px; }
 
-        @media (max-width: 800px) { .calendar-grid { grid-template-columns: repeat(7, 1fr); gap: 4px; } }
+        @media (max-width: 600px) { .calendar-grid { grid-template-columns: repeat(7, 1fr); gap: 4px; } }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h2>Daily Traffic Command</h2>
-    
-    <div id="progress-container" style="background:#e9ecef; border-radius:10px; margin-bottom:30px; overflow:hidden; border: 1px solid #ccc;">
-        <div id="progress-bar" style="background:#007bff; width:0%; height:35px; text-align:center; color:white; font-weight:bold; line-height:35px; transition:width 0.5s; font-size: 16px;">0%</div>
+    <div id="progress-container">
+        <div id="progress-bar">0%</div>
     </div>
 
     <h3>Daily Traffic Routine</h3>
@@ -87,18 +80,14 @@
         <div class="task-item"><input type="checkbox" id="t11" class="traffic-check" onchange="updateProgress()"><div><strong>12. QwikAd</strong><br><a href="https://qwikad.com/" target="_blank" class="link-btn" style="background:#fd7e14;">QWIKAD POST</a></div></div>
     </div>
 
-    <h3>Secondary Mailers</h3>
+    <h3>Secondary Mailers & Social</h3>
     <div class="task-grid">
         <div class="task-item"><input type="checkbox" id="t12" class="traffic-check" onchange="updateProgress()"><div><strong>13. Referral Frenzy</strong><br><a href="https://www.referralfrenzy.com/login.php" target="_blank" class="link-btn" style="background:#6f42c1;">REFERRAL FRENZY</a></div></div>
         <div class="task-item"><input type="checkbox" id="t13" class="traffic-check" onchange="updateProgress()"><div><strong>14. SOTAM</strong><br><a href="https://sotam.net/login" target="_blank" class="link-btn" style="background:#6f42c1;">SOTAM LOGIN</a></div></div>
-    </div>
-
-    <h3>Social & Local</h3>
-    <div class="task-grid">
         <div class="task-item"><input type="checkbox" id="t15" class="traffic-check" onchange="updateProgress()"><div><strong>15. Instagram</strong><br><a href="https://www.instagram.com/" target="_blank" class="link-btn" style="background:#008080;">INSTAGRAM</a></div></div>
     </div>
 
-    <button onclick="resetDailyTasks()" style="width:100%; padding:15px; background:#dc3545; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer;">Reset All Daily Checkmarks</button>
+    <button onclick="resetDailyTasks()" style="width:100%; padding:15px; background:#dc3545; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer; margin-top:20px;">Reset All Daily Checkmarks</button>
 
     <hr style="margin:40px 0;">
 
@@ -116,23 +105,21 @@
         <input type="text" id="newLinkNote" placeholder="Quick Notes..." style="width:calc(100% - 145px); padding:10px;">
         <button onclick="saveNewSource()" style="background:#007bff; color:white; padding:10px 20px; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">SAVE SOURCE</button>
     </div>
-    <div id="research-links-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:20px;"></div>
+    <div id="research-links-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:20px;"></div>
 
     <div class="calendar-section">
         <h3>Marketing Calendar</h3>
-        <div id="cal-title" class="cal-month-title">Month Year</div>
+        <div id="cal-title" class="cal-month-title"></div>
         <div id="calendar-grid" class="calendar-grid"></div>
     </div>
 </div>
 
 <script>
-    // --- TRAFFIC ROUTINE PERSISTENCE ---
     function updateProgress() {
         const checks = document.querySelectorAll('.traffic-check');
         const checkedStates = {};
         checks.forEach(c => checkedStates[c.id] = c.checked);
         localStorage.setItem('trafficCheckmarks', JSON.stringify(checkedStates));
-        
         const checkedCount = Array.from(checks).filter(c => c.checked).length;
         const percent = Math.round((checkedCount / checks.length) * 100);
         const bar = document.getElementById('progress-bar');
@@ -155,22 +142,16 @@
         }
     }
 
-    // --- LINK WHEEL LOGIC ---
     function renderLinks() {
         const grid = document.getElementById('research-links-grid');
         const links = JSON.parse(localStorage.getItem('researchLinks') || '[]');
         grid.innerHTML = '';
         links.forEach((link, index) => {
             const hasUrl = link.url && link.url.trim() !== "";
-            
-            // NOTE = ORANGE GRADIENT, LINK = BLUE
             const btnStyle = hasUrl ? "background:#007bff;" : "background:linear-gradient(to bottom, #ff8c00, #ff4500);";
             const btnText = hasUrl ? link.name.toUpperCase() : "VIEW NOTE";
             const target = hasUrl ? `href="${link.url}" target="_blank"` : `href="javascript:void(0)"`;
-            
-            let statusClass = "status-active";
-            if(link.status === "Testing") statusClass = "status-testing";
-            if(link.status === "Paused") statusClass = "status-paused";
+            let statusClass = link.status === "Testing" ? "status-testing" : (link.status === "Paused" ? "status-paused" : "status-active");
             
             grid.innerHTML += `
                 <div style="background:#fff; border:1px solid #ddd; padding:15px; border-radius:8px; position:relative;">
@@ -208,7 +189,7 @@
     }
 
     function deleteLink(index) {
-        if(confirm("Delete this link/note?")) {
+        if(confirm("Delete this?")) {
             let links = JSON.parse(localStorage.getItem('researchLinks') || '[]');
             links.splice(index, 1);
             localStorage.setItem('researchLinks', JSON.stringify(links));
@@ -216,7 +197,6 @@
         }
     }
 
-    // --- CALENDAR LOGIC ---
     function saveCalendarData(id) {
         const savedData = JSON.parse(localStorage.getItem('marketingCalendar') || '{}');
         const note = document.getElementById(`cal-note-${id}`).value;
@@ -231,36 +211,21 @@
         const now = new Date();
         const year = now.getFullYear();
         const month = now.getMonth();
-        
         const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-        
         title.innerText = `${monthNames[month]} ${year}`;
-        
         const firstDay = new Date(year, month, 1).getDay();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
         const savedData = JSON.parse(localStorage.getItem('marketingCalendar') || '{}');
-        
         grid.innerHTML = '';
-        
-        dayNames.forEach(day => {
-            grid.innerHTML += `<div class="weekday-label">${day}</div>`;
-        });
-        
-        for (let i = 0; i < firstDay; i++) {
-            grid.innerHTML += `<div class="cal-box empty"></div>`;
-        }
-        
+        dayNames.forEach(day => grid.innerHTML += `<div class="weekday-label">${day}</div>`);
+        for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div class="cal-box empty"></div>`;
         for (let d = 1; d <= daysInMonth; d++) {
             const dateId = `${year}-${month + 1}-${d}`;
             const dayData = savedData[dateId] || { note: '', checked: false };
-            
             grid.innerHTML += `
                 <div class="cal-box">
-                    <div class="cal-header">
-                        <span>${d}</span>
-                        <input type="checkbox" class="cal-check" id="cal-check-${dateId}" ${dayData.checked ? 'checked' : ''} onchange="saveCalendarData('${dateId}')">
-                    </div>
+                    <div class="cal-header"><span>${d}</span><input type="checkbox" class="cal-check" id="cal-check-${dateId}" ${dayData.checked ? 'checked' : ''} onchange="saveCalendarData('${dateId}')"></div>
                     <textarea class="cal-note" id="cal-note-${dateId}" placeholder="Notes..." oninput="saveCalendarData('${dateId}')">${dayData.note}</textarea>
                 </div>`;
         }
