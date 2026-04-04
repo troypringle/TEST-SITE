@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <style>
-        /* FORCE BLACK BACKGROUND - NO MORE WHITE */
+        /* FORCE JET BLACK BACKGROUND */
         html, body {
             background-color: #000000 !important;
             margin: 0;
@@ -29,43 +29,38 @@
             text-align: center;
             position: relative;
             z-index: 5;
-            box-shadow: 0 0 30px rgba(0,0,0,1);
         }
 
         /* ==================================================== */
-        /* THE STYLED PROFESSOR (NO MORE BLOBS)                */
+        /* THE FLOATING CHARACTER                              */
         /* ==================================================== */
-        
-        @keyframes professorBehavior {
-            /* Path: Constrained to top 45% of screen */
-            0%   { transform: translate(10vw, 5vh) rotate(0deg); opacity: 0.7; }
-            25%  { transform: translate(70vw, 15vh) rotate(10deg); opacity: 0.9; }
-            /* Pulse: Become 30% transparent while crossing the middle */
-            50%  { transform: translate(40vw, 35vh) rotate(-5deg); opacity: 0.3; } 
-            75%  { transform: translate(-5vw, 20vh) rotate(-15deg); opacity: 0.8; }
-            100% { transform: translate(10vw, 5vh) rotate(0deg); opacity: 0.7; }
+        @keyframes professorFloat {
+            0%   { transform: translate(10vw, 5vh) rotate(0deg); opacity: 0.8; }
+            25%  { transform: translate(75vw, 12vh) rotate(10deg); opacity: 0.9; }
+            /* Intermittent Transparency Pulse */
+            50%  { transform: translate(45vw, 30vh) rotate(-5deg); opacity: 0.2; } 
+            75%  { transform: translate(-5vw, 15vh) rotate(-15deg); opacity: 0.8; }
+            100% { transform: translate(10vw, 5vh) rotate(0deg); opacity: 0.8; }
         }
 
         .float-container {
             position: fixed;
             top: 0; left: 0;
             z-index: 9999;
-            pointer-events: none; /* Can click "through" him to hit buttons */
-            animation: professorBehavior 25s ease-in-out infinite;
-            will-change: transform;
+            pointer-events: none; /* Click right through him */
+            animation: professorFloat 28s ease-in-out infinite;
         }
 
         .professor-img {
-            width: 160px; /* Bigger presence */
+            width: 150px; 
             height: auto;
             /* MINT GREEN GLOW */
-            filter: drop-shadow(0 0 12px rgba(0, 255, 136, 0.8)) 
-                    drop-shadow(0 0 25px rgba(0, 255, 136, 0.4));
-            transition: opacity 0.5s ease;
+            filter: drop-shadow(0 0 10px rgba(0, 255, 136, 0.9)) 
+                    drop-shadow(0 0 20px rgba(0, 255, 136, 0.4));
         }
 
         /* ==================================================== */
-        /* REST OF PAGE ELEMENTS                               */
+        /* UI ELEMENTS                                         */
         /* ==================================================== */
         .streak-container {
             width: 100%;
@@ -84,13 +79,6 @@
             text-transform: uppercase;
             margin: 0;
         }
-        .banner-img-container img {
-            width: 100%;
-            max-width: 778px;
-            border-radius: 6px;
-            border: 1px solid rgba(144, 238, 144, 0.2);
-            box-shadow: 0 0 15px rgba(144, 238, 144, 0.3);
-        }
         .video-wrapper {
             position: relative;
             padding-bottom: 56.25%;
@@ -99,6 +87,7 @@
             box-shadow: 0 0 20px rgba(0, 255, 136, 0.4); 
             border-radius: 8px;
             margin: 20px 0;
+            background: #000;
         }
         .video-wrapper iframe {
             position: absolute;
@@ -121,7 +110,7 @@
 <body>
 
 <div class="float-container">
-    <img src="https://i.ibb.co/pPTmDq7/mad-scientist-transparent.png" class="professor-img" id="professor">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/a/af/Question_mark.svg" class="professor-img" id="floatingChar">
 </div>
 
 <div class="page-border">
@@ -129,31 +118,27 @@
         <p class="streak-text">Time Sensitive New Updates</p>
     </div>
 
-    <a href="https://troypringle2.aimatrixspillover.com/" class="banner-img-container">
-        <img src="https://linkpod.s3.us-east-1.amazonaws.com/uploads/block_images/2635024737b92bb05b71e8c4a98a9751.png" alt="Secure Spot">
-    </a>
-
     <div class="video-wrapper">
         <iframe src="https://www.youtube.com/embed/S-T07JIxQEk?rel=0&modestbranding=1" frameborder="0" allowfullscreen></iframe>
     </div>
 
     <a href="https://troypringle2.aimatrixspillover.com/" class="cta-btn">CLICK TO SECURE YOUR SPOT ✔️</a>
-
-    <p style="color:#666; margin-top:20px;">"DO OR DO NOT THERE IS NO TRY" - YODA</p>
 </div>
 
 <script>
-    // Logic to cycle images tomorrow
-    const prof = document.getElementById('professor');
+    // To use your own images tomorrow:
+    // 1. Upload your scientist images to the same folder as this HTML file.
+    // 2. Update the names in the list below (e.g., 'scientist1.png').
+    const char = document.getElementById('floatingChar');
     const images = [
-        "https://i.ibb.co/pPTmDq7/mad-scientist-transparent.png", // Main Professor
-        "https://i.ibb.co/D8pG5Yp/scientist-pose2.png" // Backup example
+        "https://upload.wikimedia.org/wikipedia/commons/a/af/Question_mark.svg", 
+        "https://upload.wikimedia.org/wikipedia/commons/0/02/SVG_logo.svg"
     ];
     let i = 0;
     setInterval(() => {
         i = (i + 1) % images.length;
-        prof.src = images[i];
-    }, 10000); // Swaps every 10 seconds
+        char.src = images[i];
+    }, 12000); 
 </script>
 
 </body>
