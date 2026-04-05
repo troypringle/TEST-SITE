@@ -1,27 +1,7 @@
 /* ==================================================== */
-/* COLOR SWAPPING STATION (Change Glow Here)           */
+/* VARIABLE STORAGE (IMAGE LINKS HOUSED HERE)           */
 /* ==================================================== */
 :root {
-    /* --- WHITE (Currently Active) --- */
-    --glow-main: rgba(255, 255, 255, 0.9);
-    --glow-sub:  rgba(255, 255, 255, 0.4);
-
-    /* --- YELLOW (Uncomment to use) ---
-    --glow-main: rgba(255, 255, 0, 0.9);
-    --glow-sub:  rgba(255, 255, 0, 0.4); 
-    */
-
-    /* --- CYAN (Uncomment to use) ---
-    --glow-main: rgba(0, 225, 255, 0.9);
-    --glow-sub:  rgba(0, 150, 255, 0.4);
-    */
-
-    /* --- GREEN (Uncomment to use) ---
-    --glow-main: rgba(0, 255, 136, 0.9);
-    --glow-sub:  rgba(0, 255, 136, 0.4);
-    */
-
-    /* YOUR 7 IMAGE LINKS (HOUSED IN CSS) */
     --prof-1: url('https://raw.githubusercontent.com/troypringle/images/main/1.png');
     --prof-2: url('https://raw.githubusercontent.com/troypringle/images/main/2.png');
     --prof-3: url('https://raw.githubusercontent.com/troypringle/images/main/3.png');
@@ -50,17 +30,16 @@ body {
 }
 
 /* ==================================================== */
-/* 2. PROFESSOR FLOATIE (BREAK-OUT ANIMATION)           */
+/* 2. PROFESSOR FLOATIE (THE BREAK-OUT)                 */
 /* ==================================================== */
 .float-container {
     position: fixed;
-    /* Centers the 220px box: (50vw - 110px) */
-    left: calc(50vw - 110px); 
-    /* Position over banner graphic */
-    top: 140px; 
+    /* POSITIONED TO THE LEFT OF THE CENTERED BANNER */
+    left: calc(50vw - 390px); 
+    top: 115px; /* Moved "up a hair" from 140px */
     
-    width: 220px;   
-    height: 220px;  
+    width: 320px;   /* LARGER STARTING SIZE */
+    height: 320px;  
     z-index: 10000;
     pointer-events: none; 
     
@@ -70,38 +49,60 @@ body {
     background-position: center;
     
     transition: background-image 0.3s ease-in-out; 
-
-    /* USES COLORS FROM THE STATION ABOVE */
-    filter: drop-shadow(0 0 15px var(--glow-main)) 
-            drop-shadow(0 0 30px var(--glow-sub));
             
-    animation: professor-breakout-move 33s ease-in-out infinite;
-    will-change: transform;
+    animation: professor-pill-cycle 33s ease-in-out infinite;
+    will-change: transform, filter;
 }
 
-@keyframes professor-breakout-move {
-    /* 0-10%: BREAK OUT (Starts over Banner at Banner Size) */
-    0%   { transform: scale(1) translate(0, 0) rotate(0deg); opacity: 1; }
-    
-    /* JITTER Effect: Slights back-and-forth movement while scaling up to "break free" */
-    2%   { transform: scale(1.05) translate(5px, -5px) rotate(2deg); }
-    4%   { transform: scale(1.1) translate(-5px, 5px) rotate(-2deg); }
-    6%   { transform: scale(1.15) translate(5px, 5px) rotate(2deg); }
-    8%   { transform: scale(1.2) translate(-5px, -5px) rotate(-2deg); }
-    10%  { transform: scale(1) translate(0, 0) rotate(0deg); }
+@keyframes professor-pill-cycle {
+    /* 0-10%: GREEN START & JITTER (On the Banner) */
+    0% { 
+        transform: scale(1) translate(0, 0); 
+        filter: drop-shadow(0 0 15px rgba(0, 255, 136, 0.9)) drop-shadow(0 0 30px rgba(0, 255, 136, 0.4));
+        opacity: 1; 
+    }
+    5% { transform: scale(1.05) translate(4px, -4px) rotate(1deg); }
+    10% { 
+        transform: scale(1) translate(0, 0); 
+        filter: drop-shadow(0 0 15px rgba(0, 255, 136, 0.9));
+    }
 
-    /* 10-90%: THE FLIGHT PATH (Moves around the screen) */
-    25%  { transform: scale(1.1) translate(30vw, -10vh) rotate(10deg); opacity: 1; }
-    50%  { transform: scale(1.1) translate(-30vw, 15vh) rotate(-5deg); opacity: 0.7; } 
-    75%  { transform: scale(1.1) translate(25vw, 5vh) rotate(8deg); opacity: 0.9; }
+    /* 10-35%: TRANSITION TO WHITE & FLY RIGHT */
+    25% { 
+        transform: translate(55vw, -5vh) rotate(8deg); 
+        filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 40px rgba(255, 255, 255, 0.4));
+        opacity: 1;
+    }
 
-    /* 90-100%: RETURN TO BANNER & WAIT (3 seconds still) */
-    90%  { transform: scale(1) translate(0, 0) rotate(0deg); opacity: 1; }
-    100% { transform: scale(1) translate(0, 0) rotate(0deg); opacity: 1; }
+    /* 35-60%: TRANSITION TO RED (RED PILL) & SWOOP DOWN */
+    50% { 
+        transform: translate(15vw, 25vh) rotate(-5deg); 
+        filter: drop-shadow(0 0 25px rgba(255, 0, 0, 1)) drop-shadow(0 0 50px rgba(255, 0, 0, 0.6));
+        opacity: 0.8;
+    } 
+
+    /* 60-85%: TRANSITION TO BLUE (BLUE PILL) & SWOOP UP */
+    75% { 
+        transform: translate(45vw, 5vh) rotate(5deg); 
+        filter: drop-shadow(0 0 25px rgba(0, 100, 255, 1)) drop-shadow(0 0 50px rgba(0, 100, 255, 0.6));
+        opacity: 0.9;
+    }
+
+    /* 90-100%: RETURN TO GREEN BANNER POSITION & WAIT */
+    90% { 
+        transform: translate(0, 0) scale(1); 
+        filter: drop-shadow(0 0 15px rgba(0, 255, 136, 0.9));
+        opacity: 1;
+    }
+    100% { 
+        transform: translate(0, 0) scale(1); 
+        filter: drop-shadow(0 0 15px rgba(0, 255, 136, 0.9));
+        opacity: 1;
+    }
 }
 
 /* ==================================================== */
-/* 3. PAGE CONTENT & UI (Remaining Site Styles)         */
+/* 3. PAGE CONTENT & UI                                 */
 /* ==================================================== */
 .page-border {
     width: 100%;
@@ -241,11 +242,10 @@ body {
     .spacer-between { height: 15px; }
     .video-cta-overlay a { font-size: 16px; }
     
-    /* Responsive alignment and sizing */
     .float-container { 
-        width: 140px; 
-        height: 140px; 
-        left: calc(50vw - 70px);
-        top: 100px;
+        width: 180px; 
+        height: 180px; 
+        left: calc(50vw - 220px);
+        top: 85px;
     } 
 }
