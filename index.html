@@ -4,20 +4,17 @@
     <title>Watch NEW Youtube Video Huge Updates</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="viewport-fix-inner">
-    <svg class="system-render-layer" viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <path d="M50,5 C30,5,15,20,15,40 C15,50,20,60,20,65 C15,70,10,75,10,80 C10,90,20,95,30,95 
-		C35,95,40,90,40,85 C45,90,50,95,55,95 C65,95,75,90,75,80 C75,75,70,70,65,65 C70,60,75,50,75,40 C75,20,60,5,50,5 Z 
-                 M35,35 C32,35,30,32,30,30 C30,28,32,25,35,25 C38,25,40,28,40,30 C40,32,38,35,35,35 Z 
-                 M65,35 C62,35,60,32,60,30 C60,28,62,25,65,25 C68,25,70,28,70,30 C70,32,68,35,65,35 Z 
-                 M50,55 C40,55,35,50,35,45 C45,45,55,45,65,45 C65,50,60,55,50,55 Z" />
-    </svg>
+<div class="float-container">
+    <img src="https://raw.githubusercontent.com/troypringle/images/main/1.png" 
+         id="floatingProfessor" 
+         class="professor-img" 
+         alt="Floating Professor">
 </div>
+
 <div class="page-border">
     <div class="streak-container">
         <p class="streak-text">Time Sensitive New Updates</p>
@@ -28,11 +25,6 @@
              class="banner-img" alt="Secure Your Spot">
     </a>
 
-	TEST IMAGE 
-<a href="https://troypringle2.aimatrixspillover.com/" class="banner-img-container">
-        <img src="https://linkpod.s3.us-east-1.amazonaws.com/uploads/block_images/2635024737b92bb05b71e8c4a98a9751.png"
-             class="banner-img" alt="Secure Your Spot">
-    </a> 
     <div class="spacer-between"></div>
 
     <span class="headline">
@@ -56,6 +48,7 @@
 </div>
 
 <script>
+    // 1. URL PARAMETER LOGIC (Existing)
     (function() {
         var params = window.location.search;
         if (params) {
@@ -67,6 +60,26 @@
                 }
             }
         }
+    })();
+
+    // 2. IMAGE ROTATION LOGIC (New)
+    (function() {
+        const prof = document.getElementById('floatingProfessor');
+        const images = [
+            "https://raw.githubusercontent.com/troypringle/images/main/1.png",
+            "https://raw.githubusercontent.com/troypringle/images/main/2.png",
+            "https://raw.githubusercontent.com/troypringle/images/main/3.png",
+            "https://raw.githubusercontent.com/troypringle/images/main/4.png",
+            "https://raw.githubusercontent.com/troypringle/images/main/5.png",
+            "https://raw.githubusercontent.com/troypringle/images/main/6.png",
+            "https://raw.githubusercontent.com/troypringle/images/main/7.png"
+        ];
+        
+        let i = 0;
+        setInterval(() => {
+            i = (i + 1) % images.length;
+            prof.src = images[i];
+        }, 10000); // Swaps image every 10 seconds
     })();
 </script>
 
