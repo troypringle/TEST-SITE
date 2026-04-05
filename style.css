@@ -1,4 +1,17 @@
 /* ==================================================== */
+/* VARIABLE STORAGE (IMAGE LINKS HOUSED HERE)           */
+/* ==================================================== */
+:root {
+    --prof-1: url('https://raw.githubusercontent.com/troypringle/images/main/1.png');
+    --prof-2: url('https://raw.githubusercontent.com/troypringle/images/main/2.png');
+    --prof-3: url('https://raw.githubusercontent.com/troypringle/images/main/3.png');
+    --prof-4: url('https://raw.githubusercontent.com/troypringle/images/main/4.png');
+    --prof-5: url('https://raw.githubusercontent.com/troypringle/images/main/5.png');
+    --prof-6: url('https://raw.githubusercontent.com/troypringle/images/main/6.png');
+    --prof-7: url('https://raw.githubusercontent.com/troypringle/images/main/7.png');
+}
+
+/* ==================================================== */
 /* 1. RESET & CORE LAYOUT                               */
 /* ==================================================== */
 * { box-sizing: border-box; }
@@ -22,19 +35,24 @@ body {
 .float-container {
     position: fixed;
     top: 0; left: 0;
-    width: 140px; /* Size of the professor */
+    width: 140px; 
+    height: 140px; /* Added height so the background image displays */
     z-index: 10000;
     pointer-events: none; /* Allows clicking through the image */
-    animation: professor-refined-move 28s ease-in-out infinite;
-    will-change: transform;
-}
+    
+    /* BACKGROUND IMAGE SETUP */
+    background-image: var(--prof-1); /* Starts on image 1 */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: background-image 0.5s ease-in-out; /* Smooth fade when swapping */
 
-.professor-img {
-    width: 100%;
-    height: auto;
     /* MINT GREEN GLOW - Matches Video Box */
     filter: drop-shadow(0 0 10px rgba(0, 255, 136, 0.8)) 
             drop-shadow(0 0 20px rgba(0, 255, 136, 0.4));
+            
+    animation: professor-refined-move 28s ease-in-out infinite;
+    will-change: transform;
 }
 
 @keyframes professor-refined-move {
@@ -189,5 +207,7 @@ body {
     .streak-container { height: 75px; }
     .spacer-between { height: 15px; }
     .video-cta-overlay a { font-size: 16px; }
-    .float-container { width: 100px; } /* Scale down professor on phones */
+    
+    /* Ensure height and width scale down together on phones */
+    .float-container { width: 100px; height: 100px; } 
 }
