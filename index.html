@@ -57,16 +57,24 @@
         }
     })();
 
-    // 2. IMAGE ROTATION LOGIC (Now using CSS Variables)
+    // 2. IMAGE ROTATION + TRANSITION BOOST
     (function() {
         const profBox = document.getElementById('profBox');
         let count = 1;
         
         setInterval(() => {
-            count = (count % 7) + 1; // Cycles from 1 to 7 smoothly
-            // Instructs CSS to swap to the next variable
-            profBox.style.backgroundImage = `var(--prof-${count})`;
-        }, 10000); // Swaps image every 10 seconds
+            count = (count % 7) + 1;
+            
+            // Apply a quick scale effect to "boost" the transition
+            profBox.style.transform += " scale(1.15)";
+            
+            setTimeout(() => {
+                profBox.style.backgroundImage = `var(--prof-${count})`;
+                // Reset scale after the image swaps
+                profBox.style.transform = profBox.style.transform.replace(" scale(1.15)", "");
+            }, 150); 
+
+        }, 10000); 
     })();
 </script>
 
