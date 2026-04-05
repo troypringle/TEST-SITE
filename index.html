@@ -223,8 +223,7 @@
     </footer>
 </div>
 
-<script>
-    const visualView = document.getElementById('visual-view');
+const visualView = document.getElementById('visual-view');
     const htmlRaw = document.getElementById('html-raw');
     const htmlColored = document.getElementById('html-colored');
     const titleInput = document.getElementById('mlgs-subject-field-unique');
@@ -233,6 +232,61 @@
     const lastSavedDisplay = document.getElementById('last-saved-time-str');
     const topBanner = document.getElementById('top-timer-banner');
 
+    // --- UNDO/REDO SYSTEM ---
+    let historyStack = [];
+    let redoStack = [];
+    const maxHistory = 50;
+
+    function saveState() {
+        const currentState = {
+            title: titleInput.value,
+            content: htmlRaw.value
+        };
+        // Only save if different from last state
+        if (historyStack.length === 0 || JSON.stringify(currentState) !== JSON.stringify(historyStack[historyStack.length - 1])) {
+            historyStack.push(currentState);
+            if (historyStack.length > maxHistory) historyStack.shift();
+            redoStack = []; // Clear redo on new action
+        }
+    }
+
+    function undo() {
+        if (historyStack.length > 1) {
+            redoStack.push(historyStack.pop());
+            const previousState = historyStack[historyStack.length - 1];
+            applyState(previousState);
+        }
+    }
+
+    function redo() {
+        if (redoStack.length > 0) {
+            const nextState = redoStack.pop();
+            historyStack.push(nextState);
+            applyState(nextState);
+        }
+    }
+
+    function applyState(state) {
+        titleInput.value = state.title;
+        htmlRaw.value = state.content;
+        visualView.innerHTML = state.content;
+        applySyntax(state.content);
+        autoSaveContent();
+    }
+
+    // Capture Ctrl+Z and Ctrl+Y
+    window.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.key.toLowerCase() === 'z') {
+            e.preventDefault();
+            undo();
+        }
+        if (e.ctrlKey && e.key.toLowerCase() === 'y') {
+            e.preventDefault();
+            redo();
+        }
+    });
+
+    // --- CORE FUNCTIONS ---
     function openLivePreview() {
         const content = htmlRaw.value;
         const previewWin = window.open("", "MLGSPreview", "width=800,height=800");
@@ -250,40 +304,42 @@
         htmlColored.innerHTML = escaped + "\n";
     }
 
+    // Added a small "Debounce" so it doesn't save state on every single keystroke (saves every 500ms of typing)
+    let saveTimer;
     function syncFromCode() { 
         applySyntax(htmlRaw.value); 
         visualView.innerHTML = htmlRaw.value; 
         autoSaveContent(); 
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(saveState, 500);
     }
 
     function syncFromVisual() { 
         htmlRaw.value = visualView.innerHTML; 
         applySyntax(htmlRaw.value); 
         autoSaveContent(); 
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(saveState, 500);
     }
 
-    function syncCodeScroll() { 
-        htmlColored.scrollTop = htmlRaw.scrollTop; 
-    }
-
+    function syncCodeScroll() { htmlColored.scrollTop = htmlRaw.scrollTop; }
+    
     function exec(cmd, val = null) { 
+        saveState();
         document.execCommand(cmd, false, val); 
         syncFromVisual(); 
     }
 
-    // --- MAILING ACTION LOGIC ---
+    // --- TIMER & MAILING ---
     function updateMailingTimer() {
         const lastSavedTimestamp = localStorage.getItem('mlgs_timestamp_ms');
         if (!lastSavedTimestamp || lastSavedTimestamp === "null") return;
-
         const waitPeriod = 23 * 60 * 60 * 1000; 
         const nextMailTime = parseInt(lastSavedTimestamp) + waitPeriod;
         const diff = nextMailTime - Date.now();
-
         if (diff <= 0) {
             countdownDisplay.innerText = "00:00:00";
             topBanner.innerText = "READY TO MAIL";
-            topBanner.style.background = "#eafff0";
         } else {
             const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
             const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
@@ -301,42 +357,11 @@
         lastSavedDisplay.innerText = dateString;
     }
 
-    function applyManualTime() {
-        const inputVal = document.getElementById('manual-time-input').value;
-        if (!inputVal) return;
-        triggerMailingAction(new Date(inputVal).getTime());
-    }
-
     function autoSaveContent() {
         localStorage.setItem('mlgs_session_content', JSON.stringify({ 
             title: titleInput.value, 
             content: htmlRaw.value 
         }));
-    }
-
-    function downloadHTML() {
-        const userTitle = titleInput.value.trim() || 'mlgs-email';
-        const blob = new Blob([htmlRaw.value], { type: 'text/html' });
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = userTitle + '.html';
-        a.click();
-        triggerMailingAction();
-    }
-
-    function restoreCheckpoint() {
-        const saved = localStorage.getItem('mlgs_checkpoint');
-        if (saved) {
-            const data = JSON.parse(saved);
-            titleInput.value = data.title;
-            htmlRaw.value = data.content;
-            syncFromCode();
-        }
-    }
-
-    function copyHTML() {
-        htmlRaw.select();
-        document.execCommand('copy');
     }
 
     window.onload = () => {
@@ -346,19 +371,9 @@
             titleInput.value = data.title || "";
             htmlRaw.value = data.content || "";
             syncFromCode();
+            saveState(); // Capture initial load
         }
         setInterval(updateMailingTimer, 1000);
     };
-
-    fileInput.onchange = (e) => {
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            htmlRaw.value = event.target.result;
-            syncFromCode();
-        };
-        reader.readAsText(file);
-    };
-</script>
 </body>
 </html>
