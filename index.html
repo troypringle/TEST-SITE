@@ -149,7 +149,6 @@
 
         .footer-buttons { display: flex; gap: 15px; }
         .btn-huge { flex: 1; padding: 25px; font-size: 24px; font-weight: 900; }
-        .ready-text { color: var(--pro-green) !important; }
     </style>
 </head>
 <body>
@@ -222,8 +221,9 @@
         </div>
     </footer>
 </div>
+
 <script>
-const visualView = document.getElementById('visual-view');
+    const visualView = document.getElementById('visual-view');
     const htmlRaw = document.getElementById('html-raw');
     const htmlColored = document.getElementById('html-colored');
     const titleInput = document.getElementById('mlgs-subject-field-unique');
@@ -231,6 +231,7 @@ const visualView = document.getElementById('visual-view');
     const countdownDisplay = document.getElementById('countdown-timer');
     const lastSavedDisplay = document.getElementById('last-saved-time-str');
     const topBanner = document.getElementById('top-timer-banner');
+    const manualTimeInput = document.getElementById('manual-time-input');
 
     // --- UNDO/REDO SYSTEM ---
     let historyStack = [];
@@ -242,11 +243,10 @@ const visualView = document.getElementById('visual-view');
             title: titleInput.value,
             content: htmlRaw.value
         };
-        // Only save if different from last state
         if (historyStack.length === 0 || JSON.stringify(currentState) !== JSON.stringify(historyStack[historyStack.length - 1])) {
             historyStack.push(currentState);
             if (historyStack.length > maxHistory) historyStack.shift();
-            redoStack = []; // Clear redo on new action
+            redoStack = []; 
         }
     }
 
@@ -274,7 +274,6 @@ const visualView = document.getElementById('visual-view');
         autoSaveContent();
     }
 
-    // Capture Ctrl+Z and Ctrl+Y
     window.addEventListener('keydown', (e) => {
         if (e.ctrlKey && e.key.toLowerCase() === 'z') {
             e.preventDefault();
@@ -286,14 +285,7 @@ const visualView = document.getElementById('visual-view');
         }
     });
 
-    // --- CORE FUNCTIONS ---
-    function openLivePreview() {
-        const content = htmlRaw.value;
-        const previewWin = window.open("", "MLGSPreview", "width=800,height=800");
-        previewWin.document.write('<html><head><title>Preview</title></head><body>' + content + '</body></html>');
-        previewWin.document.close();
-    }
-
+    // --- CORE EDITOR FUNCTIONS ---
     function applySyntax(code) {
         let escaped = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         escaped = escaped.replace(/&lt;(\/?[a-z1-6]+)(.*?)&gt;/gi, (match, tag, attrs) => {
@@ -304,7 +296,6 @@ const visualView = document.getElementById('visual-view');
         htmlColored.innerHTML = escaped + "\n";
     }
 
-    // Added a small "Debounce" so it doesn't save state on every single keystroke (saves every 500ms of typing)
     let saveTimer;
     function syncFromCode() { 
         applySyntax(htmlRaw.value); 
@@ -330,6 +321,60 @@ const visualView = document.getElementById('visual-view');
         syncFromVisual(); 
     }
 
+    // --- SAVE, DOWNLOAD & FILE FUNCTIONS ---
+    function downloadHTML() {
+        const content = htmlRaw.value;
+        const title = titleInput.value || "Untitled_Email";
+        const blob = new Blob([content], { type: "text/html" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `${title.replace(/\s+/g, '_')}.html`;
+        a.click();
+        
+        // Save checkpoint
+        localStorage.setItem('mlgs_checkpoint', JSON.stringify({ title: title, content: content }));
+        alert("File Downloaded & Checkpoint Saved!");
+    }
+
+    function restoreCheckpoint() {
+        const saved = localStorage.getItem('mlgs_checkpoint');
+        if (saved) {
+            saveState();
+            const data = JSON.parse(saved);
+            titleInput.value = data.title;
+            htmlRaw.value = data.content;
+            syncFromCode();
+            alert("Last download restored.");
+        } else {
+            alert("No checkpoint found.");
+        }
+    }
+
+    function copyHTML() {
+        navigator.clipboard.writeText(htmlRaw.value);
+        alert("HTML Source Copied to Clipboard!");
+    }
+
+    function openLivePreview() {
+        const content = htmlRaw.value;
+        const previewWin = window.open("", "MLGSPreview", "width=800,height=800");
+        previewWin.document.write('<html><head><title>Preview</title></head><body>' + content + '</body></html>');
+        previewWin.document.close();
+    }
+
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            saveState();
+            htmlRaw.value = e.target.result;
+            titleInput.value = file.name.replace('.html', '');
+            syncFromCode();
+        };
+        reader.readAsText(file);
+    });
+
     // --- TIMER & MAILING ---
     function updateMailingTimer() {
         const lastSavedTimestamp = localStorage.getItem('mlgs_timestamp_ms');
@@ -340,12 +385,16 @@ const visualView = document.getElementById('visual-view');
         if (diff <= 0) {
             countdownDisplay.innerText = "00:00:00";
             topBanner.innerText = "READY TO MAIL";
+            topBanner.style.background = "#eafff0";
+            topBanner.style.color = "#28a745";
         } else {
             const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
             const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
             const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
             countdownDisplay.innerText = `${h}:${m}:${s}`;
             topBanner.innerText = `NEXT MAIL IN: ${h}:${m}:${s}`;
+            topBanner.style.background = "#fff4f4";
+            topBanner.style.color = "#d9534f";
         }
     }
 
@@ -355,6 +404,14 @@ const visualView = document.getElementById('visual-view');
         const dateString = new Date(ms).toLocaleString();
         localStorage.setItem('mlgs_last_timestamp_str', dateString);
         lastSavedDisplay.innerText = dateString;
+    }
+
+    function applyManualTime() {
+        const val = manualTimeInput.value;
+        if (!val) return alert("Select a date/time first.");
+        const customMs = new Date(val).getTime();
+        triggerMailingAction(customMs);
+        alert("Mailing time updated!");
     }
 
     function autoSaveContent() {
@@ -371,10 +428,13 @@ const visualView = document.getElementById('visual-view');
             titleInput.value = data.title || "";
             htmlRaw.value = data.content || "";
             syncFromCode();
-            saveState(); // Capture initial load
+            saveState(); 
         }
+        const lastStr = localStorage.getItem('mlgs_last_timestamp_str');
+        if (lastStr) lastSavedDisplay.innerText = lastStr;
         setInterval(updateMailingTimer, 1000);
     };
-    </script>
+</script>
+
 </body>
 </html>
