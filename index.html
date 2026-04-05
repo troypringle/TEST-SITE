@@ -1,89 +1,364 @@
-<style>
-    /* Resetting the layout to 'Block' mode to stop the editor from jumping */
-    #matrix-content {
-        background-color: #000000;
-        color: white;
-        font-family: Arial, sans-serif;
-        padding: 40px 10px;
-        margin: 0;
-        text-align: center;
-    }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLGS Content Hub - Professional Edition</title>
+    <style>
+        :root {
+            --pro-blue: #0056b3;
+            --pro-blue-hover: #004494;
+            --pro-green: #28a745;
+            --pro-green-hover: #218838;
+            --bg-page: #f4f7f9;
+            --border: #ced4da;
+            --syn-tag: #0000ff;
+            --syn-attr: #ff0000;
+            --syn-val: #8000ff;
+            --syn-token: #d63384;
+        }
 
-    .page-border {
-        display: block;
-        margin: 0 auto; /* This centers the box without using Flexbox */
-        width: 95%;
-        max-width: 820px;
-        border: 2px solid #1a1a1a; 
-        border-radius: 13px;
-        padding: 15px;
-        background: #020202; 
-        position: relative;
-    }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--bg-page);
+            margin: 0;
+            padding: 25px; 
+            color: #333;
+        }
 
-    /* UI ELEMENTS */
-    .streak-container {
-        width: 100%;
-        max-width: 900px; 
-        height: 90px;      
-        background: url('https://linkpod.s3.us-east-1.amazonaws.com/uploads/block_images/f3511efd5936e0986b6fb7034cecc2c7.png') center / cover no-repeat;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 20px;
-    }
-    
-    .streak-text {
-        font-size: 28px; 
-        color: #ff0000;
-        font-weight: 900;
-        text-transform: uppercase;
-        margin: 0;
-    }
+        .main-hub {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border: 1px solid #ddd;
+        }
 
-    .video-wrapper {
-        position: relative;
-        padding-bottom: 56.25%;
-        height: 0;
-        border: 2px solid #004d26; 
-        box-shadow: 0 0 20px rgba(0, 255, 136, 0.4); 
-        border-radius: 8px;
-        margin: 20px 0;
-        background: #000;
-    }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--pro-blue);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
 
-    .video-wrapper iframe {
-        position: absolute;
-        top: 0; left: 0; width: 100%; height: 100%;
-    }
+        h1 { margin: 0; color: var(--pro-blue); font-size: 28px; font-weight: 900; text-transform: uppercase; }
 
-    .cta-btn {
-        display: block;
-        background: rgba(0, 30, 15, 0.8);
-        border: 1px solid #00ff88;
-        color: #fff;
-        padding: 15px;
-        text-decoration: none;
-        font-weight: 900;
-        font-size: 22px;
-        border-radius: 5px;
-        text-transform: uppercase;
-        margin-top: 10px;
-    }
-</style>
+        #top-timer-banner {
+            font-size: 22px;
+            font-weight: 900;
+            padding: 10px 20px;
+            border-radius: 6px;
+            background: #eafff0;
+            color: #28a745;
+            border: 2px solid #c3e6cb;
+        }
 
-<div id="matrix-content">
-    <div class="page-border">
-        
-        <div class="streak-container">
-            <p class="streak-text">Time Sensitive New Updates</p>
-        </div>
+        .subject-row { margin-bottom: 20px; }
 
-        <div class="video-wrapper">
-            <iframe src="https://www.youtube.com/embed/S-T07JIxQEk?rel=0&modestbranding=1" frameborder="0" allowfullscreen></iframe>
-        </div>
+        #mlgs-subject-field-unique {
+            width: 100%;
+            padding: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: #fdfdfd;
+        }
 
-        <a href="https://troypringle2.aimatrixspillover.com/" class="cta-btn">CLICK TO SECURE YOUR SPOT ✔️</a>
-        
+        .workspace {
+            display: flex;
+            gap: 20px;
+            height: 600px;
+            margin-bottom: 20px;
+        }
+
+        .pane {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            background: white;
+        }
+
+        .pane-header {
+            background: var(--pro-blue);
+            color: white;
+            padding: 10px 15px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+
+        .wysiwyg-toolbar { background: #f8f9fa; border-bottom: 1px solid var(--border); padding: 8px; display: flex; gap: 5px; }
+        .wysiwyg-toolbar button, .wysiwyg-toolbar select { padding: 5px 10px; font-weight: bold; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; }
+
+        #visual-view { flex: 1; padding: 20px; overflow-y: auto; outline: none; background: white; font-size: 16px; }
+
+        .code-container { position: relative; flex: 1; overflow: hidden; }
+        #html-raw, #html-colored {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            margin: 0; padding: 20px; font-family: 'Consolas', monospace; font-size: 14px;
+            line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; box-sizing: border-box; border: none; overflow-y: auto;
+        }
+        #html-raw { color: transparent; background: transparent; caret-color: black; z-index: 2; outline: none; resize: none;}
+        #html-colored { z-index: 1; color: #333; pointer-events: none; }
+
+        .tag { color: var(--syn-tag); font-weight: bold; }
+        .attr { color: var(--syn-attr); }
+        .val { color: var(--syn-val); }
+        .mlgs-var { color: white; background: var(--syn-token); padding: 0 3px; border-radius: 3px; font-weight: bold; }
+
+        .action-bar { display: flex; gap: 10px; margin-bottom: 25px; }
+        .btn { padding: 15px; font-size: 14px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; text-align: center; text-decoration: none; transition: 0.2s; flex: 1; }
+        .btn-green { background: var(--pro-green); color: white; }
+        .btn-blue { background: var(--pro-blue); color: white; }
+        .btn-grey { background: #6c757d; color: white; }
+
+        footer {
+            border-top: 3px solid var(--pro-blue);
+            padding-top: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .timer-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1.2fr 1fr;
+            gap: 20px;
+            align-items: center;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .timer-display-box { text-align: center; border-right: 2px solid #eee; }
+        .timer-val { font-size: 32px; font-weight: 900; color: #d9534f; display: block; }
+        .timer-label { font-size: 12px; font-weight: bold; color: #777; text-transform: uppercase; }
+
+        .manual-override-box { display: flex; flex-direction: column; gap: 8px; }
+        .manual-override-box label { font-size: 12px; font-weight: bold; color: var(--pro-blue); }
+        .manual-override-box input { padding: 10px; border: 1px solid var(--border); border-radius: 5px; font-weight: bold; }
+
+        .footer-buttons { display: flex; gap: 15px; }
+        .btn-huge { flex: 1; padding: 25px; font-size: 24px; font-weight: 900; }
+        .ready-text { color: var(--pro-green) !important; }
+    </style>
+</head>
+<body>
+
+<div class="main-hub">
+    <header>
+        <h1>MLGS Content Hub</h1>
+        <div id="top-timer-banner">READY TO MAIL</div>
+    </header>
+
+    <div class="subject-row">
+        <input type="text" id="mlgs-subject-field-unique" placeholder="Subject Line / Email Title..." autocomplete="off">
     </div>
+
+    <div class="workspace">
+        <div class="pane">
+            <div class="pane-header">Visual Editor & Preview</div>
+            <div class="wysiwyg-toolbar">
+                <button onclick="exec('bold')">B</button>
+                <button onclick="exec('italic')">I</button>
+                <button onclick="exec('underline')">U</button>
+                <select onchange="exec('fontSize', this.value); this.selectedIndex=0;"><option value="">Size</option><option value="3">Small</option><option value="4">Normal</option><option value="5">Large</option><option value="7">Huge</option></select>
+                <input type="color" oninput="exec('foreColor', this.value)" title="Color">
+                <button onclick="exec('createLink', prompt('URL:'))">Link</button>
+                <button onclick="exec('removeFormat')">Clear Style</button>
+            </div>
+            <div id="visual-view" contenteditable="true" oninput="syncFromVisual()"></div>
+        </div>
+
+        <div class="pane">
+            <div class="pane-header">HTML Source Code</div>
+            <div class="code-container">
+                <div id="html-colored"></div>
+                <textarea id="html-raw" spellcheck="false" oninput="syncFromCode()" onscroll="syncCodeScroll()"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-bar">
+        <button class="btn btn-green" onclick="downloadHTML()">Save & Download</button>
+        <button class="btn btn-blue" onclick="openLivePreview()">Live Preview Test</button>
+        <button class="btn btn-blue" onclick="restoreCheckpoint()">Restore Last Download</button>
+        <button class="btn btn-grey" onclick="document.getElementById('file-input').click()">Browse PC Files</button>
+        <button class="btn btn-grey" onclick="copyHTML()">Copy HTML Source</button>
+    </div>
+    <input type="file" id="file-input" style="display:none" accept=".html">
+
+    <footer>
+        <div class="timer-grid">
+            <div class="timer-display-box">
+                <span class="timer-label">Next Mailing Available In:</span>
+                <span id="countdown-timer" class="timer-val">00:00:00</span>
+            </div>
+            
+            <div class="timer-display-box">
+                <span class="timer-label">Last Mailing Recorded:</span>
+                <span id="last-saved-time-str" style="font-weight: bold; font-size: 14px; margin-top: 10px; display: block; color: #555;">NEVER RECORDED</span>
+            </div>
+
+            <div class="manual-override-box">
+                <label>Manual Time Override:</label>
+                <input type="datetime-local" id="manual-time-input">
+                <button class="btn btn-blue" style="padding: 5px; font-size: 11px;" onclick="applyManualTime()">Set Custom Action Time</button>
+            </div>
+        </div>
+
+        <div class="footer-buttons">
+            <a href="https://www.myleadgensecret.com/index.php" target="_blank" class="btn btn-green btn-huge">OPEN MLGS LOGIN</a>
+            <button class="btn btn-blue btn-huge" onclick="triggerMailingAction()">UPDATE TIME / DATE NOW</button>
+        </div>
+    </footer>
 </div>
+
+<script>
+    const visualView = document.getElementById('visual-view');
+    const htmlRaw = document.getElementById('html-raw');
+    const htmlColored = document.getElementById('html-colored');
+    const titleInput = document.getElementById('mlgs-subject-field-unique');
+    const fileInput = document.getElementById('file-input');
+    const countdownDisplay = document.getElementById('countdown-timer');
+    const lastSavedDisplay = document.getElementById('last-saved-time-str');
+    const topBanner = document.getElementById('top-timer-banner');
+
+    function openLivePreview() {
+        const content = htmlRaw.value;
+        const previewWin = window.open("", "MLGSPreview", "width=800,height=800");
+        previewWin.document.write('<html><head><title>Preview</title></head><body>' + content + '</body></html>');
+        previewWin.document.close();
+    }
+
+    function applySyntax(code) {
+        let escaped = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        escaped = escaped.replace(/&lt;(\/?[a-z1-6]+)(.*?)&gt;/gi, (match, tag, attrs) => {
+            let highlightedAttrs = attrs.replace(/([a-z-]+)=(['"].*?['"])/gi, '<span class="attr">$1</span>=<span class="val">$2</span>');
+            return `<span class="tag">&lt;${tag}</span>${highlightedAttrs}<span class="tag">&gt;</span>`;
+        });
+        escaped = escaped.replace(/\{!(.*?)\}/g, '<span class="mlgs-var">{!$1}</span>');
+        htmlColored.innerHTML = escaped + "\n";
+    }
+
+    function syncFromCode() { 
+        applySyntax(htmlRaw.value); 
+        visualView.innerHTML = htmlRaw.value; 
+        autoSaveContent(); 
+    }
+
+    function syncFromVisual() { 
+        htmlRaw.value = visualView.innerHTML; 
+        applySyntax(htmlRaw.value); 
+        autoSaveContent(); 
+    }
+
+    function syncCodeScroll() { 
+        htmlColored.scrollTop = htmlRaw.scrollTop; 
+    }
+
+    function exec(cmd, val = null) { 
+        document.execCommand(cmd, false, val); 
+        syncFromVisual(); 
+    }
+
+    // --- MAILING ACTION LOGIC ---
+    function updateMailingTimer() {
+        const lastSavedTimestamp = localStorage.getItem('mlgs_timestamp_ms');
+        if (!lastSavedTimestamp || lastSavedTimestamp === "null") return;
+
+        const waitPeriod = 23 * 60 * 60 * 1000; 
+        const nextMailTime = parseInt(lastSavedTimestamp) + waitPeriod;
+        const diff = nextMailTime - Date.now();
+
+        if (diff <= 0) {
+            countdownDisplay.innerText = "00:00:00";
+            topBanner.innerText = "READY TO MAIL";
+            topBanner.style.background = "#eafff0";
+        } else {
+            const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
+            const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
+            const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
+            countdownDisplay.innerText = `${h}:${m}:${s}`;
+            topBanner.innerText = `NEXT MAIL IN: ${h}:${m}:${s}`;
+        }
+    }
+
+    function triggerMailingAction(customMs = null) {
+        const ms = customMs || Date.now();
+        localStorage.setItem('mlgs_timestamp_ms', ms);
+        const dateString = new Date(ms).toLocaleString();
+        localStorage.setItem('mlgs_last_timestamp_str', dateString);
+        lastSavedDisplay.innerText = dateString;
+    }
+
+    function applyManualTime() {
+        const inputVal = document.getElementById('manual-time-input').value;
+        if (!inputVal) return;
+        triggerMailingAction(new Date(inputVal).getTime());
+    }
+
+    function autoSaveContent() {
+        localStorage.setItem('mlgs_session_content', JSON.stringify({ 
+            title: titleInput.value, 
+            content: htmlRaw.value 
+        }));
+    }
+
+    function downloadHTML() {
+        const userTitle = titleInput.value.trim() || 'mlgs-email';
+        const blob = new Blob([htmlRaw.value], { type: 'text/html' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = userTitle + '.html';
+        a.click();
+        triggerMailingAction();
+    }
+
+    function restoreCheckpoint() {
+        const saved = localStorage.getItem('mlgs_checkpoint');
+        if (saved) {
+            const data = JSON.parse(saved);
+            titleInput.value = data.title;
+            htmlRaw.value = data.content;
+            syncFromCode();
+        }
+    }
+
+    function copyHTML() {
+        htmlRaw.select();
+        document.execCommand('copy');
+    }
+
+    window.onload = () => {
+        const session = localStorage.getItem('mlgs_session_content');
+        if (session) {
+            const data = JSON.parse(session);
+            titleInput.value = data.title || "";
+            htmlRaw.value = data.content || "";
+            syncFromCode();
+        }
+        setInterval(updateMailingTimer, 1000);
+    };
+
+    fileInput.onchange = (e) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            htmlRaw.value = event.target.result;
+            syncFromCode();
+        };
+        reader.readAsText(file);
+    };
+</script>
+</body>
+</html>
