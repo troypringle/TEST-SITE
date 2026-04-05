@@ -1,7 +1,27 @@
 /* ==================================================== */
-/* VARIABLE STORAGE (IMAGE LINKS HOUSED HERE)           */
+/* COLOR SWAPPING STATION (Change Glow Here)           */
 /* ==================================================== */
 :root {
+    /* --- WHITE (Currently Active) --- */
+    --glow-main: rgba(255, 255, 255, 0.9);
+    --glow-sub:  rgba(255, 255, 255, 0.4);
+
+    /* --- YELLOW (Uncomment to use) ---
+    --glow-main: rgba(255, 255, 0, 0.9);
+    --glow-sub:  rgba(255, 255, 0, 0.4); 
+    */
+
+    /* --- CYAN (Uncomment to use) ---
+    --glow-main: rgba(0, 225, 255, 0.9);
+    --glow-sub:  rgba(0, 150, 255, 0.4);
+    */
+
+    /* --- GREEN (Uncomment to use) ---
+    --glow-main: rgba(0, 255, 136, 0.9);
+    --glow-sub:  rgba(0, 255, 136, 0.4);
+    */
+
+    /* YOUR 7 IMAGE LINKS (HOUSED IN CSS) */
     --prof-1: url('https://raw.githubusercontent.com/troypringle/images/main/1.png');
     --prof-2: url('https://raw.githubusercontent.com/troypringle/images/main/2.png');
     --prof-3: url('https://raw.githubusercontent.com/troypringle/images/main/3.png');
@@ -30,13 +50,17 @@ body {
 }
 
 /* ==================================================== */
-/* 2. PROFESSOR FLOATIE (MATRIX SYSTEM CORE)            */
+/* 2. PROFESSOR FLOATIE (BREAK-OUT ANIMATION)           */
 /* ==================================================== */
 .float-container {
     position: fixed;
-    top: 0; left: 0;
-    width: 220px;   /* INCREASED SIZE */
-    height: 220px;  /* INCREASED SIZE */
+    /* Centers the 220px box: (50vw - 110px) */
+    left: calc(50vw - 110px); 
+    /* Position over banner graphic */
+    top: 140px; 
+    
+    width: 220px;   
+    height: 220px;  
     z-index: 10000;
     pointer-events: none; 
     
@@ -45,31 +69,39 @@ body {
     background-repeat: no-repeat;
     background-position: center;
     
-    /* FASTER TRANSITION FOR MORE "BOOST" */
     transition: background-image 0.3s ease-in-out; 
 
-    /* ELECTRIC BLUE GLOW - Stands out against your green elements */
-    filter: drop-shadow(0 0 15px rgba(0, 225, 255, 0.9)) 
-            drop-shadow(0 0 30px rgba(0, 150, 255, 0.4));
+    /* USES COLORS FROM THE STATION ABOVE */
+    filter: drop-shadow(0 0 15px var(--glow-main)) 
+            drop-shadow(0 0 30px var(--glow-sub));
             
-    animation: professor-refined-move 33s ease-in-out infinite;
+    animation: professor-breakout-move 33s ease-in-out infinite;
     will-change: transform;
 }
 
-@keyframes professor-refined-move {
-    /* Kept between 15vw and 75vw so he doesn't drift too far left or right */
-    9%   { transform: translate(19vw, 9vh) rotate(3deg); opacity: 0.9; }
-    25%  { transform: translate(73vw, 12vh) rotate(13deg); opacity: 1; }
+@keyframes professor-breakout-move {
+    /* 0-10%: BREAK OUT (Starts over Banner at Banner Size) */
+    0%   { transform: scale(1) translate(0, 0) rotate(0deg); opacity: 1; }
     
-    /* OPACITY BOOSTED: Minimum 0.5 so he stays visible while crossing */
-    50%  { transform: translate(36vw, 25vh) rotate(-6deg); opacity: 0.8; } 
-    
-    75%  { transform: translate(19vw, 18vh) rotate(-9deg); opacity: 0.8; }
-    100% { transform: translate(16vw, 9vh) rotate(-3deg); opacity: 0.9; }
+    /* JITTER Effect: Slights back-and-forth movement while scaling up to "break free" */
+    2%   { transform: scale(1.05) translate(5px, -5px) rotate(2deg); }
+    4%   { transform: scale(1.1) translate(-5px, 5px) rotate(-2deg); }
+    6%   { transform: scale(1.15) translate(5px, 5px) rotate(2deg); }
+    8%   { transform: scale(1.2) translate(-5px, -5px) rotate(-2deg); }
+    10%  { transform: scale(1) translate(0, 0) rotate(0deg); }
+
+    /* 10-90%: THE FLIGHT PATH (Moves around the screen) */
+    25%  { transform: scale(1.1) translate(30vw, -10vh) rotate(10deg); opacity: 1; }
+    50%  { transform: scale(1.1) translate(-30vw, 15vh) rotate(-5deg); opacity: 0.7; } 
+    75%  { transform: scale(1.1) translate(25vw, 5vh) rotate(8deg); opacity: 0.9; }
+
+    /* 90-100%: RETURN TO BANNER & WAIT (3 seconds still) */
+    90%  { transform: scale(1) translate(0, 0) rotate(0deg); opacity: 1; }
+    100% { transform: scale(1) translate(0, 0) rotate(0deg); opacity: 1; }
 }
 
 /* ==================================================== */
-/* 3. PAGE CONTENT & UI                                 */
+/* 3. PAGE CONTENT & UI (Remaining Site Styles)         */
 /* ==================================================== */
 .page-border {
     width: 100%;
@@ -209,5 +241,11 @@ body {
     .spacer-between { height: 15px; }
     .video-cta-overlay a { font-size: 16px; }
     
-    .float-container { width: 140px; height: 140px; } 
+    /* Responsive alignment and sizing */
+    .float-container { 
+        width: 140px; 
+        height: 140px; 
+        left: calc(50vw - 70px);
+        top: 100px;
+    } 
 }
