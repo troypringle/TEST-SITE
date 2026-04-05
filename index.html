@@ -8,12 +8,7 @@
 </head>
 <body>
 
-<div class="float-container">
-    <img src="https://raw.githubusercontent.com/troypringle/images/main/1.png" 
-         id="floatingProfessor" 
-         class="professor-img" 
-         alt="Floating Professor">
-</div>
+<div class="float-container" id="profBox"></div>
 
 <div class="page-border">
     <div class="streak-container">
@@ -62,23 +57,15 @@
         }
     })();
 
-    // 2. IMAGE ROTATION LOGIC (New)
+    // 2. IMAGE ROTATION LOGIC (Now using CSS Variables)
     (function() {
-        const prof = document.getElementById('floatingProfessor');
-        const images = [
-            "https://raw.githubusercontent.com/troypringle/images/main/1.png",
-            "https://raw.githubusercontent.com/troypringle/images/main/2.png",
-            "https://raw.githubusercontent.com/troypringle/images/main/3.png",
-            "https://raw.githubusercontent.com/troypringle/images/main/4.png",
-            "https://raw.githubusercontent.com/troypringle/images/main/5.png",
-            "https://raw.githubusercontent.com/troypringle/images/main/6.png",
-            "https://raw.githubusercontent.com/troypringle/images/main/7.png"
-        ];
+        const profBox = document.getElementById('profBox');
+        let count = 1;
         
-        let i = 0;
         setInterval(() => {
-            i = (i + 1) % images.length;
-            prof.src = images[i];
+            count = (count % 7) + 1; // Cycles from 1 to 7 smoothly
+            // Instructs CSS to swap to the next variable
+            profBox.style.backgroundImage = `var(--prof-${count})`;
         }, 10000); // Swaps image every 10 seconds
     })();
 </script>
