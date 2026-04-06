@@ -249,10 +249,23 @@ body {
         top: 85px;
     } 
 
+    /* FIXED: Added filters back so the glow shows on mobile */
     @keyframes professor-pill-cycle {
-        0%, 100% { transform: translate(0,0); }
-        25% { transform: translate(140px, -20px); }
-        50% { transform: translate(20px, 120px); }
-        75% { transform: translate(99px, 30px); }
+        0%, 100% { 
+            transform: translate(0,0); 
+            filter: drop-shadow(0 0 15px #00ff88); 
+        }
+        25% { 
+            transform: translate(140px, -20px); 
+            filter: drop-shadow(0 0 25px #bc13fe); 
+        }
+        50% { 
+            transform: translate(20px, 120px); 
+            filter: drop-shadow(0 0 25px #0066ff); 
+        }
+        75% { 
+            transform: translate(99px, 30px); 
+            filter: drop-shadow(0 0 25px #ff0000); 
+        }
     }
 }
