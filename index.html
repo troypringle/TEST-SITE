@@ -22,6 +22,7 @@
             --accent: #00ff88;
             --gold: #ffd700;
             --red: #ff4444;
+            --blue: #58a6ff;
         }
 
         body {
@@ -32,7 +33,7 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -43,6 +44,9 @@
             border-radius: 8px;
             margin-bottom: 20px;
             border: 2px solid var(--accent);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .header h1 {
@@ -52,9 +56,14 @@
             font-size: 28px;
         }
 
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
         .grid {
             display: grid;
-            grid-template-columns: 300px 1fr;
+            grid-template-columns: 280px 1fr 1fr;
             gap: 20px;
         }
 
@@ -64,9 +73,11 @@
             border-radius: 8px;
             border: 1px solid var(--border);
             height: fit-content;
+            position: sticky;
+            top: 20px;
         }
 
-        .main {
+        .editor-col, .preview-col {
             display: flex;
             flex-direction: column;
             gap: 20px;
@@ -80,39 +91,56 @@
         }
 
         .card-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
             margin-bottom: 15px;
             color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title .badge {
+            background: var(--accent);
+            color: #000;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
         }
 
         .section-title {
-            font-size: 12px;
+            font-size: 11px;
             text-transform: uppercase;
             color: var(--text-muted);
             margin-bottom: 10px;
             letter-spacing: 1px;
+            font-weight: 600;
         }
 
-        /* FIXED BUTTON STYLES */
+        /* BUTTONS */
         .btn {
             background: var(--bg-input);
             color: var(--text);
             border: 1px solid var(--border);
-            padding: 12px 16px;
+            padding: 10px 14px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             width: 100%;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
 
         .btn:hover {
             background: var(--bg-dark);
             border-color: var(--accent);
-            color: var(--text); /* KEEP TEXT VISIBLE */
+            color: var(--text);
             transform: translateY(-1px);
         }
 
@@ -126,7 +154,7 @@
         .btn-primary:hover {
             background: linear-gradient(135deg, #00cc6a, var(--accent));
             box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
-            color: #000; /* KEEP TEXT VISIBLE */
+            color: #000;
         }
 
         .btn-gold {
@@ -139,7 +167,7 @@
         .btn-gold:hover {
             background: linear-gradient(135deg, #ffed4e, var(--gold));
             box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
-            color: #000; /* KEEP TEXT VISIBLE */
+            color: #000;
         }
 
         .btn-red {
@@ -150,11 +178,11 @@
 
         .btn-red:hover {
             background: #cc0000;
-            color: white; /* KEEP TEXT VISIBLE */
+            color: white;
         }
 
         .btn-blue {
-            background: #58a6ff;
+            background: var(--blue);
             border: none;
             color: #000;
             font-weight: 600;
@@ -165,7 +193,16 @@
             color: #000;
         }
 
+        .btn-small {
+            padding: 6px 10px;
+            font-size: 12px;
+            width: auto;
+            margin: 0;
+        }
+
+        /* INPUTS */
         input[type="text"],
+        input[type="password"],
         textarea {
             width: 100%;
             background: var(--bg-input);
@@ -178,8 +215,10 @@
         }
 
         textarea {
-            min-height: 350px;
+            min-height: 300px;
             resize: vertical;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
         }
 
         input:focus,
@@ -188,18 +227,22 @@
             border-color: var(--accent);
         }
 
+        /* SUBJECT LIST */
         .subject-list {
             margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
         }
 
         .subject-item {
             background: var(--bg-input);
-            padding: 12px;
+            padding: 10px 12px;
             border-radius: 6px;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             cursor: pointer;
             border: 1px solid var(--border);
             transition: all 0.2s;
+            font-size: 13px;
         }
 
         .subject-item:hover {
@@ -213,6 +256,63 @@
             background: rgba(0, 255, 136, 0.1);
         }
 
+        /* LIVE PREVIEW */
+        .preview-frame {
+            background: #ffffff;
+            border-radius: 6px;
+            padding: 20px;
+            min-height: 400px;
+            color: #000;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            overflow: auto;
+        }
+
+        .preview-frame img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .preview-frame a {
+            color: #0000cc;
+        }
+
+        .preview-header {
+            background: var(--bg-input);
+            padding: 10px 15px;
+            border-radius: 6px 6px 0 0;
+            border: 1px solid var(--border);
+            border-bottom: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .preview-header-title {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .preview-body {
+            border: 1px solid var(--border);
+            border-radius: 0 0 6px 6px;
+        }
+
+        .preview-subject {
+            background: var(--bg-input);
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .preview-subject strong {
+            color: var(--gold);
+        }
+
+        /* TOAST */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -224,6 +324,7 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
             display: none;
             z-index: 1000;
+            max-width: 350px;
         }
 
         .toast.show {
@@ -231,11 +332,16 @@
             animation: slideIn 0.3s;
         }
 
-        @keyframes slideIn {
-            from { transform: translateX(400px); }
-            to { transform: translateX(0); }
+        .toast.error {
+            border-color: var(--red);
         }
 
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* LOADING */
         .loading {
             text-align: center;
             padding: 20px;
@@ -250,8 +356,8 @@
             border: 3px solid var(--bg-input);
             border-top: 3px solid var(--accent);
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 30px;
+            height: 30px;
             animation: spin 1s linear infinite;
             margin: 0 auto;
         }
@@ -261,8 +367,9 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* HELPERS */
         .help-text {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-muted);
             margin-bottom: 10px;
             line-height: 1.5;
@@ -271,10 +378,23 @@
         .divider {
             height: 1px;
             background: var(--border);
-            margin: 20px 0;
+            margin: 15px 0;
         }
 
-        /* HTML VIEW MODAL */
+        .button-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .button-row .btn {
+            flex: 1;
+            min-width: 100px;
+            margin: 0;
+        }
+
+        /* MODAL */
         .modal {
             display: none;
             position: fixed;
@@ -306,6 +426,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
         }
 
         .modal-close {
@@ -315,36 +437,74 @@
             padding: 8px 16px;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 14px;
+        }
+
+        .modal-close:hover {
+            background: #cc0000;
         }
 
         .html-output {
-            background: #000;
+            background: #0a0a0a;
             color: #00ff88;
             padding: 15px;
             border-radius: 6px;
             font-family: 'Courier New', monospace;
-            font-size: 13px;
+            font-size: 12px;
             white-space: pre-wrap;
             word-wrap: break-word;
             max-height: 500px;
             overflow: auto;
+            border: 1px solid var(--border);
         }
 
-        .button-row {
+        /* TABS */
+        .tabs {
             display: flex;
-            gap: 10px;
-            margin-top: 10px;
-            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 15px;
         }
 
-        .button-row .btn {
-            flex: 1;
-            min-width: 120px;
+        .tab {
+            padding: 8px 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 6px 6px 0 0;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
         }
 
-        @media (max-width: 1024px) {
+        .tab:hover {
+            background: var(--bg-dark);
+        }
+
+        .tab.active {
+            background: var(--accent);
+            color: #000;
+            border-color: var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1200px) {
             .grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: static;
+            }
+
+            .preview-col {
+                order: -1;
             }
         }
     </style>
@@ -356,17 +516,40 @@
         <span id="toastMessage"></span>
     </div>
 
-    <!-- HTML View Modal -->
+    <!-- HTML Source Modal -->
     <div class="modal" id="htmlModal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2 style="color: var(--accent);">📄 HTML Source Code</h2>
-                <button class="modal-close" id="closeModal">✕ Close</button>
+                <button class="modal-close" id="closeHtmlModal">✕ Close</button>
             </div>
-            <p class="help-text">Copy this HTML and paste into MLGS:</p>
+            <p class="help-text">Copy this HTML and paste into MLGS email body:</p>
             <pre class="html-output" id="htmlOutput"></pre>
-            <div class="button-row">
-                <button class="btn btn-primary" id="copyHtmlBtn">📋 Copy HTML</button>
+            <div class="button-row" style="margin-top: 15px;">
+                <button class="btn btn-primary" id="copyHtmlBtn">📋 Copy HTML Code</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full Preview Modal -->
+    <div class="modal" id="previewModal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2 style="color: var(--accent);">👁️ Full Email Preview</h2>
+                <button class="modal-close" id="closePreviewModal">✕ Close</button>
+            </div>
+            <div class="preview-header">
+                <span class="preview-header-title">Email Preview</span>
+            </div>
+            <div class="preview-body">
+                <div class="preview-subject" id="modalPreviewSubject">
+                    <strong>Subject:</strong> <span id="modalSubjectText"></span>
+                </div>
+                <div class="preview-frame" id="modalPreviewFrame"></div>
+            </div>
+            <div class="button-row" style="margin-top: 15px;">
+                <button class="btn btn-primary" id="copyFromPreviewBtn">📋 Copy Full Email</button>
+                <button class="btn btn-blue" id="viewHtmlFromPreviewBtn">📄 View HTML</button>
             </div>
         </div>
     </div>
@@ -374,77 +557,106 @@
     <div class="container">
         <div class="header">
             <h1>🔥 MLGS Swipe Machine</h1>
+            <div class="header-actions">
+                <button class="btn btn-small" id="apiBtn">⚙️ API</button>
+                <button class="btn btn-small" id="helpBtn">❓ Help</button>
+            </div>
         </div>
 
         <div class="grid">
             <!-- Sidebar -->
             <div class="sidebar">
-                <div class="section-title">🎯 Quick Actions</div>
-                <button class="btn" id="apiBtn">⚙️ API Settings</button>
-                <button class="btn" id="helpBtn">❓ Help</button>
-                
-                <div class="divider"></div>
-                
-                <div class="section-title">📝 Generate Email</div>
+                <!-- API Key (hidden by default if set) -->
+                <div id="apiCard">
+                    <div class="section-title">⚙️ API Key</div>
+                    <p class="help-text">Get free key: <a href="https://console.groq.com" target="_blank" style="color: var(--accent);">console.groq.com</a></p>
+                    <input type="password" id="apiKeyInput" placeholder="Paste Groq API key...">
+                    <button class="btn btn-primary" id="saveApiBtn" style="margin-top: 8px;">Save Key</button>
+                    <div class="divider"></div>
+                </div>
+
+                <div class="section-title">⚡ Generate Email</div>
                 <p class="help-text">Click to generate subject + body:</p>
-                <button class="btn btn-gold" data-type="curiosity">🧠 Curiosity Hook</button>
-                <button class="btn btn-gold" data-type="money">💰 Money Angle</button>
+                <button class="btn btn-gold" data-type="curiosity">🧠 Curiosity</button>
+                <button class="btn btn-gold" data-type="money">💰 Money</button>
                 <button class="btn btn-gold" data-type="urgency">⏰ Urgency</button>
-                <button class="btn btn-gold" data-type="lazy">😴 Lazy Method</button>
-                <button class="btn btn-gold" data-type="proof">📊 Proof/Results</button>
+                <button class="btn btn-gold" data-type="lazy">😴 Lazy</button>
+                <button class="btn btn-gold" data-type="proof">📊 Proof</button>
                 
                 <div class="divider"></div>
                 
                 <div class="section-title">💾 Templates</div>
                 <button class="btn btn-primary" id="saveTemplateBtn">Save Current</button>
-                <div id="templateList"></div>
+                <div id="templateList" style="margin-top: 10px;"></div>
+
+                <div class="divider"></div>
+
+                <div class="section-title">✍️ Signature</div>
+                <button class="btn" id="editSignatureBtn">Edit Signature</button>
+                <button class="btn" id="insertSignatureBtn">Insert to Body</button>
             </div>
 
-            <!-- Main Content -->
-            <div class="main">
-                <!-- API Key Input -->
-                <div class="card" id="apiCard">
-                    <div class="card-title">⚙️ API Key Required</div>
-                    <p class="help-text">Get free API key from <a href="https://console.groq.com" target="_blank" style="color: var(--accent);">console.groq.com</a></p>
-                    <input type="password" id="apiKeyInput" placeholder="Paste your Groq API key here...">
-                    <button class="btn btn-primary" id="saveApiBtn" style="margin-top: 10px;">Save API Key</button>
-                </div>
-
-                <!-- Subject Generator -->
+            <!-- Editor Column -->
+            <div class="editor-col">
+                <!-- Subject -->
                 <div class="card">
                     <div class="card-title">📧 Subject Line</div>
-                    <input type="text" id="subjectInput" placeholder="Your subject line...">
+                    <input type="text" id="subjectInput" placeholder="Your subject line..." oninput="updatePreview()">
                     <button class="btn btn-gold" id="generateSubjectsBtn" style="margin-top: 10px;">Generate 10 Subjects</button>
                     <div class="loading" id="subjectLoading">
                         <div class="spinner"></div>
-                        <p style="margin-top: 10px;">Generating...</p>
+                        <p style="margin-top: 10px; font-size: 13px;">Generating...</p>
                     </div>
                     <div class="subject-list" id="subjectList"></div>
                 </div>
 
                 <!-- Body Editor -->
                 <div class="card">
-                    <div class="card-title">✉️ Email Body</div>
-                    <p class="help-text">Edit HTML here. Use MLGS format with span tags.</p>
-                    <textarea id="bodyEditor" placeholder="Your email body HTML..."></textarea>
+                    <div class="card-title">
+                        ✉️ Email Body 
+                        <span class="badge">HTML</span>
+                    </div>
+                    <textarea id="bodyEditor" placeholder="Your email HTML..." oninput="updatePreview()"></textarea>
                     <div class="button-row">
                         <button class="btn btn-gold" id="generateBodyBtn">Generate Body</button>
-                        <button class="btn btn-blue" id="viewHtmlBtn">👁️ View HTML</button>
                         <button class="btn btn-red" id="clearBtn">Clear</button>
                     </div>
                     <div class="loading" id="bodyLoading">
                         <div class="spinner"></div>
-                        <p style="margin-top: 10px;">Generating...</p>
+                        <p style="margin-top: 10px; font-size: 13px;">Generating...</p>
                     </div>
                 </div>
 
-                <!-- Signature -->
-                <div class="card">
-                    <div class="card-title">✍️ Signature</div>
-                    <textarea id="signatureEditor" style="min-height: 150px;" placeholder="Your HTML signature..."></textarea>
+                <!-- Signature Editor (hidden by default) -->
+                <div class="card" id="signatureCard" style="display: none;">
+                    <div class="card-title">✍️ Signature HTML</div>
+                    <textarea id="signatureEditor" style="min-height: 150px;" placeholder="Your signature HTML..."></textarea>
                     <div class="button-row">
                         <button class="btn btn-primary" id="saveSignatureBtn">Save Signature</button>
-                        <button class="btn" id="insertSignatureBtn">Insert to Body</button>
+                        <button class="btn" id="closeSignatureBtn">Close</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview Column -->
+            <div class="preview-col">
+                <!-- Live Preview -->
+                <div class="card">
+                    <div class="card-title">
+                        👁️ Live Preview
+                        <span class="badge">Real-time</span>
+                    </div>
+                    <div class="preview-header">
+                        <span class="preview-header-title">Email Preview</span>
+                        <button class="btn btn-small btn-blue" id="openFullPreviewBtn">⛶ Expand</button>
+                    </div>
+                    <div class="preview-body">
+                        <div class="preview-subject">
+                            <strong>Subject:</strong> <span id="previewSubject">Your subject line...</span>
+                        </div>
+                        <div class="preview-frame" id="previewFrame">
+                            <p style="color: #999;">Start typing or generate an email to see preview...</p>
+                        </div>
                     </div>
                 </div>
 
@@ -452,14 +664,17 @@
                 <div class="card">
                     <div class="card-title">📤 Copy to MLGS</div>
                     <p class="help-text">
-                        <strong>Option 1:</strong> Click "Copy Full Email" → paste into MLGS body → grab subject from first line<br>
-                        <strong>Option 2:</strong> Copy subject and body separately
+                        Copy full email, paste into MLGS body, then grab subject from first line.
                     </p>
-                    <button class="btn btn-primary" id="copyFullBtn" style="font-size: 16px; padding: 15px;">📋 Copy Full Email (Subject + Body HTML)</button>
+                    <button class="btn btn-primary" id="copyFullBtn" style="font-size: 15px; padding: 14px;">
+                        📋 Copy Full Email (Subject + Body)
+                    </button>
                     <div class="button-row">
-                        <button class="btn" id="copySubjectBtn">Copy Subject Only</button>
-                        <button class="btn" id="copyBodyBtn">Copy Body HTML Only</button>
-                        <button class="btn btn-blue" id="viewFullHtmlBtn">👁️ View Full HTML</button>
+                        <button class="btn" id="copySubjectBtn">Copy Subject</button>
+                        <button class="btn" id="copyBodyBtn">Copy Body</button>
+                    </div>
+                    <div class="button-row">
+                        <button class="btn btn-blue" id="viewHtmlBtn">📄 View HTML Source</button>
                     </div>
                 </div>
             </div>
@@ -478,57 +693,96 @@
         // ===== PROMPTS =====
         const prompts = {
             curiosity: {
-                subject: `Generate 10 curiosity-driven subject lines for MLGS (My Lead Gen Secret). Focus on "weird trick", discovery, numbers. Under 60 chars. No spam words. Output ONLY numbered list 1-10.`,
-                body: `Write a promotional email for MLGS. Benefits: 100 leads daily + $5/referral. Price: $60 one-time. Link: https://troypringle.github.io/MLGS-Page/
+                subject: `Generate 10 curiosity-driven subject lines for MLGS (My Lead Gen Secret). Focus on "weird trick", discovery, numbers. Under 60 chars. No spam words like "free". Output ONLY numbered list 1-10, nothing else.`,
+                body: `Write a promotional email for My Lead Gen Secret (MLGS).
 
-Format EXACTLY like this with proper MLGS HTML structure:
-<p><span style="font-size:16px"><span style="color:#000000">Line of text here</span></span></p>
+Key benefits to mention:
+- 100 fresh leads delivered daily automatically
+- Earn $5 commission for every referral
+- Only $60 one-time payment (not monthly)
+- System has been running since 2009
 
-Include merge tag {!name_fix} at start. 12-16 lines. Excited tone. NO signature. Use <br /> for line breaks within paragraphs.`
+Link to use: https://troypringle.github.io/MLGS-Page/
+
+FORMAT YOUR OUTPUT EXACTLY LIKE THIS (MLGS HTML format):
+
+<p><span style="font-size:16px"><span style="color:#000000">⭐{!name_fix}</span></span></p>
+
+<p><span style="font-size:16px"><span style="color:#000000">Your first paragraph here with compelling hook.</span></span></p>
+
+<p><span style="font-size:16px"><span style="color:#000000">Second paragraph about benefits.</span></span></p>
+
+<p><span style="font-size:16px"><span style="color:#000000">Third paragraph with proof or urgency.</span></span></p>
+
+<p><span style="font-size:16px"><a href="https://troypringle.github.io/MLGS-Page/" target="_blank"><span style="color:#0000cc">Click here to get started now</span></a></span></p>
+
+Requirements:
+- Use curiosity angle
+- 10-14 lines total
+- Excited friend tone
+- NO signature (added separately)
+- Use EXACT HTML format shown above
+- Include {!name_fix} merge tag at start`
             },
             money: {
-                subject: `Generate 10 money-focused subject lines for MLGS. Include $5, $60, passive income. Under 60 chars. Output ONLY numbered list 1-10.`,
-                body: `Write money-focused email for MLGS. Emphasize $5 commissions, daily income. Link: https://troypringle.github.io/MLGS-Page/
+                subject: `Generate 10 money-focused subject lines for MLGS. Include $5, $60, passive income angles. Under 60 chars. Output ONLY numbered list 1-10.`,
+                body: `Write a money-focused promotional email for MLGS.
 
-Format EXACTLY like this with proper MLGS HTML structure:
-<p><span style="font-size:16px"><span style="color:#000000">Line of text here</span></span></p>
+Benefits: 100 leads daily, $5/referral commission, $60 one-time.
+Link: https://troypringle.github.io/MLGS-Page/
 
-Include merge tag {!name_fix} at start. 12-16 lines. NO signature. Use <br /> for line breaks.`
+FORMAT EXACTLY LIKE THIS:
+<p><span style="font-size:16px"><span style="color:#000000">⭐{!name_fix}</span></span></p>
+<p><span style="font-size:16px"><span style="color:#000000">Paragraph text here</span></span></p>
+
+Focus on income potential. 10-14 lines. NO signature. Use exact HTML format.`
             },
             urgency: {
                 subject: `Generate 10 urgency/scarcity subject lines for MLGS. FOMO, time-sensitive. Under 60 chars. Output ONLY numbered list 1-10.`,
-                body: `Write urgency-focused email for MLGS. Emphasize $60 one-time could change to monthly. Link: https://troypringle.github.io/MLGS-Page/
+                body: `Write an urgency-focused email for MLGS.
 
-Format EXACTLY like this with proper MLGS HTML structure:
-<p><span style="font-size:16px"><span style="color:#000000">Line of text here</span></span></p>
+Emphasize: $60 one-time could change to monthly anytime.
+Link: https://troypringle.github.io/MLGS-Page/
 
-Include merge tag {!name_fix} at start. 12-16 lines. NO signature. Use <br /> for line breaks.`
+FORMAT EXACTLY LIKE THIS:
+<p><span style="font-size:16px"><span style="color:#000000">⭐{!name_fix}</span></span></p>
+<p><span style="font-size:16px"><span style="color:#000000">Paragraph text here</span></span></p>
+
+Create FOMO. 10-14 lines. NO signature. Use exact HTML format.`
             },
             lazy: {
                 subject: `Generate 10 "lazy method" subject lines for MLGS. Automation, passive, effortless. Under 60 chars. Output ONLY numbered list 1-10.`,
-                body: `Write "lazy method" email for MLGS. Emphasize automation, 100 leads daily automatic. Link: https://troypringle.github.io/MLGS-Page/
+                body: `Write a "lazy method" email for MLGS.
 
-Format EXACTLY like this with proper MLGS HTML structure:
-<p><span style="font-size:16px"><span style="color:#000000">Line of text here</span></span></p>
+Emphasize: Automated 100 leads daily, no work required.
+Link: https://troypringle.github.io/MLGS-Page/
 
-Include merge tag {!name_fix} at start. 12-16 lines. NO signature. Use <br /> for line breaks.`
+FORMAT EXACTLY LIKE THIS:
+<p><span style="font-size:16px"><span style="color:#000000">⭐{!name_fix}</span></span></p>
+<p><span style="font-size:16px"><span style="color:#000000">Paragraph text here</span></span></p>
+
+Emphasize autopilot/passive. 10-14 lines. NO signature. Use exact HTML format.`
             },
             proof: {
                 subject: `Generate 10 proof/results subject lines for MLGS. Testimonials, real numbers. Under 60 chars. Output ONLY numbered list 1-10.`,
-                body: `Write proof-based email for MLGS. Include believable results, testimonial-style. Link: https://troypringle.github.io/MLGS-Page/
+                body: `Write a proof-based email for MLGS.
 
-Format EXACTLY like this with proper MLGS HTML structure:
-<p><span style="font-size:16px"><span style="color:#000000">Line of text here</span></span></p>
+Include believable results, testimonial-style content.
+Link: https://troypringle.github.io/MLGS-Page/
 
-Include merge tag {!name_fix} at start. 12-16 lines. NO signature. Use <br /> for line breaks.`
+FORMAT EXACTLY LIKE THIS:
+<p><span style="font-size:16px"><span style="color:#000000">⭐{!name_fix}</span></span></p>
+<p><span style="font-size:16px"><span style="color:#000000">Paragraph text here</span></span></p>
+
+Use social proof. 10-14 lines. NO signature. Use exact HTML format.`
             }
         };
 
         // ===== TOAST =====
-        function toast(msg) {
+        function toast(msg, isError = false) {
             const el = document.getElementById('toast');
             document.getElementById('toastMessage').textContent = msg;
-            el.classList.add('show');
+            el.className = 'toast show' + (isError ? ' error' : '');
             setTimeout(() => el.classList.remove('show'), 3000);
         }
 
@@ -537,10 +791,19 @@ Include merge tag {!name_fix} at start. 12-16 lines. NO signature. Use <br /> fo
             document.getElementById(id).classList.toggle('show', show);
         }
 
+        // ===== LIVE PREVIEW =====
+        function updatePreview() {
+            const subject = document.getElementById('subjectInput').value || 'Your subject line...';
+            const body = document.getElementById('bodyEditor').value;
+            
+            document.getElementById('previewSubject').textContent = subject;
+            document.getElementById('previewFrame').innerHTML = body || '<p style="color: #999;">Start typing or generate an email...</p>';
+        }
+
         // ===== API CALL =====
         async function callAI(prompt) {
             if (!state.apiKey) {
-                toast('❌ Set API key first');
+                toast('❌ Set API key first', true);
                 document.getElementById('apiCard').scrollIntoView({behavior: 'smooth'});
                 return null;
             }
@@ -556,15 +819,19 @@ Include merge tag {!name_fix} at start. 12-16 lines. NO signature. Use <br /> fo
                         model: 'llama-3.1-70b-versatile',
                         messages: [{role: 'user', content: prompt}],
                         temperature: 0.9,
-                        max_tokens: 1500
+                        max_tokens: 2000
                     })
                 });
 
-                if (!res.ok) throw new Error('API error');
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.error?.message || 'API error');
+                }
+                
                 const data = await res.json();
                 return data.choices[0].message.content;
             } catch (err) {
-                toast('❌ API call failed');
+                toast('❌ ' + err.message, true);
                 return null;
             }
         }
@@ -572,19 +839,26 @@ Include merge tag {!name_fix} at start. 12-16 lines. NO signature. Use <br /> fo
         // ===== GENERATE SUBJECTS =====
         async function generateSubjects(type) {
             loading('subjectLoading', true);
+            document.getElementById('subjectList').innerHTML = '';
+            
             const result = await callAI(prompts[type].subject);
             loading('subjectLoading', false);
 
             if (!result) return;
 
             const subjects = result.split('\n')
-                .map(l => l.replace(/^\d+[\.\)]\s*/, '').trim())
+                .map(l => l.replace(/^\d+[\.\)]\s*/, '').replace(/^["']|["']$/g, '').trim())
                 .filter(l => l.length > 5 && l.length < 100)
                 .slice(0, 10);
 
+            if (subjects.length === 0) {
+                toast('❌ No valid subjects generated', true);
+                return;
+            }
+
             const list = document.getElementById('subjectList');
-            list.innerHTML = subjects.map((s, i) => 
-                `<div class="subject-item" data-subject="${s}">${s}</div>`
+            list.innerHTML = subjects.map(s => 
+                `<div class="subject-item" data-subject="${s.replace(/"/g, '&quot;')}">${s}</div>`
             ).join('');
 
             list.querySelectorAll('.subject-item').forEach(el => {
@@ -592,11 +866,12 @@ Include merge tag {!name_fix} at start. 12-16 lines. NO signature. Use <br /> fo
                     list.querySelectorAll('.subject-item').forEach(e => e.classList.remove('selected'));
                     el.classList.add('selected');
                     document.getElementById('subjectInput').value = el.dataset.subject;
+                    updatePreview();
                     toast('✅ Subject selected');
                 });
             });
 
-            toast('✅ Generated 10 subjects');
+            toast(`✅ Generated ${subjects.length} subjects`);
         }
 
         // ===== GENERATE BODY =====
@@ -607,48 +882,44 @@ Include merge tag {!name_fix} at start. 12-16 lines. NO signature. Use <br /> fo
 
             if (!result) return;
 
-            // Ensure MLGS format
             let html = result.trim();
             
-            // If AI didn't format properly, convert to MLGS format
+            // Ensure MLGS format if AI didn't follow instructions
             if (!html.includes('<p><span style="font-size:16px">')) {
                 html = html.split('\n\n')
                     .filter(p => p.trim())
-                    .map(p => `<p><span style="font-size:16px"><span style="color:#000000">${p.trim().replace(/\n/g, '<br />\n')}</span></span></p>`)
+                    .map(p => `<p><span style="font-size:16px"><span style="color:#000000">${p.trim()}</span></span></p>`)
                     .join('\n\n');
             }
 
             document.getElementById('bodyEditor').value = html;
+            updatePreview();
             toast('✅ Body generated');
         }
 
-        // ===== FORMAT HTML FOR MLGS =====
+        // ===== FORMAT HTML =====
         function formatForMLGS(html) {
             let output = html.trim();
             
-            // Remove data:image base64
+            // Remove base64 images
             output = output.replace(/<img[^>]*src="data:image[^>]*>/gi, '');
-            
-            // Ensure proper MLGS structure if missing
-            if (!output.includes('font-size:16px')) {
-                output = output.split('\n')
-                    .filter(line => line.trim())
-                    .map(line => {
-                        if (line.startsWith('<p>') && !line.includes('font-size')) {
-                            return line.replace('<p>', '<p><span style="font-size:16px"><span style="color:#000000">')
-                                       .replace('</p>', '</span></span></p>');
-                        }
-                        return line;
-                    })
-                    .join('\n');
-            }
             
             return output;
         }
 
         // ===== COPY FUNCTIONS =====
         function copy(text) {
-            navigator.clipboard.writeText(text);
+            navigator.clipboard.writeText(text).then(() => {
+                // success handled by caller
+            }).catch(() => {
+                // Fallback
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+            });
         }
 
         document.getElementById('copyFullBtn').addEventListener('click', () => {
@@ -656,59 +927,40 @@ Include merge tag {!name_fix} at start. 12-16 lines. NO signature. Use <br /> fo
             const body = formatForMLGS(document.getElementById('bodyEditor').value);
             
             if (!subject && !body) {
-                toast('❌ Need subject or body');
+                toast('❌ Need subject or body', true);
                 return;
             }
 
             let full = '';
-            if (subject) {
-                full += `SUBJECT: ${subject}\n\n`;
-            }
+            if (subject) full += `SUBJECT: ${subject}\n\n`;
             full += body;
             
             copy(full);
-            toast('✅ Copied! Paste to MLGS');
+            toast('✅ Copied! Paste to MLGS body');
         });
 
         document.getElementById('copySubjectBtn').addEventListener('click', () => {
             const s = document.getElementById('subjectInput').value.trim();
-            if (!s) return toast('❌ No subject');
+            if (!s) return toast('❌ No subject', true);
             copy(s);
             toast('✅ Subject copied');
         });
 
         document.getElementById('copyBodyBtn').addEventListener('click', () => {
             const b = formatForMLGS(document.getElementById('bodyEditor').value);
-            if (!b) return toast('❌ No body');
+            if (!b) return toast('❌ No body', true);
             copy(b);
-            toast('✅ Body HTML copied');
+            toast('✅ Body copied');
         });
 
-        // ===== HTML VIEW MODAL =====
+        // ===== HTML SOURCE MODAL =====
         document.getElementById('viewHtmlBtn').addEventListener('click', () => {
             const html = formatForMLGS(document.getElementById('bodyEditor').value);
-            showHtmlModal(html);
-        });
-
-        document.getElementById('viewFullHtmlBtn').addEventListener('click', () => {
-            const subject = document.getElementById('subjectInput').value.trim();
-            const body = formatForMLGS(document.getElementById('bodyEditor').value);
-            
-            let full = '';
-            if (subject) {
-                full += `SUBJECT: ${subject}\n\n`;
-            }
-            full += body;
-            
-            showHtmlModal(full);
-        });
-
-        function showHtmlModal(html) {
             document.getElementById('htmlOutput').textContent = html;
             document.getElementById('htmlModal').classList.add('show');
-        }
+        });
 
-        document.getElementById('closeModal').addEventListener('click', () => {
+        document.getElementById('closeHtmlModal').addEventListener('click', () => {
             document.getElementById('htmlModal').classList.remove('show');
         });
 
@@ -718,14 +970,52 @@ Include merge tag {!name_fix} at start. 12-16 lines. NO signature. Use <br /> fo
             toast('✅ HTML copied');
         });
 
-        // Close modal on outside click
         document.getElementById('htmlModal').addEventListener('click', (e) => {
             if (e.target.id === 'htmlModal') {
                 document.getElementById('htmlModal').classList.remove('show');
             }
         });
 
+        // ===== FULL PREVIEW MODAL =====
+        document.getElementById('openFullPreviewBtn').addEventListener('click', () => {
+            const subject = document.getElementById('subjectInput').value || 'Your subject line...';
+            const body = document.getElementById('bodyEditor').value;
+            
+            document.getElementById('modalSubjectText').textContent = subject;
+            document.getElementById('modalPreviewFrame').innerHTML = body || '<p style="color: #999;">No content yet...</p>';
+            document.getElementById('previewModal').classList.add('show');
+        });
+
+        document.getElementById('closePreviewModal').addEventListener('click', () => {
+            document.getElementById('previewModal').classList.remove('show');
+        });
+
+        document.getElementById('copyFromPreviewBtn').addEventListener('click', () => {
+            document.getElementById('copyFullBtn').click();
+        });
+
+        document.getElementById('viewHtmlFromPreviewBtn').addEventListener('click', () => {
+            document.getElementById('previewModal').classList.remove('show');
+            document.getElementById('viewHtmlBtn').click();
+        });
+
+        document.getElementById('previewModal').addEventListener('click', (e) => {
+            if (e.target.id === 'previewModal') {
+                document.getElementById('previewModal').classList.remove('show');
+            }
+        });
+
         // ===== SIGNATURE =====
+        document.getElementById('editSignatureBtn').addEventListener('click', () => {
+            document.getElementById('signatureCard').style.display = 'block';
+            document.getElementById('signatureEditor').value = state.signature;
+            document.getElementById('signatureCard').scrollIntoView({behavior: 'smooth'});
+        });
+
+        document.getElementById('closeSignatureBtn').addEventListener('click', () => {
+            document.getElementById('signatureCard').style.display = 'none';
+        });
+
         document.getElementById('saveSignatureBtn').addEventListener('click', () => {
             state.signature = document.getElementById('signatureEditor').value;
             localStorage.setItem('mlgs_signature', state.signature);
@@ -733,16 +1023,20 @@ Include merge tag {!name_fix} at start. 12-16 lines. NO signature. Use <br /> fo
         });
 
         document.getElementById('insertSignatureBtn').addEventListener('click', () => {
+            if (!state.signature) {
+                toast('❌ No signature saved', true);
+                return;
+            }
             const body = document.getElementById('bodyEditor').value;
-            const sig = document.getElementById('signatureEditor').value;
-            document.getElementById('bodyEditor').value = body + '\n\n' + sig;
+            document.getElementById('bodyEditor').value = body + '\n\n' + state.signature;
+            updatePreview();
             toast('✅ Signature inserted');
         });
 
         // ===== API KEY =====
         document.getElementById('saveApiBtn').addEventListener('click', () => {
             const key = document.getElementById('apiKeyInput').value.trim();
-            if (!key) return toast('❌ Enter API key');
+            if (!key) return toast('❌ Enter API key', true);
             state.apiKey = key;
             localStorage.setItem('mlgs_api_key', key);
             document.getElementById('apiCard').style.display = 'none';
@@ -750,8 +1044,11 @@ Include merge tag {!name_fix} at start. 12-16 lines. NO signature. Use <br /> fo
         });
 
         document.getElementById('apiBtn').addEventListener('click', () => {
-            document.getElementById('apiCard').style.display = 'block';
-            document.getElementById('apiCard').scrollIntoView({behavior: 'smooth'});
+            const card = document.getElementById('apiCard');
+            card.style.display = card.style.display === 'none' ? 'block' : 'none';
+            if (card.style.display !== 'none') {
+                card.scrollIntoView({behavior: 'smooth'});
+            }
         });
 
         // ===== TEMPLATES =====
@@ -759,14 +1056,15 @@ Include merge tag {!name_fix} at start. 12-16 lines. NO signature. Use <br /> fo
             const name = prompt('Template name:');
             if (!name) return;
 
-            const t = {
+            state.templates.unshift({
                 id: Date.now(),
                 name,
                 subject: document.getElementById('subjectInput').value,
                 body: document.getElementById('bodyEditor').value
-            };
+            });
 
-            state.templates.unshift(t);
+            if (state.templates.length > 20) state.templates.pop(); // Limit to 20
+            
             localStorage.setItem('mlgs_templates', JSON.stringify(state.templates));
             renderTemplates();
             toast('✅ Template saved');
@@ -775,12 +1073,12 @@ Include merge tag {!name_fix} at start. 12-16 lines. NO signature. Use <br /> fo
         function renderTemplates() {
             const list = document.getElementById('templateList');
             if (state.templates.length === 0) {
-                list.innerHTML = '<p class="help-text">No templates yet</p>';
+                list.innerHTML = '<p class="help-text">No templates</p>';
                 return;
             }
 
-            list.innerHTML = state.templates.map(t => `
-                <button class="btn" onclick="loadTemplate(${t.id})">${t.name}</button>
+            list.innerHTML = state.templates.slice(0, 10).map(t => `
+                <button class="btn" style="font-size: 12px;" onclick="loadTemplate(${t.id})">${t.name}</button>
             `).join('');
         }
 
@@ -789,6 +1087,7 @@ Include merge tag {!name_fix} at start. 12-16 lines. NO signature. Use <br /> fo
             if (!t) return;
             document.getElementById('subjectInput').value = t.subject;
             document.getElementById('bodyEditor').value = t.body;
+            updatePreview();
             toast(`✅ Loaded: ${t.name}`);
         }
 
@@ -813,50 +1112,71 @@ Include merge tag {!name_fix} at start. 12-16 lines. NO signature. Use <br /> fo
         document.getElementById('clearBtn').addEventListener('click', () => {
             if (confirm('Clear body?')) {
                 document.getElementById('bodyEditor').value = '';
+                updatePreview();
             }
         });
 
         // ===== HELP =====
         document.getElementById('helpBtn').addEventListener('click', () => {
-            alert(`🔥 MLGS SWIPE MACHINE
+            alert(`🔥 MLGS SWIPE MACHINE - Help
 
-1. Click ⚙️ API Settings
-   - Get free key: console.groq.com
-   - Paste and save
+QUICK START:
+1. Set API Key (get free at console.groq.com)
+2. Click any gold Generate button
+3. Pick a subject from the list
+4. See live preview on the right
+5. Click "Copy Full Email"
+6. Paste into MLGS
 
-2. Click any Generate button (e.g., 🧠 Curiosity Hook)
-   - Generates 10 subjects + body in MLGS HTML format
+FEATURES:
+• Live Preview - See email as you type
+• View HTML Source - Copy raw HTML
+• Templates - Save and reuse emails
+• Signature - Add once, insert anytime
 
-3. Click a subject to select it
+HTML FORMAT:
+Generates proper MLGS HTML:
+<p><span style="font-size:16px">...</span></p>
 
-4. Edit body if needed
+TIPS:
+• Preview updates in real-time
+• Click "Expand" for full preview
+• Signature auto-saves locally`);
+        });
 
-5. Click "👁️ View Full HTML" to preview
-
-6. Click "📋 Copy Full Email" 
-   - Paste into MLGS body
-   - Subject line is at top
-
-HTML FORMAT USED:
-<p><span style="font-size:16px"><span style="color:#000000">
-Text here
-</span></span></p>
-
-This matches MLGS email format exactly.`);
+        // ===== KEYBOARD SHORTCUTS =====
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.getElementById('htmlModal').classList.remove('show');
+                document.getElementById('previewModal').classList.remove('show');
+            }
         });
 
         // ===== INIT =====
-        if (state.apiKey) {
-            document.getElementById('apiCard').style.display = 'none';
-            document.getElementById('apiKeyInput').value = state.apiKey;
+        function init() {
+            if (state.apiKey) {
+                document.getElementById('apiCard').style.display = 'none';
+                document.getElementById('apiKeyInput').value = state.apiKey;
+            }
+
+            renderTemplates();
+            updatePreview();
+            
+            // Check for saved draft
+            const draftBody = localStorage.getItem('mlgs_draft_body');
+            const draftSubject = localStorage.getItem('mlgs_draft_subject');
+            if (draftBody) document.getElementById('bodyEditor').value = draftBody;
+            if (draftSubject) document.getElementById('subjectInput').value = draftSubject;
+            updatePreview();
         }
 
-        if (state.signature) {
-            document.getElementById('signatureEditor').value = state.signature;
-        }
+        // Auto-save draft
+        setInterval(() => {
+            localStorage.setItem('mlgs_draft_body', document.getElementById('bodyEditor').value);
+            localStorage.setItem('mlgs_draft_subject', document.getElementById('subjectInput').value);
+        }, 5000);
 
-        renderTemplates();
-        toast('👋 Ready! Set API key to generate');
+        init();
     </script>
 
 </body>
