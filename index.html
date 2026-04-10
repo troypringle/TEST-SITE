@@ -13,18 +13,19 @@
         }
 
         :root {
-            --bg-main: #f5f0e8;
-            --bg-panel: #ffffff;
-            --bg-input: #fafaf8;
-            --border: #d4c5a9;
-            --text: #2c2416;
-            --text-muted: #8b7d6b;
+            --bg-main: #2c2416;
+            --bg-panel: #3d3224;
+            --bg-input: #4a3f30;
+            --border: #5c4d3a;
+            --text: #f5f0e8;
+            --text-muted: #a89880;
             --accent: #d4a574;
-            --accent-dark: #b8915f;
-            --gold: #ffd700;
-            --red: #c74444;
+            --green: #4caf50;
+            --green-hover: #45a049;
             --blue: #5b8db8;
-            --green: #6b9b6e;
+            --blue-hover: #4a7ca6;
+            --red: #c74444;
+            --gold: #ffd700;
         }
 
         body {
@@ -46,11 +47,10 @@
             border-radius: 8px;
             margin-bottom: 20px;
             border: 2px solid var(--accent);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .header h1 {
-            color: var(--accent-dark);
+            color: var(--gold);
             font-size: 28px;
             font-weight: 700;
         }
@@ -63,7 +63,7 @@
 
         .grid {
             display: grid;
-            grid-template-columns: 320px 1fr 1fr;
+            grid-template-columns: 340px 1fr 1fr;
             gap: 20px;
         }
 
@@ -75,7 +75,6 @@
             height: fit-content;
             position: sticky;
             top: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .editor-col, .preview-col {
@@ -89,14 +88,13 @@
             border: 1px solid var(--border);
             border-radius: 8px;
             padding: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .card-title {
             font-size: 16px;
             font-weight: 600;
             margin-bottom: 15px;
-            color: var(--accent-dark);
+            color: var(--gold);
             display: flex;
             align-items: center;
             gap: 8px;
@@ -111,6 +109,7 @@
             font-weight: 600;
         }
 
+        /* Base Button */
         .btn {
             background: var(--bg-input);
             color: var(--text);
@@ -130,23 +129,48 @@
         }
 
         .btn:hover {
-            background: var(--accent);
-            color: white;
+            background: var(--border);
             transform: translateY(-1px);
         }
 
-        .btn-primary {
-            background: var(--accent-dark);
+        /* Green Button */
+        .btn-green {
+            background: var(--green);
             border: none;
             color: white;
             font-weight: 600;
         }
 
-        .btn-primary:hover {
-            background: var(--accent);
-            box-shadow: 0 4px 8px rgba(180, 145, 95, 0.3);
+        .btn-green:hover {
+            background: var(--green-hover);
+            box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
         }
 
+        /* Blue Button */
+        .btn-blue {
+            background: var(--blue);
+            border: none;
+            color: white;
+            font-weight: 600;
+        }
+
+        .btn-blue:hover {
+            background: var(--blue-hover);
+            box-shadow: 0 4px 8px rgba(91, 141, 184, 0.3);
+        }
+
+        /* Red Button */
+        .btn-red {
+            background: var(--red);
+            border: none;
+            color: white;
+        }
+
+        .btn-red:hover {
+            background: #a83838;
+        }
+
+        /* Gold/Yellow Button */
         .btn-gold {
             background: var(--gold);
             border: none;
@@ -158,27 +182,19 @@
             background: #ffed4e;
         }
 
-        .btn-red {
-            background: var(--red);
-            border: none;
-            color: white;
-        }
-
-        .btn-red:hover {
-            background: #a83838;
-        }
-
-        .btn-blue {
-            background: var(--blue);
-            border: none;
-            color: white;
-        }
-
         .btn-small {
             padding: 6px 10px;
             font-size: 12px;
             width: auto;
             margin: 0;
+        }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            margin: 0;
+            font-size: 14px;
         }
 
         input[type="text"],
@@ -229,21 +245,22 @@
 
         .subject-item:hover {
             border-color: var(--accent);
-            background: #fff;
+            background: var(--bg-panel);
         }
 
         .subject-item.selected {
-            border-color: var(--accent-dark);
-            background: #fff9f0;
+            border-color: var(--gold);
+            background: rgba(255, 215, 0, 0.1);
             font-weight: 600;
         }
 
+        /* White Email Preview */
         .preview-frame {
             background: #ffffff;
             border-radius: 6px;
             padding: 20px;
             min-height: 400px;
-            color: #000;
+            color: #000000;
             font-family: Arial, sans-serif;
             font-size: 16px;
             line-height: 1.6;
@@ -266,20 +283,19 @@
             border-radius: 6px 6px 0 0;
             border: 1px solid var(--border);
             border-bottom: none;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
         .preview-subject {
-            background: var(--bg-input);
+            background: #ffffff;
             padding: 12px 15px;
-            border-bottom: 1px solid var(--border);
+            border: 1px solid var(--border);
+            border-top: none;
+            color: #000;
             font-size: 14px;
         }
 
         .preview-subject strong {
-            color: var(--accent-dark);
+            color: var(--accent);
         }
 
         .toast {
@@ -287,10 +303,10 @@
             bottom: 20px;
             right: 20px;
             background: var(--bg-panel);
-            border: 2px solid var(--accent);
+            border: 2px solid var(--green);
             padding: 15px 20px;
             border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             display: none;
             z-index: 1000;
             max-width: 350px;
@@ -322,7 +338,7 @@
 
         .spinner {
             border: 3px solid var(--border);
-            border-top: 3px solid var(--accent);
+            border-top: 3px solid var(--gold);
             border-radius: 50%;
             width: 30px;
             height: 30px;
@@ -368,7 +384,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.8);
             z-index: 2000;
             padding: 20px;
             overflow: auto;
@@ -406,29 +422,50 @@
             font-size: 14px;
         }
 
+        /* Prompt Item with Edit Button */
         .prompt-item {
             background: var(--bg-input);
-            padding: 12px;
             border-radius: 6px;
             margin-bottom: 8px;
             border: 1px solid var(--border);
+            display: flex;
+            align-items: stretch;
+            overflow: hidden;
+        }
+
+        .prompt-generate {
+            flex: 1;
+            padding: 12px;
             cursor: pointer;
             transition: all 0.2s;
-        }
-
-        .prompt-item:hover {
-            background: white;
-            border-color: var(--accent);
-        }
-
-        .prompt-header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            font-weight: 600;
-            color: var(--accent-dark);
+            font-weight: 500;
+            color: var(--text);
         }
 
+        .prompt-generate:hover {
+            background: var(--green);
+            color: white;
+        }
+
+        .prompt-edit {
+            padding: 12px 14px;
+            cursor: pointer;
+            background: var(--border);
+            color: var(--text);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            border-left: 1px solid var(--border);
+        }
+
+        .prompt-edit:hover {
+            background: var(--blue);
+            color: white;
+        }
+
+        /* Template Item */
         .template-item {
             background: var(--bg-input);
             padding: 10px;
@@ -448,9 +485,10 @@
         }
 
         .template-name:hover {
-            color: var(--accent-dark);
+            color: var(--gold);
         }
 
+        /* Signature Tabs */
         .sig-selector {
             display: flex;
             gap: 5px;
@@ -465,17 +503,19 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 12px;
+            color: var(--text);
             transition: all 0.2s;
         }
 
         .sig-tab:hover {
-            background: white;
+            background: var(--border);
         }
 
         .sig-tab.active {
-            background: var(--accent-dark);
-            color: white;
-            border-color: var(--accent-dark);
+            background: var(--gold);
+            color: #000;
+            border-color: var(--gold);
+            font-weight: 600;
         }
 
         @media (max-width: 1200px) {
@@ -499,23 +539,23 @@
     <div class="modal" id="promptModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 style="color: var(--accent-dark);">✏️ Edit Prompt</h2>
+                <h2 style="color: var(--gold);">✏️ Edit Prompt</h2>
                 <button class="modal-close" id="closePromptModal">✕</button>
             </div>
             <div style="margin-bottom: 15px;">
                 <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 5px;">Prompt Name</label>
-                <input type="text" id="promptName" placeholder="e.g., Money Angle">
+                <input type="text" id="promptName" placeholder="e.g., 💰 Money Angle">
             </div>
             <div style="margin-bottom: 15px;">
-                <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 5px;">Subject Prompt</label>
-                <textarea id="promptSubject" rows="4"></textarea>
+                <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 5px;">Subject Line Prompt</label>
+                <textarea id="promptSubject" rows="5" style="min-height: 120px;"></textarea>
             </div>
             <div style="margin-bottom: 15px;">
                 <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 5px;">Body Prompt</label>
-                <textarea id="promptBody" rows="8"></textarea>
+                <textarea id="promptBody" rows="8" style="min-height: 180px;"></textarea>
             </div>
             <div class="button-row">
-                <button class="btn btn-primary" id="savePromptBtn">💾 Save Prompt</button>
+                <button class="btn btn-green" id="savePromptBtn">💾 Save Prompt</button>
                 <button class="btn btn-red" id="deletePromptBtn">🗑️ Delete</button>
             </div>
         </div>
@@ -525,13 +565,13 @@
     <div class="modal" id="htmlModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 style="color: var(--accent-dark);">📄 HTML Source</h2>
+                <h2 style="color: var(--gold);">📄 Edit HTML Source</h2>
                 <button class="modal-close" id="closeHtmlModal">✕</button>
             </div>
             <textarea id="htmlEditor" style="min-height: 400px; font-family: 'Courier New', monospace; font-size: 12px;"></textarea>
             <div class="button-row" style="margin-top: 15px;">
-                <button class="btn btn-primary" id="applyHtmlBtn">✓ Apply Changes</button>
-                <button class="btn" id="copyHtmlBtn">📋 Copy HTML</button>
+                <button class="btn btn-green" id="applyHtmlBtn">✓ Apply Changes</button>
+                <button class="btn btn-blue" id="copyHtmlBtn">📋 Copy HTML</button>
             </div>
         </div>
     </div>
@@ -550,7 +590,7 @@
             <div class="sidebar">
                 <div id="apiCard" style="display: none;">
                     <div class="section-title">⚙️ Groq API Key</div>
-                    <p class="help-text">Get free key: <a href="https://console.groq.com" target="_blank" style="color: var(--accent-dark);">console.groq.com</a></p>
+                    <p class="help-text">Get free key: <a href="https://console.groq.com" target="_blank" style="color: var(--gold);">console.groq.com</a></p>
                     
                     <select id="modelSelect" style="margin-bottom: 10px;">
                         <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Best)</option>
@@ -559,27 +599,29 @@
                     </select>
                     
                     <input type="password" id="apiKeyInput" placeholder="Paste API key...">
-                    <button class="btn btn-primary" id="saveApiBtn" style="margin-top: 8px;">Save Key</button>
+                    <button class="btn btn-green" id="saveApiBtn" style="margin-top: 8px;">💾 Save Key</button>
                     <div class="divider"></div>
                 </div>
 
                 <div class="section-title">⚡ Prompt Library</div>
-                <p class="help-text">Click to generate, right-click to edit</p>
+                <p class="help-text">Click to generate • ✏️ to edit</p>
                 <div id="promptList"></div>
-                <button class="btn btn-primary" id="addPromptBtn" style="margin-top: 8px;">➕ Add New Prompt</button>
+                <button class="btn btn-green" id="addPromptBtn" style="margin-top: 8px;">➕ Add New Prompt</button>
                 
                 <div class="divider"></div>
                 
                 <div class="section-title">💾 Email Templates</div>
                 <div id="templateList"></div>
-                <button class="btn btn-primary" id="saveTemplateBtn" style="margin-top: 8px;">💾 Save Current</button>
+                <button class="btn btn-green" id="saveTemplateBtn" style="margin-top: 8px;">💾 Save Current</button>
 
                 <div class="divider"></div>
 
                 <div class="section-title">✍️ Signatures</div>
                 <div class="sig-selector" id="sigSelector"></div>
-                <button class="btn" id="manageSigBtn">⚙️ Manage Signatures</button>
-                <button class="btn btn-primary" id="insertSigBtn">Insert Selected</button>
+                <div class="button-row">
+                    <button class="btn" id="manageSigBtn">⚙️ Manage</button>
+                    <button class="btn btn-blue" id="insertSigBtn">Insert</button>
+                </div>
             </div>
 
             <!-- Editor Column -->
@@ -587,7 +629,7 @@
                 <div class="card">
                     <div class="card-title">📧 Subject Line</div>
                     <input type="text" id="subjectInput" placeholder="Your subject line..." oninput="updatePreview()">
-                    <button class="btn btn-gold" id="generateSubjectsBtn" style="margin-top: 10px;">⚡ Generate 10 Subjects</button>
+                    <button class="btn btn-green" id="generateSubjectsBtn" style="margin-top: 10px;">⚡ Generate 10 Subjects</button>
                     <div class="loading" id="subjectLoading">
                         <div class="spinner"></div>
                         <p style="margin-top: 10px; font-size: 13px;">Generating...</p>
@@ -597,10 +639,22 @@
 
                 <div class="card">
                     <div class="card-title">✉️ Email Body</div>
-                    <p class="help-text">Type naturally - HTML formatting added automatically</p>
-                    <textarea id="bodyEditor" placeholder="Start typing your email here..." oninput="updatePreview()"></textarea>
+                    <p class="help-text">Type naturally - HTML formatting added on copy</p>
+                    <textarea id="bodyEditor" placeholder="Start typing your email here...
+
+Example:
+⭐{!name_fix}
+
+Are you tired of chasing leads that go nowhere?
+
+What if I told you there's a system that delivers 100 fresh leads to your inbox every single day...
+
+And you get paid $5 every time someone joins?
+
+Click below to see how it works:
+[Your Link Here]" oninput="updatePreview()"></textarea>
                     <div class="button-row">
-                        <button class="btn btn-gold" id="generateBodyBtn">⚡ Generate Body</button>
+                        <button class="btn btn-green" id="generateBodyBtn">⚡ Generate Body</button>
                         <button class="btn btn-blue" id="editHtmlBtn">📝 Edit HTML</button>
                         <button class="btn btn-red" id="clearBtn">Clear</button>
                     </div>
@@ -616,27 +670,25 @@
                 <div class="card">
                     <div class="card-title">👁️ Live Preview</div>
                     <div class="preview-header">
-                        <span style="font-size: 12px; color: var(--text-muted);">Email Preview</span>
+                        <span style="font-size: 12px; color: var(--text-muted);">How it looks in email</span>
                     </div>
-                    <div style="border: 1px solid var(--border); border-top: none; border-radius: 0 0 6px 6px;">
-                        <div class="preview-subject">
-                            <strong>Subject:</strong> <span id="previewSubject">Your subject line...</span>
-                        </div>
-                        <div class="preview-frame" id="previewFrame">
-                            <p style="color: #999;">Start typing to see preview...</p>
-                        </div>
+                    <div class="preview-subject">
+                        <strong>Subject:</strong> <span id="previewSubject">Your subject line...</span>
+                    </div>
+                    <div class="preview-frame" id="previewFrame">
+                        <p style="color: #999;">Start typing to see preview...</p>
                     </div>
                 </div>
 
                 <div class="card">
                     <div class="card-title">📤 Copy to MLGS</div>
-                    <p class="help-text">Copy and paste into your MLGS email editor</p>
-                    <button class="btn btn-primary" id="copyFullBtn" style="font-size: 15px; padding: 14px;">
-                        📋 Copy Full Email (Subject + Body)
+                    <p class="help-text">Copy and paste into MLGS email editor</p>
+                    <button class="btn btn-green" id="copyFullBtn" style="font-size: 15px; padding: 14px;">
+                        📋 Copy Full Email
                     </button>
                     <div class="button-row">
-                        <button class="btn" id="copySubjectBtn">Copy Subject</button>
-                        <button class="btn" id="copyBodyBtn">Copy Body</button>
+                        <button class="btn btn-blue" id="copySubjectBtn">Copy Subject</button>
+                        <button class="btn btn-blue" id="copyBodyBtn">Copy Body HTML</button>
                     </div>
                 </div>
             </div>
@@ -651,7 +703,8 @@
             signatures: JSON.parse(localStorage.getItem('mlgs_signatures') || '[{"id":1,"name":"MLGS","content":""}]'),
             currentSig: parseInt(localStorage.getItem('mlgs_current_sig') || '1'),
             prompts: JSON.parse(localStorage.getItem('mlgs_prompts') || 'null') || getDefaultPrompts(),
-            currentPrompt: null
+            currentPrompt: null,
+            lastUsedPrompt: null
         };
 
         function getDefaultPrompts() {
@@ -659,32 +712,182 @@
                 {
                     id: 1,
                     name: "💰 Money Angle",
-                    subject: "Generate 10 compelling subject lines for MLGS (My Lead Gen Secret) focused on making money. Each subject should:\n- Mention $5 commissions or $60 one-time cost\n- Create urgency or curiosity\n- Be under 60 characters\n- Avoid spam words\n\nOutput ONLY the numbered list 1-10, nothing else.",
-                    body: "Write a promotional email for MLGS (My Lead Gen Secret) using a money-focused angle.\n\nKey points:\n- 100 leads delivered daily automatically\n- Earn $5 per referral\n- Only $60 one-time (not monthly)\n- Link: https://troypringle.github.io/MLGS-Page/\n\nWrite in a conversational, excited tone. 10-15 sentences. Start with ⭐{!name_fix}. NO signature (added separately).\n\nOutput clean paragraph text, not HTML."
+                    subject: `Generate 10 compelling email subject lines for MLGS (My Lead Gen Secret).
+
+REQUIREMENTS:
+- Each subject must be 40-70 characters long
+- Focus on money/income angle ($5 commissions, $60 one-time)
+- Create curiosity and urgency
+- Avoid spam words like "free", "guarantee"
+- Make them click-worthy
+
+EXAMPLES OF GOOD SUBJECTS:
+- "I just got another $5 while eating breakfast..."
+- "The $60 decision that changed my daily income"
+- "Why I stopped chasing leads and started collecting them"
+
+Output ONLY the 10 numbered subject lines, nothing else.`,
+                    body: `Write a promotional email for MLGS (My Lead Gen Secret) using a money-focused angle.
+
+CONTEXT:
+- 100 leads delivered daily automatically
+- Earn $5 per referral commission
+- Only $60 one-time (not monthly subscription)
+- Link: https://troypringle.github.io/MLGS-Page/
+
+REQUIREMENTS:
+- Start with ⭐{!name_fix}
+- Write 10-15 conversational sentences
+- Excited friend tone, not salesy
+- Focus on income potential
+- Include clear call-to-action
+- NO signature (added separately)
+
+Output clean paragraph text, NOT HTML code.`
                 },
                 {
                     id: 2,
                     name: "😴 Lazy/Autopilot",
-                    subject: "Generate 10 subject lines emphasizing the automated/passive nature of MLGS. Focus on:\n- 'While you sleep' angles\n- Automation\n- No work required\n- Under 60 characters\n\nOutput ONLY numbered list 1-10.",
-                    body: "Write an email for MLGS emphasizing automation and passive income.\n\nHighlight:\n- 100 leads arrive automatically every day\n- No prospecting needed\n- Set it and forget it\n- $5 per referral on autopilot\n- Link: https://troypringle.github.io/MLGS-Page/\n\nConversational tone. 10-15 sentences. Start with ⭐{!name_fix}. NO signature.\n\nOutput plain text paragraphs."
+                    subject: `Generate 10 email subject lines for MLGS focusing on automation/passive income.
+
+REQUIREMENTS:
+- Each subject must be 40-70 characters long
+- "While you sleep" angles
+- Emphasize no work required
+- Avoid spam words
+- Create intrigue
+
+EXAMPLES:
+- "What happened while I was sleeping last night..."
+- "I haven't prospected in 47 days (here's why)"
+- "The laziest way I've ever made $5 commissions"
+
+Output ONLY 10 numbered subject lines.`,
+                    body: `Write an email for MLGS emphasizing the autopilot/lazy nature.
+
+CONTEXT:
+- 100 leads arrive automatically every day
+- No prospecting, no cold calling
+- Set it and forget it system
+- $5 per referral on autopilot
+- Link: https://troypringle.github.io/MLGS-Page/
+
+REQUIREMENTS:
+- Start with ⭐{!name_fix}
+- 10-15 sentences, conversational
+- Emphasize automation and ease
+- Include call-to-action
+- NO signature
+
+Output plain text paragraphs.`
                 },
                 {
                     id: 3,
-                    name: "⏰ Urgency/Scarcity",
-                    subject: "Generate 10 urgency-driven subject lines for MLGS:\n- Limited time angles\n- Price could increase\n- FOMO triggers\n- Under 60 characters\n\nOutput ONLY numbered list 1-10.",
-                    body: "Write urgent email for MLGS emphasizing limited-time opportunity.\n\nMention:\n- $60 one-time could become monthly subscription\n- Act now messaging\n- 100 daily leads\n- $5 commissions\n- Link: https://troypringle.github.io/MLGS-Page/\n\nUrgent but not pushy. 10-15 sentences. Start with ⭐{!name_fix}. NO signature.\n\nOutput plain text."
+                    name: "⏰ Urgency/FOMO",
+                    subject: `Generate 10 urgency-driven email subject lines for MLGS.
+
+REQUIREMENTS:
+- Each subject must be 40-70 characters long
+- Limited time angles
+- Fear of missing out
+- Price increase warnings
+- Avoid spam words
+
+EXAMPLES:
+- "This $60 deal won't last (here's the proof)"
+- "Everyone's talking about this before it changes"
+- "Last chance before the price goes up..."
+
+Output ONLY 10 numbered subject lines.`,
+                    body: `Write urgent email for MLGS emphasizing limited-time opportunity.
+
+CONTEXT:
+- $60 one-time could become monthly subscription
+- 100 daily leads
+- $5 commissions per referral
+- Link: https://troypringle.github.io/MLGS-Page/
+
+REQUIREMENTS:
+- Start with ⭐{!name_fix}
+- 10-15 sentences
+- Create urgency without being pushy
+- Mention price could increase
+- Clear call-to-action
+- NO signature
+
+Output plain text.`
                 },
                 {
                     id: 4,
                     name: "📊 Proof/Results",
-                    subject: "Generate 10 proof-based subject lines:\n- Real results\n- Testimonial style\n- Specific numbers\n- Under 60 characters\n\nOutput ONLY numbered list 1-10.",
-                    body: "Write results-focused email for MLGS.\n\nInclude:\n- How it's working for others\n- 100 daily leads fact\n- $5 per signup proof\n- Believable success story\n- Link: https://troypringle.github.io/MLGS-Page/\n\nAuthentic tone. 10-15 sentences. Start with ⭐{!name_fix}. NO signature.\n\nOutput plain text."
+                    subject: `Generate 10 proof-based email subject lines for MLGS.
+
+REQUIREMENTS:
+- Each subject must be 40-70 characters long
+- Real results angle
+- Testimonial style
+- Specific numbers when possible
+- Avoid spam words
+
+EXAMPLES:
+- "Day 14 update: here's what actually happened"
+- "I didn't believe it either until I saw this"
+- "The screenshot that made me a believer"
+
+Output ONLY 10 numbered subject lines.`,
+                    body: `Write results-focused email for MLGS.
+
+CONTEXT:
+- 100 daily leads delivered automatically
+- $5 per signup commission
+- $60 one-time investment
+- Link: https://troypringle.github.io/MLGS-Page/
+
+REQUIREMENTS:
+- Start with ⭐{!name_fix}
+- 10-15 sentences
+- Share believable results/experience
+- Authentic, not hype
+- Call-to-action
+- NO signature
+
+Output plain text paragraphs.`
                 },
                 {
                     id: 5,
                     name: "🧠 Curiosity Hook",
-                    subject: "Generate 10 curiosity-driven subject lines:\n- 'Weird trick' style\n- Question format\n- Mystery/discovery\n- Under 60 characters\n\nOutput ONLY numbered list 1-10.",
-                    body: "Write curiosity-based email for MLGS.\n\nFocus on:\n- Discovering something new\n- How it works (briefly)\n- 100 leads + $5 commissions\n- Link: https://troypringle.github.io/MLGS-Page/\n\nIntriguing tone. 10-15 sentences. Start with ⭐{!name_fix}. NO signature.\n\nOutput plain text."
+                    subject: `Generate 10 curiosity-driven email subject lines for MLGS.
+
+REQUIREMENTS:
+- Each subject must be 40-70 characters long
+- "Weird trick" style
+- Questions that demand answers
+- Mystery/discovery angles
+- Avoid spam words
+
+EXAMPLES:
+- "The weird thing that happened at 6am today..."
+- "Why are 100 people emailing me every day?"
+- "I found something strange in my inbox"
+
+Output ONLY 10 numbered subject lines.`,
+                    body: `Write curiosity-based email for MLGS.
+
+CONTEXT:
+- 100 leads daily (automated)
+- $5 commissions per referral
+- $60 one-time
+- Link: https://troypringle.github.io/MLGS-Page/
+
+REQUIREMENTS:
+- Start with ⭐{!name_fix}
+- 10-15 sentences
+- Build curiosity throughout
+- Reveal benefit naturally
+- Strong call-to-action
+- NO signature
+
+Output plain text.`
                 }
             ];
         }
@@ -736,7 +939,11 @@
                     })
                 });
 
-                if (!res.ok) throw new Error('API error');
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.error?.message || 'API error');
+                }
+                
                 const data = await res.json();
                 return data.choices[0].message.content;
             } catch (err) {
@@ -749,7 +956,10 @@
             const prompt = state.prompts.find(p => p.id === promptId);
             if (!prompt) return;
 
+            state.lastUsedPrompt = promptId;
             loading('subjectLoading', true);
+            document.getElementById('subjectList').innerHTML = '';
+            
             const result = await callAI(prompt.subject);
             loading('subjectLoading', false);
 
@@ -757,7 +967,7 @@
 
             const subjects = result.split('\n')
                 .map(l => l.replace(/^\d+[\.\)]\s*/, '').replace(/^["']|["']$/g, '').trim())
-                .filter(l => l.length > 10 && l.length < 120)
+                .filter(l => l.length > 20 && l.length < 120)
                 .slice(0, 10);
 
             if (subjects.length === 0) {
@@ -787,6 +997,7 @@
             const prompt = state.prompts.find(p => p.id === promptId);
             if (!prompt) return;
 
+            state.lastUsedPrompt = promptId;
             loading('bodyLoading', true);
             const result = await callAI(prompt.body);
             loading('bodyLoading', false);
@@ -801,23 +1012,23 @@
         function renderPrompts() {
             const list = document.getElementById('promptList');
             list.innerHTML = state.prompts.map(p => `
-                <div class="prompt-item" data-id="${p.id}">
-                    <div class="prompt-header">
-                        <span>${p.name}</span>
-                        <span style="font-size: 11px; color: var(--text-muted);">✏️ Edit</span>
-                    </div>
+                <div class="prompt-item">
+                    <div class="prompt-generate" data-id="${p.id}">${p.name}</div>
+                    <div class="prompt-edit" data-id="${p.id}" title="Edit Prompt">✏️</div>
                 </div>
             `).join('');
 
-            list.querySelectorAll('.prompt-item').forEach(el => {
+            list.querySelectorAll('.prompt-generate').forEach(el => {
                 el.addEventListener('click', () => {
                     const id = parseInt(el.dataset.id);
                     generateSubjects(id);
                     generateBody(id);
                 });
+            });
 
-                el.addEventListener('contextmenu', (e) => {
-                    e.preventDefault();
+            list.querySelectorAll('.prompt-edit').forEach(el => {
+                el.addEventListener('click', (e) => {
+                    e.stopPropagation();
                     openEditPrompt(parseInt(el.dataset.id));
                 });
             });
@@ -837,8 +1048,30 @@
         document.getElementById('addPromptBtn').addEventListener('click', () => {
             state.currentPrompt = null;
             document.getElementById('promptName').value = '';
-            document.getElementById('promptSubject').value = '';
-            document.getElementById('promptBody').value = '';
+            document.getElementById('promptSubject').value = `Generate 10 email subject lines for MLGS.
+
+REQUIREMENTS:
+- Each subject must be 40-70 characters long
+- [YOUR ANGLE HERE]
+- Avoid spam words like "free"
+- Create curiosity
+
+Output ONLY 10 numbered subject lines.`;
+            document.getElementById('promptBody').value = `Write an email for MLGS.
+
+CONTEXT:
+- 100 leads daily automatically
+- $5 per referral
+- $60 one-time
+- Link: https://troypringle.github.io/MLGS-Page/
+
+REQUIREMENTS:
+- Start with ⭐{!name_fix}
+- 10-15 sentences
+- [YOUR ANGLE HERE]
+- NO signature
+
+Output plain text.`;
             document.getElementById('promptModal').classList.add('show');
         });
 
@@ -873,7 +1106,14 @@
         });
 
         document.getElementById('deletePromptBtn').addEventListener('click', () => {
-            if (!state.currentPrompt) return;
+            if (!state.currentPrompt) {
+                toast('❌ Cannot delete - this is a new prompt', true);
+                return;
+            }
+            if (state.prompts.length <= 1) {
+                toast('❌ Must keep at least one prompt', true);
+                return;
+            }
             if (!confirm('Delete this prompt?')) return;
 
             state.prompts = state.prompts.filter(p => p.id !== state.currentPrompt);
@@ -897,7 +1137,7 @@
             list.innerHTML = state.templates.map(t => `
                 <div class="template-item">
                     <span class="template-name" data-id="${t.id}">${t.name}</span>
-                    <button class="btn btn-small btn-red" onclick="deleteTemplate(${t.id})">🗑️</button>
+                    <button class="btn btn-small btn-red btn-icon" onclick="deleteTemplate(${t.id})">🗑️</button>
                 </div>
             `).join('');
 
@@ -949,7 +1189,6 @@
                     state.currentSig = parseInt(el.dataset.id);
                     localStorage.setItem('mlgs_current_sig', state.currentSig);
                     renderSignatures();
-                    toast(`✅ Selected: ${el.textContent}`);
                 });
             });
         }
@@ -957,7 +1196,7 @@
         document.getElementById('insertSigBtn').addEventListener('click', () => {
             const sig = state.signatures.find(s => s.id === state.currentSig);
             if (!sig || !sig.content) {
-                toast('❌ No signature content', true);
+                toast('❌ No signature content - click Manage to add', true);
                 return;
             }
 
@@ -968,42 +1207,56 @@
         });
 
         document.getElementById('manageSigBtn').addEventListener('click', () => {
-            const action = prompt('Options:\n1. Edit current signature\n2. Add new signature\n3. Delete signature\n\nEnter 1, 2, or 3:');
+            const currentSig = state.signatures.find(s => s.id === state.currentSig);
+            const action = prompt(`Managing: ${currentSig?.name || 'Signature'}
+
+1 = Edit current signature content
+2 = Rename current signature
+3 = Add new signature
+4 = Delete current signature
+
+Enter number:`);
             
             if (action === '1') {
-                const sig = state.signatures.find(s => s.id === state.currentSig);
-                const newContent = prompt('Edit signature content:', sig?.content || '');
+                const newContent = prompt('Paste signature content (plain text or HTML):', currentSig?.content || '');
                 if (newContent !== null) {
-                    sig.content = newContent;
+                    currentSig.content = newContent;
                     localStorage.setItem('mlgs_signatures', JSON.stringify(state.signatures));
                     toast('✅ Signature updated');
                 }
             } else if (action === '2') {
-                const name = prompt('New signature name (e.g., Herculist, MLGS, TrafficHub):');
-                if (!name) return;
-                const content = prompt('Signature content:');
-                if (content !== null) {
-                    state.signatures.push({
-                        id: Date.now(),
-                        name,
-                        content
-                    });
+                const newName = prompt('New name:', currentSig?.name || '');
+                if (newName) {
+                    currentSig.name = newName;
                     localStorage.setItem('mlgs_signatures', JSON.stringify(state.signatures));
                     renderSignatures();
-                    toast('✅ Signature added');
+                    toast('✅ Renamed');
                 }
             } else if (action === '3') {
+                const name = prompt('New signature name (e.g., Herculist, TrafficHub):');
+                if (!name) return;
+                state.signatures.push({
+                    id: Date.now(),
+                    name,
+                    content: ''
+                });
+                state.currentSig = state.signatures[state.signatures.length - 1].id;
+                localStorage.setItem('mlgs_signatures', JSON.stringify(state.signatures));
+                localStorage.setItem('mlgs_current_sig', state.currentSig);
+                renderSignatures();
+                toast('✅ Added - now click Manage > 1 to add content');
+            } else if (action === '4') {
                 if (state.signatures.length === 1) {
                     toast('❌ Cannot delete last signature', true);
                     return;
                 }
-                if (confirm('Delete current signature?')) {
+                if (confirm('Delete this signature?')) {
                     state.signatures = state.signatures.filter(s => s.id !== state.currentSig);
                     state.currentSig = state.signatures[0].id;
                     localStorage.setItem('mlgs_signatures', JSON.stringify(state.signatures));
                     localStorage.setItem('mlgs_current_sig', state.currentSig);
                     renderSignatures();
-                    toast('✅ Signature deleted');
+                    toast('✅ Deleted');
                 }
             }
         });
@@ -1042,7 +1295,7 @@
             full += htmlBody;
             
             copy(full);
-            toast('✅ Full email copied!');
+            toast('✅ Full email copied with HTML!');
         });
 
         document.getElementById('copySubjectBtn').addEventListener('click', () => {
@@ -1067,7 +1320,16 @@
 
         document.getElementById('applyHtmlBtn').addEventListener('click', () => {
             const html = document.getElementById('htmlEditor').value;
-            const text = html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+            const text = html
+                .replace(/<br\s*\/?>/gi, '\n')
+                .replace(/<\/p>/gi, '\n\n')
+                .replace(/<[^>]*>/g, '')
+                .replace(/&nbsp;/g, ' ')
+                .replace(/&amp;/g, '&')
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .replace(/\n{3,}/g, '\n\n')
+                .trim();
             document.getElementById('bodyEditor').value = text;
             updatePreview();
             document.getElementById('htmlModal').classList.remove('show');
@@ -1091,15 +1353,13 @@
         });
 
         document.getElementById('generateSubjectsBtn').addEventListener('click', () => {
-            if (state.prompts.length > 0) {
-                generateSubjects(state.prompts[0].id);
-            }
+            const promptId = state.lastUsedPrompt || (state.prompts.length > 0 ? state.prompts[0].id : null);
+            if (promptId) generateSubjects(promptId);
         });
 
         document.getElementById('generateBodyBtn').addEventListener('click', () => {
-            if (state.prompts.length > 0) {
-                generateBody(state.prompts[0].id);
-            }
+            const promptId = state.lastUsedPrompt || (state.prompts.length > 0 ? state.prompts[0].id : null);
+            if (promptId) generateBody(promptId);
         });
 
         document.getElementById('saveApiBtn').addEventListener('click', () => {
@@ -1126,23 +1386,36 @@
         document.getElementById('helpBtn').addEventListener('click', () => {
             alert(`🔥 MLGS SWIPE MACHINE
 
-QUICK START:
-1. Get free API key from console.groq.com
-2. Click ⚙️ API Key button and save it
-3. Click any prompt in the library to generate
-4. Pick a subject line
-5. Edit body if needed
-6. Insert signature
-7. Copy Full Email → paste to MLGS
+SETUP:
+1. Get free API key: console.groq.com
+2. Click ⚙️ API Key and save it
 
-FEATURES:
-✏️ Edit prompts - Right-click any prompt
-🗑️ Delete templates - Click trash icon
-✍️ Multiple signatures - Switch between MLGS/Herculist/etc
-📝 WYSIWYG editor - Type naturally, not HTML
-👁️ White preview - Matches real email look
+GENERATE EMAILS:
+• Click any prompt name to generate
+• Pick a subject from the list
+• Edit body as needed
+• Insert signature
+• Copy Full Email → paste to MLGS
 
-100% FREE with Groq!`);
+CUSTOMIZE:
+• ✏️ Edit prompts to change angles
+• ➕ Add your own prompts
+• 💾 Save templates for reuse
+• ✍️ Multiple signatures (MLGS, Herculist, etc.)
+
+TIPS:
+• Type naturally in body editor
+• HTML formatting added automatically on copy
+• White preview shows real email look
+
+100% FREE forever with Groq!`);
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.getElementById('promptModal').classList.remove('show');
+                document.getElementById('htmlModal').classList.remove('show');
+            }
         });
 
         function init() {
