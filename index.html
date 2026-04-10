@@ -583,18 +583,21 @@
             <div class="sidebar">
                 <div id="apiCard">
                     <div class="section-title">⚙️ API Settings</div>
-                    <p class="help-text">Free API key: <a href="https://openrouter.ai/keys" target="_blank" style="color: var(--accent);">openrouter.ai/keys</a></p>
+                    <p class="help-text">Get free key: <a href="https://console.groq.com" target="_blank" style="color: var(--accent);">console.groq.com</a></p>
                     
                     <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 5px;">Provider</label>
                     <select id="apiProvider" style="margin-bottom: 10px;">
-                        <option value="openrouter">OpenRouter (Recommended)</option>
-                        <option value="groq">Groq</option>
+                        <option value="groq">Groq (Recommended - Fast & Free)</option>
                     </select>
 
                     <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 5px;">Model</label>
-                    <select id="modelSelect" style="margin-bottom: 10px;"></select>
+                    <select id="modelSelect" style="margin-bottom: 10px;">
+                        <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Best)</option>
+                        <option value="llama-3.1-8b-instant">Llama 3.1 8B (Fastest)</option>
+                        <option value="mixtral-8x7b-32768">Mixtral 8x7B (Good)</option>
+                    </select>
                     
-                    <input type="password" id="apiKeyInput" placeholder="Paste API key...">
+                    <input type="password" id="apiKeyInput" placeholder="Paste Groq API key...">
                     <button class="btn btn-primary" id="saveApiBtn" style="margin-top: 8px;">Save Settings</button>
                     
                     <div class="divider"></div>
@@ -613,10 +616,6 @@
                     <div class="usage-row">
                         <span class="usage-label">Last Request:</span>
                         <span class="usage-value" id="lastTokens">0</span>
-                    </div>
-                    <div class="usage-row">
-                        <span class="usage-label">Daily Limit:</span>
-                        <span class="usage-value">200,000</span>
                     </div>
                     <div class="progress-bar">
                         <div class="progress-fill" id="usageProgress" style="width: 0%"></div>
@@ -745,8 +744,7 @@
     <script>
         let state = {
             apiKey: localStorage.getItem('mlgs_api_key') || '',
-            apiProvider: localStorage.getItem('mlgs_api_provider') || 'openrouter',
-            model: localStorage.getItem('mlgs_model') || 'meta-llama/llama-3.1-8b-instruct:free',
+            model: localStorage.getItem('mlgs_model') || 'llama-3.3-70b-versatile',
             signature: localStorage.getItem('mlgs_signature') || '',
             templates: JSON.parse(localStorage.getItem('mlgs_templates') || '[]'),
             currentType: 'curiosity',
@@ -764,19 +762,6 @@
             localStorage.setItem('mlgs_last_date', new Date().toDateString());
         }
 
-        const models = {
-            openrouter: {
-                'meta-llama/llama-3.1-8b-instruct:free': 'Meta: Llama 3.1 8B (Free)',
-                'meta-llama/llama-3.1-70b-instruct:free': 'Meta: Llama 3.1 70B (Free)',
-                'google/gemini-flash-1.5': 'Google: Gemini Flash 1.5 (Free)',
-                'mistralai/mistral-7b-instruct:free': 'Mistral: 7B Instruct (Free)',
-                'microsoft/wizardlm-2-8x22b': 'Microsoft: WizardLM 2 (Free)'
-            },
-            groq: {
-                'llama-3.1-70b-versatile': 'Llama 3.1 70B (Groq)'
-            }
-        };
-
         const prompts = {
             curiosity: {
                 subject: `Generate 10 curiosity-driven subject lines for MLGS (My Lead Gen Secret). Focus on "weird trick", discovery, numbers. Under 60 chars. No spam words like "free". Output ONLY numbered list 1-10, nothing else.`,
@@ -788,30 +773,60 @@ Key benefits:
 - $60 one-time payment
 Link: https://troypringle.github.io/MLGS-Page/
 
+FORMAT EXACTLY LIKE THIS:
+<p><span style="font-size:16px"><span style="color:#000000">⭐{!name_fix}</span></span></p>
+
+<p><span style="font-size:16px"><span style="color:#000000">Your compelling hook paragraph here.</span></span></p>
+
+<p><span style="font-size:16px"><span style="color:#000000">Another paragraph about benefits.</span></span></p>
+
+<p><span style="font-size:16px"><a href="https://troypringle.github.io/MLGS-Page/" target="_blank"><span style="color:#0000cc">Click here to get started now</span></a></span></p>
+
+Use curiosity angle. 10-14 lines. Excited friend tone. NO signature. Output ONLY the HTML, nothing else.`
+            },
+            money: {
+                subject: `Generate 10 money-focused subject lines for MLGS. Include $5, $60, income angles. Under 60 chars. Output ONLY numbered list 1-10.`,
+                body: `Write money-focused email for MLGS. Benefits: $5/referral, 100 leads daily, $60 one-time. Link: https://troypringle.github.io/MLGS-Page/
+
 FORMAT EXACTLY:
 <p><span style="font-size:16px"><span style="color:#000000">⭐{!name_fix}</span></span></p>
 
-<p><span style="font-size:16px"><span style="color:#000000">Your compelling hook here.</span></span></p>
+<p><span style="font-size:16px"><span style="color:#000000">Text here</span></span></p>
 
-<p><span style="font-size:16px"><a href="https://troypringle.github.io/MLGS-Page/" target="_blank"><span style="color:#0000cc">Click here now</span></a></span></p>
-
-Use curiosity angle. 10-14 lines. Excited tone. NO signature.`
-            },
-            money: {
-                subject: `Generate 10 money-focused subject lines for MLGS. Include $5, $60, income. Under 60 chars. Output ONLY numbered list 1-10.`,
-                body: `Write money-focused email for MLGS. Benefits: $5/referral, 100 leads daily, $60 one-time. Link: https://troypringle.github.io/MLGS-Page/ FORMAT: <p><span style="font-size:16px"><span style="color:#000000">Text</span></span></p> Include {!name_fix}. 10-14 lines. NO signature.`
+Focus on income. 10-14 lines. NO signature. Output ONLY HTML.`
             },
             urgency: {
                 subject: `Generate 10 urgency subject lines for MLGS. FOMO, time-sensitive. Under 60 chars. Output ONLY numbered list 1-10.`,
-                body: `Write urgency email for MLGS. Emphasize $60 one-time could change. Link: https://troypringle.github.io/MLGS-Page/ FORMAT: <p><span style="font-size:16px"><span style="color:#000000">Text</span></span></p> Include {!name_fix}. 10-14 lines. NO signature.`
+                body: `Write urgency email for MLGS. Emphasize $60 one-time could change to monthly. Link: https://troypringle.github.io/MLGS-Page/
+
+FORMAT EXACTLY:
+<p><span style="font-size:16px"><span style="color:#000000">⭐{!name_fix}</span></span></p>
+
+<p><span style="font-size:16px"><span style="color:#000000">Text here</span></span></p>
+
+Create FOMO. 10-14 lines. NO signature. Output ONLY HTML.`
             },
             lazy: {
-                subject: `Generate 10 "lazy method" subject lines for MLGS. Automation, passive. Under 60 chars. Output ONLY numbered list 1-10.`,
-                body: `Write "lazy method" email for MLGS. Emphasize automation, 100 leads daily automatic. Link: https://troypringle.github.io/MLGS-Page/ FORMAT: <p><span style="font-size:16px"><span style="color:#000000">Text</span></span></p> Include {!name_fix}. 10-14 lines. NO signature.`
+                subject: `Generate 10 "lazy method" subject lines for MLGS. Automation, passive, effortless. Under 60 chars. Output ONLY numbered list 1-10.`,
+                body: `Write "lazy method" email for MLGS. Emphasize automation, 100 leads daily automatic. Link: https://troypringle.github.io/MLGS-Page/
+
+FORMAT EXACTLY:
+<p><span style="font-size:16px"><span style="color:#000000">⭐{!name_fix}</span></span></p>
+
+<p><span style="font-size:16px"><span style="color:#000000">Text here</span></span></p>
+
+Emphasize autopilot. 10-14 lines. NO signature. Output ONLY HTML.`
             },
             proof: {
                 subject: `Generate 10 proof/results subject lines for MLGS. Testimonials, numbers. Under 60 chars. Output ONLY numbered list 1-10.`,
-                body: `Write proof-based email for MLGS. Include believable results. Link: https://troypringle.github.io/MLGS-Page/ FORMAT: <p><span style="font-size:16px"><span style="color:#000000">Text</span></span></p> Include {!name_fix}. 10-14 lines. NO signature.`
+                body: `Write proof-based email for MLGS. Include believable results. Link: https://troypringle.github.io/MLGS-Page/
+
+FORMAT EXACTLY:
+<p><span style="font-size:16px"><span style="color:#000000">⭐{!name_fix}</span></span></p>
+
+<p><span style="font-size:16px"><span style="color:#000000">Text here</span></span></p>
+
+Use social proof. 10-14 lines. NO signature. Output ONLY HTML.`
             }
         };
 
@@ -831,17 +846,8 @@ Use curiosity angle. 10-14 lines. Excited tone. NO signature.`
             document.getElementById('dailyTokens').textContent = state.usage.daily.toLocaleString();
             document.getElementById('lastTokens').textContent = state.usage.last.toLocaleString();
             
-            const percent = Math.min((state.usage.daily / 200000) * 100, 100);
+            const percent = Math.min((state.usage.daily / 500000) * 100, 100);
             document.getElementById('usageProgress').style.width = percent + '%';
-            
-            const dailyEl = document.getElementById('dailyTokens');
-            if (percent > 80) {
-                dailyEl.className = 'usage-value danger';
-            } else if (percent > 50) {
-                dailyEl.className = 'usage-value warning';
-            } else {
-                dailyEl.className = 'usage-value';
-            }
         }
 
         function trackTokens(tokensUsed) {
@@ -864,29 +870,16 @@ Use curiosity angle. 10-14 lines. Excited tone. NO signature.`
         async function callAI(prompt) {
             if (!state.apiKey) {
                 toast('❌ Set API key first', true);
-                document.getElementById('apiCard').scrollIntoView({behavior: 'smooth'});
                 return null;
             }
 
-            const apiUrls = {
-                openrouter: 'https://openrouter.ai/api/v1/chat/completions',
-                groq: 'https://api.groq.com/openai/v1/chat/completions'
-            };
-
             try {
-                const headers = {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${state.apiKey}`
-                };
-
-                if (state.apiProvider === 'openrouter') {
-                    headers['HTTP-Referer'] = window.location.href;
-                    headers['X-Title'] = 'MLGS Swipe Machine';
-                }
-
-                const res = await fetch(apiUrls[state.apiProvider], {
+                const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                     method: 'POST',
-                    headers: headers,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${state.apiKey}`
+                    },
                     body: JSON.stringify({
                         model: state.model,
                         messages: [{role: 'user', content: prompt}],
@@ -903,8 +896,7 @@ Use curiosity angle. 10-14 lines. Excited tone. NO signature.`
                 const data = await res.json();
 
                 if (data.usage) {
-                    const tokensUsed = data.usage.total_tokens || 0;
-                    trackTokens(tokensUsed);
+                    trackTokens(data.usage.total_tokens || 0);
                 }
 
                 return data.choices[0].message.content;
@@ -1078,18 +1070,14 @@ Use curiosity angle. 10-14 lines. Excited tone. NO signature.`
 
         document.getElementById('insertSignatureBtn').addEventListener('click', () => {
             if (!state.signature) {
-                toast('❌ No signature saved - click Edit Signature first', true);
+                toast('❌ No signature saved', true);
                 return;
             }
             
             const body = document.getElementById('bodyEditor').value.trim();
-            const sig = state.signature.trim();
-            
-            const combined = body + '\n\n' + sig;
-            
-            document.getElementById('bodyEditor').value = combined;
+            document.getElementById('bodyEditor').value = body + '\n\n' + state.signature.trim();
             updatePreview();
-            toast('✅ Signature inserted (HTML preserved)');
+            toast('✅ Signature inserted');
         });
 
         document.getElementById('sigEditTab').addEventListener('click', () => {
@@ -1102,9 +1090,7 @@ Use curiosity angle. 10-14 lines. Excited tone. NO signature.`
         });
 
         document.getElementById('sigPreviewTab').addEventListener('click', () => {
-            const sig = document.getElementById('signatureEditor').value;
-            document.getElementById('signaturePreview').innerHTML = sig || '<p style="color: #999;">No signature yet...</p>';
-            
+            document.getElementById('signaturePreview').innerHTML = document.getElementById('signatureEditor').value || '<p style="color: #999;">No signature yet...</p>';
             document.getElementById('sigEditView').style.display = 'none';
             document.getElementById('sigPreviewView').style.display = 'block';
             document.getElementById('sigEditTab').style.background = 'var(--bg-input)';
@@ -1119,63 +1105,29 @@ Use curiosity angle. 10-14 lines. Excited tone. NO signature.`
                 toast('❌ No signature to test', true);
                 return;
             }
-            
-            document.getElementById('modalSubjectText').textContent = 'Signature Preview Test';
+            document.getElementById('modalSubjectText').textContent = 'Signature Preview';
             document.getElementById('modalPreviewFrame').innerHTML = sig;
             document.getElementById('previewModal').classList.add('show');
-            toast('✅ Showing signature preview');
         });
 
         document.getElementById('saveApiBtn').addEventListener('click', () => {
             const key = document.getElementById('apiKeyInput').value.trim();
-            const provider = document.getElementById('apiProvider').value;
             const model = document.getElementById('modelSelect').value;
             
             if (!key) return toast('❌ Enter API key', true);
             
             state.apiKey = key;
-            state.apiProvider = provider;
             state.model = model;
             
             localStorage.setItem('mlgs_api_key', key);
-            localStorage.setItem('mlgs_api_provider', provider);
             localStorage.setItem('mlgs_model', model);
             
-            toast('✅ API settings saved');
+            toast('✅ Settings saved');
         });
 
         document.getElementById('apiBtn').addEventListener('click', () => {
             const card = document.getElementById('apiCard');
-            const isHidden = card.style.display === 'none';
-            card.style.display = isHidden ? 'block' : 'none';
-            if (isHidden) card.scrollIntoView({behavior: 'smooth'});
-        });
-
-        document.getElementById('apiProvider').addEventListener('change', (e) => {
-            const provider = e.target.value;
-            const modelSelect = document.getElementById('modelSelect');
-
-            modelSelect.innerHTML = '';
-            const currentModels = models[provider];
-
-            for (const [value, label] of Object.entries(currentModels)) {
-                const option = document.createElement('option');
-                option.value = value;
-                option.textContent = label;
-                modelSelect.appendChild(option);
-            }
-
-            if (provider === 'groq') {
-                modelSelect.disabled = true;
-                state.model = 'llama-3.1-70b-versatile';
-            } else {
-                modelSelect.disabled = false;
-                state.model = 'meta-llama/llama-3.1-8b-instruct:free';
-            }
-
-            state.apiProvider = provider;
-            localStorage.setItem('mlgs_api_provider', provider);
-            localStorage.setItem('mlgs_model', state.model);
+            card.style.display = card.style.display === 'none' ? 'block' : 'none';
         });
 
         document.getElementById('resetUsageBtn').addEventListener('click', () => {
@@ -1255,56 +1207,30 @@ Use curiosity angle. 10-14 lines. Excited tone. NO signature.`
         document.getElementById('helpBtn').addEventListener('click', () => {
             alert(`🔥 MLGS SWIPE MACHINE
 
-QUICK START:
-1. Get free API key: openrouter.ai/keys
-2. Save in settings (⚙️ API button)
-3. Click any Generate button
-4. Pick subject → see live preview
-5. Copy Full Email → paste to MLGS
+GET API KEY (FREE):
+1. Go to console.groq.com
+2. Sign up (free)
+3. Create API key
+4. Paste here
+
+HOW TO USE:
+1. Save your API key
+2. Click any Generate button
+3. Pick a subject line
+4. Edit body if needed
+5. Insert signature
+6. Click "Copy Full Email"
+7. Paste into MLGS
 
 SIGNATURE:
-1. Click "Edit Signature"
-2. Paste your HTML signature
-3. Click "Preview" tab to see how it looks
-4. Save it
-5. Click "Insert to Body" anytime
+Click "Edit Signature" to paste your HTML signature once, then use "Insert to Body" anytime.
 
-TOKEN TRACKING:
-• Shows exact tokens used
-• Daily usage counter
-• Resets at midnight
-
-FEATURES:
-✅ Live Preview (real-time)
-✅ HTML Source viewer
-✅ Token usage tracking
-✅ Signature with preview
-✅ Templates
-✅ 200,000 free tokens daily!`);
+All 100% FREE with Groq!`);
         });
 
         function init() {
-            const modelSelect = document.getElementById('modelSelect');
-            modelSelect.innerHTML = '';
-
-            const currentModels = models[state.apiProvider];
-            for (const [value, label] of Object.entries(currentModels)) {
-                const option = document.createElement('option');
-                option.value = value;
-                option.textContent = label;
-                if (value === state.model) option.selected = true;
-                modelSelect.appendChild(option);
-            }
-
-            document.getElementById('apiProvider').value = state.apiProvider;
             document.getElementById('apiKeyInput').value = state.apiKey;
-
-            if (state.apiProvider === 'groq') {
-                modelSelect.disabled = true;
-            } else {
-                modelSelect.disabled = false;
-            }
-
+            document.getElementById('modelSelect').value = state.model;
             renderTemplates();
             updateUsageDisplay();
             updatePreview();
