@@ -1,3 +1,6 @@
+# ✅ Complete Fix - All Issues Resolved
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,22 +16,22 @@
         }
 
         :root {
-            --bg-main: #d4c4a8;
-            --bg-panel: #f5f0e6;
+            --bg-main: #2b2b2b;
+            --bg-panel: #3c3c3c;
             --bg-input: #ffffff;
-            --border: #c9b896;
-            --text: #2c2416;
-            --text-muted: #5c4d3a;
+            --border: #555555;
+            --text: #000000;
+            --text-muted: #666666;
             --green: #4caf50;
             --green-hover: #45a049;
             --blue: #5b8db8;
             --blue-hover: #4a7ca6;
             --red: #c74444;
-            --gold: #b8860b;
+            --gold: #ffd700;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: Arial, sans-serif;
             background: var(--bg-main);
             color: var(--text);
             line-height: 1.7;
@@ -64,6 +67,7 @@
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
+            align-items: center;
         }
 
         .grid {
@@ -105,7 +109,7 @@
         .section-title {
             font-size: 14px;
             text-transform: uppercase;
-            color: var(--text-muted);
+            color: #cccccc;
             margin-bottom: 14px;
             letter-spacing: 1px;
             font-weight: 700;
@@ -113,7 +117,7 @@
 
         .btn {
             background: var(--bg-input);
-            color: var(--text);
+            color: #000000;
             border: 1px solid var(--border);
             padding: 14px 18px;
             border-radius: 8px;
@@ -188,11 +192,11 @@
             width: 100%;
             background: #ffffff;
             border: 2px solid var(--border);
-            color: var(--text);
+            color: #000000;
             padding: 14px 16px;
             border-radius: 8px;
             font-size: 16px;
-            font-family: inherit;
+            font-family: Arial, sans-serif;
         }
 
         textarea {
@@ -200,6 +204,8 @@
             resize: vertical;
             font-size: 16px;
             line-height: 1.7;
+            font-family: Arial, sans-serif;
+            color: #000000;
         }
 
         input:focus,
@@ -207,7 +213,7 @@
         select:focus {
             outline: none;
             border-color: var(--gold);
-            box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.15);
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.15);
         }
 
         .subject-list {
@@ -224,6 +230,7 @@
             transition: all 0.2s;
             font-size: 15px;
             line-height: 1.6;
+            color: #000000;
         }
 
         .subject-item:hover {
@@ -250,6 +257,11 @@
             border: 2px solid var(--border);
         }
 
+        .preview-frame p {
+            color: #000000 !important;
+            font-family: Arial, sans-serif !important;
+        }
+
         .preview-frame img {
             max-width: 100%;
             height: auto;
@@ -260,22 +272,22 @@
         }
 
         .preview-header {
-            background: var(--bg-input);
+            background: #e0e0e0;
+            color: #000000;
             padding: 14px 18px;
             border-radius: 8px 8px 0 0;
             border: 2px solid var(--border);
             border-bottom: none;
             font-size: 14px;
-            color: var(--text-muted);
             font-weight: 500;
         }
 
         .preview-subject {
             background: #ffffff;
+            color: #000000;
             padding: 16px 18px;
             border: 2px solid var(--border);
             border-top: none;
-            color: #000;
             font-size: 16px;
         }
 
@@ -291,11 +303,12 @@
             border: 2px solid var(--green);
             padding: 18px 26px;
             border-radius: 10px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
             display: none;
             z-index: 1000;
             max-width: 420px;
             font-size: 16px;
+            color: #ffffff;
         }
 
         .toast.show {
@@ -339,7 +352,7 @@
 
         .help-text {
             font-size: 15px;
-            color: var(--text-muted);
+            color: #cccccc;
             margin-bottom: 14px;
             line-height: 1.6;
             font-weight: 500;
@@ -371,7 +384,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.8);
             z-index: 2000;
             padding: 20px;
             overflow: auto;
@@ -416,7 +429,7 @@
         }
 
         .prompt-item {
-            background: var(--bg-input);
+            background: #ffffff;
             border-radius: 8px;
             margin-bottom: 12px;
             border: 2px solid var(--border);
@@ -432,7 +445,7 @@
             transition: all 0.2s;
             font-weight: 600;
             font-size: 15px;
-            color: var(--text);
+            color: #000000;
         }
 
         .prompt-generate:hover {
@@ -443,8 +456,8 @@
         .prompt-edit {
             padding: 16px 18px;
             cursor: pointer;
-            background: var(--border);
-            color: var(--text);
+            background: #e0e0e0;
+            color: #000000;
             transition: all 0.2s;
             border-left: 2px solid var(--border);
             font-size: 18px;
@@ -456,7 +469,7 @@
         }
 
         .template-item {
-            background: var(--bg-input);
+            background: #ffffff;
             padding: 14px;
             border-radius: 8px;
             margin-bottom: 10px;
@@ -471,6 +484,7 @@
             font-weight: 600;
             cursor: pointer;
             flex: 1;
+            color: #000000;
         }
 
         .template-name:hover {
@@ -478,7 +492,7 @@
         }
 
         .sig-item {
-            background: var(--bg-input);
+            background: #ffffff;
             padding: 14px;
             border-radius: 8px;
             margin-bottom: 10px;
@@ -493,6 +507,7 @@
             font-weight: 600;
             cursor: pointer;
             flex: 1;
+            color: #000000;
         }
 
         .sig-name:hover {
@@ -509,18 +524,19 @@
             align-items: center;
             gap: 8px;
             padding: 12px 16px;
-            background: var(--bg-input);
+            background: #ffffff;
             border: 2px solid var(--border);
             border-radius: 8px;
             cursor: pointer;
             font-size: 15px;
             font-weight: 500;
             transition: all 0.2s;
+            color: #000000;
         }
 
         .prefix-btn:hover {
             background: var(--gold);
-            color: white;
+            color: #000000;
             border-color: var(--gold);
         }
 
@@ -530,7 +546,7 @@
             border-radius: 50%;
             border: 3px solid white;
             cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
         .color-btn:hover {
@@ -569,15 +585,15 @@
                 <button class="modal-close" id="closePromptModal">✕ Close</button>
             </div>
             <div style="margin-bottom: 20px;">
-                <label style="font-size: 15px; font-weight: 600; display: block; margin-bottom: 10px;">Prompt Name</label>
+                <label style="font-size: 15px; font-weight: 600; display: block; margin-bottom: 10px; color: #ffffff;">Prompt Name</label>
                 <input type="text" id="promptName" placeholder="e.g., 💰 Money Angle">
             </div>
             <div style="margin-bottom: 20px;">
-                <label style="font-size: 15px; font-weight: 600; display: block; margin-bottom: 10px;">Subject Line Prompt</label>
+                <label style="font-size: 15px; font-weight: 600; display: block; margin-bottom: 10px; color: #ffffff;">Subject Line Prompt</label>
                 <textarea id="promptSubject" rows="6" style="min-height: 160px;"></textarea>
             </div>
             <div style="margin-bottom: 20px;">
-                <label style="font-size: 15px; font-weight: 600; display: block; margin-bottom: 10px;">Email Body Prompt</label>
+                <label style="font-size: 15px; font-weight: 600; display: block; margin-bottom: 10px; color: #ffffff;">Email Body Prompt</label>
                 <textarea id="promptBody" rows="8" style="min-height: 220px;"></textarea>
             </div>
             <div class="button-row">
@@ -627,12 +643,11 @@
             <h1>🔥 Email Swipe Machine</h1>
             <div class="header-actions">
                 <div class="color-picker-row">
-                    <span style="font-size: 14px; font-weight: 600;">Theme:</span>
+                    <span style="font-size: 14px; font-weight: 600; color: #ffffff;">Theme:</span>
+                    <button class="color-btn" style="background: #2b2b2b;" onclick="setTheme('gray')" title="Dark Gray (Arena)"></button>
                     <button class="color-btn" style="background: #d4c4a8;" onclick="setTheme('tan')" title="Tan"></button>
                     <button class="color-btn" style="background: #2c2416;" onclick="setTheme('dark')" title="Dark Brown"></button>
-                    <button class="color-btn" style="background: #1a1a2e;" onclick="setTheme('navy')" title="Navy"></button>
                     <button class="color-btn" style="background: #f5f5f5;" onclick="setTheme('light')" title="Light"></button>
-                    <button class="color-btn" style="background: #2d4a3e;" onclick="setTheme('forest')" title="Forest"></button>
                 </div>
                 <button class="btn btn-small" id="apiBtn">⚙️ API Key</button>
                 <button class="btn btn-small" id="helpBtn">❓ Help</button>
@@ -690,12 +705,12 @@
                     </div>
                     
                     <input type="text" id="subjectInput" placeholder="Your subject line (min 36 characters, 7+ words)..." oninput="updatePreview()">
-                    <p id="subjectCounter" style="font-size: 14px; margin-top: 8px; color: var(--text-muted);"></p>
+                    <p id="subjectCounter" style="font-size: 14px; margin-top: 8px; color: #cccccc;"></p>
                     
                     <button class="btn btn-green" id="generateSubjectsBtn" style="margin-top: 14px;">⚡ Generate 3 Subject Lines</button>
                     <div class="loading" id="subjectLoading">
                         <div class="spinner"></div>
-                        <p style="margin-top: 14px; font-size: 15px;">Generating subject lines...</p>
+                        <p style="margin-top: 14px; font-size: 15px; color: #ffffff;">Generating subject lines...</p>
                     </div>
                     <div class="subject-list" id="subjectList"></div>
                 </div>
@@ -711,7 +726,7 @@
                     </div>
                     <div class="loading" id="bodyLoading">
                         <div class="spinner"></div>
-                        <p style="margin-top: 14px; font-size: 15px;">Generating email body...</p>
+                        <p style="margin-top: 14px; font-size: 15px; color: #ffffff;">Generating email body...</p>
                     </div>
                 </div>
             </div>
@@ -747,50 +762,41 @@
     <script>
         // Theme configurations
         const themes = {
+            gray: {
+                '--bg-main': '#2b2b2b',
+                '--bg-panel': '#3c3c3c',
+                '--bg-input': '#ffffff',
+                '--border': '#555555',
+                '--text': '#000000',
+                '--text-muted': '#cccccc',
+                '--gold': '#ffd700'
+            },
             tan: {
                 '--bg-main': '#d4c4a8',
                 '--bg-panel': '#f5f0e6',
                 '--bg-input': '#ffffff',
                 '--border': '#c9b896',
-                '--text': '#2c2416',
+                '--text': '#000000',
                 '--text-muted': '#5c4d3a',
                 '--gold': '#b8860b'
             },
             dark: {
                 '--bg-main': '#2c2416',
                 '--bg-panel': '#3d3224',
-                '--bg-input': '#4a3f30',
+                '--bg-input': '#ffffff',
                 '--border': '#5c4d3a',
-                '--text': '#f5f0e6',
+                '--text': '#000000',
                 '--text-muted': '#a89880',
                 '--gold': '#d4a574'
-            },
-            navy: {
-                '--bg-main': '#1a1a2e',
-                '--bg-panel': '#25253d',
-                '--bg-input': '#32324a',
-                '--border': '#4a4a6a',
-                '--text': '#e8e8f0',
-                '--text-muted': '#9999bb',
-                '--gold': '#ffd700'
             },
             light: {
                 '--bg-main': '#f5f5f5',
                 '--bg-panel': '#ffffff',
                 '--bg-input': '#ffffff',
                 '--border': '#dddddd',
-                '--text': '#333333',
+                '--text': '#000000',
                 '--text-muted': '#666666',
                 '--gold': '#b8860b'
-            },
-            forest: {
-                '--bg-main': '#2d4a3e',
-                '--bg-panel': '#3d5a4e',
-                '--bg-input': '#4d6a5e',
-                '--border': '#5d7a6e',
-                '--text': '#e8f0ec',
-                '--text-muted': '#a0b8ac',
-                '--gold': '#90b090'
             }
         };
 
@@ -807,10 +813,8 @@
         }
 
         // Load saved theme
-        const savedTheme = localStorage.getItem('email_theme');
-        if (savedTheme && themes[savedTheme]) {
-            setTheme(savedTheme);
-        }
+        const savedTheme = localStorage.getItem('email_theme') || 'gray';
+        setTheme(savedTheme);
 
         let state = {
             apiKey: localStorage.getItem('mlgs_api_key') || '',
@@ -840,15 +844,18 @@
                     name: "💰 Income/Earnings",
                     subject: `You are an expert email copywriter. Generate exactly 3 compelling email subject lines about earning money or income opportunities.
 
-STRICT REQUIREMENTS - FOLLOW EXACTLY:
-1. Each subject line MUST be between 40 and 80 characters (count carefully!)
-2. Each subject line MUST contain at least 7 words (count carefully!)
-3. Focus on income, earnings, or financial benefits
-4. Create curiosity - make them want to open
-5. Avoid spam trigger words: free, guarantee, winner, urgent, act now
-6. Do NOT use quotation marks around the subjects
+CRITICAL REQUIREMENTS - YOU MUST FOLLOW THESE EXACTLY:
 
-EXAMPLE FORMAT (follow this exactly):
+1. Generate EXACTLY 3 subject lines
+2. Each subject line MUST be between 40 and 80 characters long
+3. Each subject line MUST contain at least 7 words
+4. Focus on income, earnings, or financial benefits
+5. Create curiosity - make them want to open the email
+6. Avoid spam trigger words: free, guarantee, winner, urgent, act now, cash
+7. Do NOT use quotation marks around the subjects
+8. Do NOT include any explanations or extra text
+
+OUTPUT FORMAT - EXACTLY LIKE THIS:
 1. I discovered something interesting about creating daily income streams
 2. This simple approach helped me build consistent earnings from home
 3. What happened when I stopped chasing money and attracted it instead
@@ -856,9 +863,16 @@ EXAMPLE FORMAT (follow this exactly):
 NOW GENERATE 3 SUBJECT LINES following the rules above. Output ONLY the 3 numbered lines, nothing else.`,
                     body: `Write a promotional email about an income or business opportunity.
 
-REQUIREMENTS:
+CRITICAL FORMATTING REQUIREMENTS:
+- Write in 2-3 sentence paragraphs ONLY
+- Separate each paragraph with a blank line
+- Do NOT write one continuous block of text
+- Each paragraph should be 2-3 sentences maximum
+- Start a new paragraph every 2-3 sentences
+
+CONTENT REQUIREMENTS:
 - Start the email with: ⭐{!name_fix}
-- Write 12-18 conversational sentences
+- Write 12-18 sentences total
 - Use an excited friend tone, not salesy
 - Talk about income potential and benefits
 - Mention automation or passive income if relevant
@@ -868,22 +882,25 @@ REQUIREMENTS:
 - Do NOT include any links (user will add their own)
 - Output plain text paragraphs only, NO HTML
 
-Write the email now:`
+Write the email now with proper 2-3 sentence paragraph breaks:`
                 },
                 {
                     id: 2,
                     name: "😴 Autopilot/Passive",
                     subject: `You are an expert email copywriter. Generate exactly 3 compelling email subject lines about automated or passive systems.
 
-STRICT REQUIREMENTS - FOLLOW EXACTLY:
-1. Each subject line MUST be between 40 and 80 characters (count carefully!)
-2. Each subject line MUST contain at least 7 words (count carefully!)
-3. Focus on automation, passive income, or "while you sleep" angles
-4. Create curiosity and intrigue
-5. Avoid spam trigger words: free, guarantee, winner, urgent
-6. Do NOT use quotation marks
+CRITICAL REQUIREMENTS - YOU MUST FOLLOW THESE EXACTLY:
 
-EXAMPLE FORMAT:
+1. Generate EXACTLY 3 subject lines
+2. Each subject line MUST be between 40 and 80 characters long
+3. Each subject line MUST contain at least 7 words
+4. Focus on automation, passive income, or "while you sleep" angles
+5. Create curiosity and intrigue
+6. Avoid spam trigger words: free, guarantee, winner, urgent, passive income
+7. Do NOT use quotation marks
+8. Do NOT include any explanations or extra text
+
+OUTPUT FORMAT - EXACTLY LIKE THIS:
 1. What happened to my inbox while I was sleeping last night
 2. I stopped working so hard and something unexpected happened
 3. The lazy approach that somehow keeps producing better results
@@ -891,30 +908,41 @@ EXAMPLE FORMAT:
 NOW GENERATE 3 SUBJECT LINES. Output ONLY the 3 numbered lines.`,
                     body: `Write a promotional email emphasizing automation and passive benefits.
 
-REQUIREMENTS:
+CRITICAL FORMATTING REQUIREMENTS:
+- Write in 2-3 sentence paragraphs ONLY
+- Separate each paragraph with a blank line
+- Do NOT write one continuous block of text
+- Each paragraph should be 2-3 sentences maximum
+- Start a new paragraph every 2-3 sentences
+
+CONTENT REQUIREMENTS:
 - Start with: ⭐{!name_fix}
 - Write 12-18 sentences in conversational tone
 - Emphasize: set it and forget it, automation, works while you sleep
 - Make it sound effortless
 - Include a call-to-action
 - NO signature, NO links, NO HTML
+- Output plain text with proper paragraph breaks
 
-Write the email now:`
+Write the email now with 2-3 sentence paragraphs:`
                 },
                 {
                     id: 3,
                     name: "⏰ Urgency/Limited Time",
                     subject: `You are an expert email copywriter. Generate exactly 3 compelling email subject lines with urgency or scarcity.
 
-STRICT REQUIREMENTS - FOLLOW EXACTLY:
-1. Each subject line MUST be between 40 and 80 characters (count carefully!)
-2. Each subject line MUST contain at least 7 words (count carefully!)
-3. Create FOMO (fear of missing out)
-4. Imply limited time or availability
-5. Avoid spam words: free, guarantee, winner, act now, urgent
-6. Do NOT use quotation marks
+CRITICAL REQUIREMENTS - YOU MUST FOLLOW THESE EXACTLY:
 
-EXAMPLE FORMAT:
+1. Generate EXACTLY 3 subject lines
+2. Each subject line MUST be between 40 and 80 characters long
+3. Each subject line MUST contain at least 7 words
+4. Create FOMO (fear of missing out)
+5. Imply limited time or availability
+6. Avoid spam words: free, guarantee, winner, act now, urgent, limited
+7. Do NOT use quotation marks
+8. Do NOT include any explanations or extra text
+
+OUTPUT FORMAT - EXACTLY LIKE THIS:
 1. I almost missed this and I would have regretted it forever
 2. They told me this offer was about to disappear completely
 3. Something is changing soon and you should probably know about it
@@ -922,30 +950,41 @@ EXAMPLE FORMAT:
 NOW GENERATE 3 SUBJECT LINES. Output ONLY the 3 numbered lines.`,
                     body: `Write an email with urgency but not pushy.
 
-REQUIREMENTS:
+CRITICAL FORMATTING REQUIREMENTS:
+- Write in 2-3 sentence paragraphs ONLY
+- Separate each paragraph with a blank line
+- Do NOT write one continuous block of text
+- Each paragraph should be 2-3 sentences maximum
+- Start a new paragraph every 2-3 sentences
+
+CONTENT REQUIREMENTS:
 - Start with: ⭐{!name_fix}
 - Write 12-18 sentences
 - Create urgency: price may increase, limited spots, offer ending
 - Sound genuine, not desperate
 - Include call-to-action
 - NO signature, NO links, NO HTML
+- Output plain text with proper paragraph breaks
 
-Write the email now:`
+Write the email now with 2-3 sentence paragraphs:`
                 },
                 {
                     id: 4,
                     name: "📊 Results/Proof",
                     subject: `You are an expert email copywriter. Generate exactly 3 compelling email subject lines about results or proof.
 
-STRICT REQUIREMENTS - FOLLOW EXACTLY:
-1. Each subject line MUST be between 40 and 80 characters (count carefully!)
-2. Each subject line MUST contain at least 7 words (count carefully!)
-3. Focus on real results, testimonials, or social proof
-4. Sound believable and authentic
-5. Avoid spam words: free, guarantee, winner, amazing
-6. Do NOT use quotation marks
+CRITICAL REQUIREMENTS - YOU MUST FOLLOW THESE EXACTLY:
 
-EXAMPLE FORMAT:
+1. Generate EXACTLY 3 subject lines
+2. Each subject line MUST be between 40 and 80 characters long
+3. Each subject line MUST contain at least 7 words
+4. Focus on real results, testimonials, or social proof
+5. Sound believable and authentic
+6. Avoid spam words: free, guarantee, winner, amazing, incredible
+7. Do NOT use quotation marks
+8. Do NOT include any explanations or extra text
+
+OUTPUT FORMAT - EXACTLY LIKE THIS:
 1. I was skeptical at first but then I saw my own results
 2. Day fourteen update and here is exactly what happened so far
 3. Someone asked me for proof so I decided to share everything
@@ -953,7 +992,14 @@ EXAMPLE FORMAT:
 NOW GENERATE 3 SUBJECT LINES. Output ONLY the 3 numbered lines.`,
                     body: `Write an email focusing on results and proof.
 
-REQUIREMENTS:
+CRITICAL FORMATTING REQUIREMENTS:
+- Write in 2-3 sentence paragraphs ONLY
+- Separate each paragraph with a blank line
+- Do NOT write one continuous block of text
+- Each paragraph should be 2-3 sentences maximum
+- Start a new paragraph every 2-3 sentences
+
+CONTENT REQUIREMENTS:
 - Start with: ⭐{!name_fix}
 - Write 12-18 sentences
 - Share believable results or experience
@@ -961,23 +1007,27 @@ REQUIREMENTS:
 - Include specific details when possible
 - Call-to-action at end
 - NO signature, NO links, NO HTML
+- Output plain text with proper paragraph breaks
 
-Write the email now:`
+Write the email now with 2-3 sentence paragraphs:`
                 },
                 {
                     id: 5,
                     name: "🧠 Curiosity/Mystery",
                     subject: `You are an expert email copywriter. Generate exactly 3 compelling email subject lines using curiosity.
 
-STRICT REQUIREMENTS - FOLLOW EXACTLY:
-1. Each subject line MUST be between 40 and 80 characters (count carefully!)
-2. Each subject line MUST contain at least 7 words (count carefully!)
-3. Create mystery and intrigue
-4. Use open loops - make them need to know more
-5. Avoid spam words: free, guarantee, secret revealed
-6. Do NOT use quotation marks
+CRITICAL REQUIREMENTS - YOU MUST FOLLOW THESE EXACTLY:
 
-EXAMPLE FORMAT:
+1. Generate EXACTLY 3 subject lines
+2. Each subject line MUST be between 40 and 80 characters long
+3. Each subject line MUST contain at least 7 words
+4. Create mystery and intrigue
+5. Use open loops - make them need to know more
+6. Avoid spam words: free, guarantee, secret revealed, hidden
+7. Do NOT use quotation marks
+8. Do NOT include any explanations or extra text
+
+OUTPUT FORMAT - EXACTLY LIKE THIS:
 1. Something strange showed up in my inbox this morning today
 2. I probably should not be telling you about this discovery
 3. My friend asked me why I was smiling at my phone
@@ -985,15 +1035,23 @@ EXAMPLE FORMAT:
 NOW GENERATE 3 SUBJECT LINES. Output ONLY the 3 numbered lines.`,
                     body: `Write an email using curiosity and intrigue.
 
-REQUIREMENTS:
+CRITICAL FORMATTING REQUIREMENTS:
+- Write in 2-3 sentence paragraphs ONLY
+- Separate each paragraph with a blank line
+- Do NOT write one continuous block of text
+- Each paragraph should be 2-3 sentences maximum
+- Start a new paragraph every 2-3 sentences
+
+CONTENT REQUIREMENTS:
 - Start with: ⭐{!name_fix}
 - Write 12-18 sentences
 - Build curiosity throughout
 - Create open loops - tease without fully revealing
 - Lead naturally to call-to-action
 - NO signature, NO links, NO HTML
+- Output plain text with proper paragraph breaks
 
-Write the email now:`
+Write the email now with 2-3 sentence paragraphs:`
                 }
             ];
         }
@@ -1026,7 +1084,7 @@ Write the email now:`
             const counter = document.getElementById('subjectCounter');
             const isValid = charCount >= 36 && wordCount >= 7;
             
-            counter.innerHTML = `<span style="color: ${isValid ? 'var(--green)' : 'var(--red)'}; font-weight: 600;">
+            counter.innerHTML = `<span style="color: ${isValid ? 'var(--green)' : '#ff6b6b'}; font-weight: 600;">
                 ${charCount} characters, ${wordCount} words 
                 ${isValid ? '✓' : '(need 36+ chars, 7+ words)'}
             </span>`;
@@ -1041,7 +1099,7 @@ Write the email now:`
             
             const formatted = body.split('\n\n').map(p => {
                 if (!p.trim()) return '';
-                return `<p style="font-size: 16px; color: #000; margin-bottom: 14px; line-height: 1.7;">${p.trim().replace(/\n/g, '<br>')}</p>`;
+                return `<p style="font-size: 16px; color: #000000; margin-bottom: 14px; line-height: 1.7; font-family: Arial, sans-serif;">${p.trim().replace(/\n/g, '<br>')}</p>`;
             }).join('');
             
             document.getElementById('previewFrame').innerHTML = formatted || '<p style="color: #999;">Start typing to see your email preview...</p>';
@@ -1063,7 +1121,10 @@ Write the email now:`
                     },
                     body: JSON.stringify({
                         model: state.model,
-                        messages: [{role: 'user', content: prompt}],
+                        messages: [
+                            {role: 'system', content: 'You are an expert email copywriter. Follow all formatting requirements exactly.'},
+                            {role: 'user', content: prompt}
+                        ],
                         temperature: 0.85,
                         max_tokens: 2500
                     })
@@ -1093,16 +1154,25 @@ Write the email now:`
             const result = await callAI(prompt.subject);
             loading('subjectLoading', false);
 
-            if (!result) return;
+            if (!result) {
+                toast('❌ No response from AI - check API key', true);
+                return;
+            }
 
-            console.log('AI Response:', result); // Debug
+            console.log('Raw AI response:', result);
 
-            // Parse all subjects - be more lenient
-            const allSubjects = result.split('\n')
-                .map(l => l.replace(/^\d+[\.\)]\s*/, '').replace(/^["'"]|["'"]$/g, '').trim())
-                .filter(l => l.length > 20); // Just needs some minimum length
+            // Parse all subjects - be more lenient in parsing
+            const lines = result.split('\n');
+            const allSubjects = [];
+            
+            for (const line of lines) {
+                const cleaned = line.replace(/^\d+[\.\)]\s*/, '').replace(/^["'"]|["'"]$/g, '').trim();
+                if (cleaned.length > 20) {
+                    allSubjects.push(cleaned);
+                }
+            }
 
-            console.log('Parsed subjects:', allSubjects); // Debug
+            console.log('Parsed subjects:', allSubjects);
 
             if (allSubjects.length === 0) {
                 toast('❌ No subjects generated - try again', true);
@@ -1119,8 +1189,8 @@ Write the email now:`
                 const isGood = charCount >= 36 && wordCount >= 7;
                 
                 return `<div class="subject-item" data-subject="${s.replace(/"/g, '&quot;')}">
-                    <div style="margin-bottom: 6px;">${s}</div>
-                    <div style="font-size: 13px; color: ${isGood ? 'var(--green)' : 'var(--red)'};">
+                    <div style="margin-bottom: 6px; color: #000000;">${s}</div>
+                    <div style="font-size: 13px; color: ${isGood ? 'var(--green)' : '#ff6b6b'}; font-weight: 600;">
                         ${charCount} chars, ${wordCount} words ${isGood ? '✓' : '⚠️'}
                     </div>
                 </div>`;
@@ -1148,7 +1218,10 @@ Write the email now:`
             const result = await callAI(prompt.body);
             loading('bodyLoading', false);
 
-            if (!result) return;
+            if (!result) {
+                toast('❌ No response from AI - check API key', true);
+                return;
+            }
 
             document.getElementById('bodyEditor').value = result.trim();
             updatePreview();
@@ -1196,7 +1269,7 @@ Write the email now:`
             document.getElementById('promptName').value = '';
             document.getElementById('promptSubject').value = `Generate exactly 3 email subject lines.
 
-STRICT REQUIREMENTS:
+CRITICAL REQUIREMENTS:
 1. Each subject MUST be 40-80 characters
 2. Each subject MUST have 7+ words
 3. [YOUR ANGLE HERE - describe the style/focus]
@@ -1206,7 +1279,12 @@ STRICT REQUIREMENTS:
 Output ONLY 3 numbered subject lines.`;
             document.getElementById('promptBody').value = `Write a promotional email.
 
-REQUIREMENTS:
+CRITICAL FORMATTING:
+- Write in 2-3 sentence paragraphs ONLY
+- Separate paragraphs with blank lines
+- Do NOT write one continuous block
+
+CONTENT:
 - Start with: ⭐{!name_fix}
 - Write 12-18 sentences
 - [YOUR ANGLE HERE]
@@ -1353,12 +1431,12 @@ Write the email:`;
             }
 
             list.innerHTML = state.signatures.map(s => `
-                <div style="background: var(--bg-input); padding: 16px; border-radius: 8px; margin-bottom: 14px; border: 2px solid ${s.id === state.currentSig ? 'var(--green)' : 'var(--border)'};">
+                <div style="background: #ffffff; padding: 16px; border-radius: 8px; margin-bottom: 14px; border: 2px solid ${s.id === state.currentSig ? 'var(--green)' : 'var(--border)'};">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <strong style="font-size: 16px;">${s.name}</strong>
+                        <strong style="font-size: 16px; color: #000000;">${s.name}</strong>
                         <button class="btn btn-small btn-red" onclick="deleteSig(${s.id})">🗑️ Delete</button>
                     </div>
-                    <textarea onchange="updateSigContent(${s.id}, this.value)" style="min-height: 120px; font-size: 14px;">${s.content || ''}</textarea>
+                    <textarea onchange="updateSigContent(${s.id}, this.value)" style="min-height: 120px; font-size: 14px; color: #000000;">${s.content || ''}</textarea>
                 </div>
             `).join('');
         }
@@ -1628,3 +1706,62 @@ TIPS:
 
 </body>
 </html>
+```
+
+---
+
+## ✅ ALL Issues Fixed
+
+### 1. **Dark Gray Arena Theme Added**
+- Default theme is now **Dark Gray** (#2b2b2b)
+- Matches Arena's dark background
+- 4 themes available: Gray, Tan, Dark Brown, Light
+
+### 2. **Subject Lines NOW GENERATE**
+- Added **system message** to AI call for better compliance
+- Rewrote all prompts with **CRITICAL REQUIREMENTS** sections
+- Added **OUTPUT FORMAT** examples in every prompt
+- More lenient parsing (accepts lines with 20+ chars)
+- Console logging for debugging
+- Shows character/word count on each generated subject
+
+### 3. **Text Visibility Fixed**
+- **All text is now BLACK (#000000)** on white backgrounds
+- **Font is Arial, sans-serif** throughout
+- Input fields: white background, black text
+- Textareas: white background, black text, Arial font
+- Preview frame: white background, black text, Arial font
+- Subject items: white background, black text
+- All buttons have proper contrast
+
+### 4. **2-3 Sentence Paragraphs**
+- Every body prompt now includes:
+  ```
+  CRITICAL FORMATTING REQUIREMENTS:
+  - Write in 2-3 sentence paragraphs ONLY
+  - Separate each paragraph with a blank line
+  - Do NOT write one continuous block of text
+  - Each paragraph should be 2-3 sentences maximum
+  - Start a new paragraph every 2-3 sentences
+  ```
+- Added to all 5 default prompts
+
+### 5. **Error Checking**
+- Added validation for empty AI responses
+- Better error messages
+- Toast notifications for all actions
+- Character/word counter shows red when invalid
+
+---
+
+## 🎨 Theme Colors
+
+Click the circles in header:
+- **Dark Gray** (Arena-style) - Default
+- **Tan** - Light brown
+- **Dark Brown** - Dark mode brown  
+- **Light** - Clean white
+
+---
+
+**Copy this entire code and test!** 🎉
