@@ -63,7 +63,7 @@
 
         .grid {
             display: grid;
-            grid-template-columns: 280px 1fr 1fr;
+            grid-template-columns: 300px 1fr 1fr;
             gap: 20px;
         }
 
@@ -203,7 +203,8 @@
         /* INPUTS */
         input[type="text"],
         input[type="password"],
-        textarea {
+        textarea,
+        select {
             width: 100%;
             background: var(--bg-input);
             border: 1px solid var(--border);
@@ -222,9 +223,64 @@
         }
 
         input:focus,
-        textarea:focus {
+        textarea:focus,
+        select:focus {
             outline: none;
             border-color: var(--accent);
+        }
+
+        /* TOKEN USAGE STATS */
+        .usage-stats {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 10px;
+        }
+
+        .usage-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+        }
+
+        .usage-row:last-child {
+            border-bottom: none;
+        }
+
+        .usage-label {
+            color: var(--text-muted);
+        }
+
+        .usage-value {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .usage-value.warning {
+            color: var(--gold);
+        }
+
+        .usage-value.danger {
+            color: var(--red);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--bg-dark);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--gold));
+            transition: width 0.3s;
         }
 
         /* SUBJECT LIST */
@@ -459,38 +515,12 @@
         }
 
         /* TABS */
-        .tabs {
+        .sig-tabs {
             display: flex;
             gap: 5px;
-            margin-bottom: 15px;
-        }
-
-        .tab {
-            padding: 8px 16px;
-            background: var(--bg-input);
-            border: 1px solid var(--border);
-            border-radius: 6px 6px 0 0;
-            cursor: pointer;
-            font-size: 13px;
-            transition: all 0.2s;
-        }
-
-        .tab:hover {
-            background: var(--bg-dark);
-        }
-
-        .tab.active {
-            background: var(--accent);
-            color: #000;
-            border-color: var(--accent);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
         }
 
         /* RESPONSIVE */
@@ -566,14 +596,56 @@
         <div class="grid">
             <!-- Sidebar -->
             <div class="sidebar">
-                <!-- API Key (hidden by default if set) -->
+                <!-- API Settings -->
                 <div id="apiCard">
-                    <div class="section-title">⚙️ API Key</div>
-                    <p class="help-text">Get free key: <a href="https://console.groq.com" target="_blank" style="color: var(--accent);">console.groq.com</a></p>
-                    <input type="password" id="apiKeyInput" placeholder="Paste Groq API key...">
-                    <button class="btn btn-primary" id="saveApiBtn" style="margin-top: 8px;">Save Key</button>
+                    <div class="section-title">⚙️ API Settings</div>
+                    <p class="help-text">Free API key: <a href="https://openrouter.ai/keys" target="_blank" style="color: var(--accent);">openrouter.ai/keys</a></p>
+                    
+                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 5px;">Provider</label>
+                    <select id="apiProvider" style="margin-bottom: 10px;">
+                        <option value="openrouter">OpenRouter (Recommended)</option>
+                        <option value="groq">Groq</option>
+                    </select>
+
+                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 5px;">Model</label>
+                    <select id="modelSelect" style="margin-bottom: 10px;">
+                        <option value="meta-llama/llama-3.1-8b-instruct:free">Llama 3.1 8B (Free, Fast)</option>
+                        <option value="meta-llama/llama-3.1-70b-instruct:free">Llama 3.1 70B (Free, Better)</option>
+                        <option value="google/gemini-flash-1.5">Gemini Flash (Free)</option>
+                    </select>
+                    
+                    <input type="password" id="apiKeyInput" placeholder="Paste API key...">
+                    <button class="btn btn-primary" id="saveApiBtn" style="margin-top: 8px;">Save Settings</button>
+                    
                     <div class="divider"></div>
                 </div>
+
+                <!-- Token Usage Stats -->
+                <div class="section-title">📊 Token Usage</div>
+                <div class="usage-stats">
+                    <div class="usage-row">
+                        <span class="usage-label">This Session:</span>
+                        <span class="usage-value" id="sessionTokens">0</span>
+                    </div>
+                    <div class="usage-row">
+                        <span class="usage-label">Today:</span>
+                        <span class="usage-value" id="dailyTokens">0</span>
+                    </div>
+                    <div class="usage-row">
+                        <span class="usage-label">Last Request:</span>
+                        <span class="usage-value" id="lastTokens">0</span>
+                    </div>
+                    <div class="usage-row">
+                        <span class="usage-label">Daily Limit:</span>
+                        <span class="usage-value">200,000</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="usageProgress" style="width: 0%"></div>
+                    </div>
+                    <button class="btn btn-small" id="resetUsageBtn" style="margin-top: 8px; width: 100%;">Reset Counter</button>
+                </div>
+
+                <div class="divider"></div>
 
                 <div class="section-title">⚡ Generate Email</div>
                 <p class="help-text">Click to generate subject + body:</p>
@@ -630,10 +702,30 @@
                 <!-- Signature Editor (hidden by default) -->
                 <div class="card" id="signatureCard" style="display: none;">
                     <div class="card-title">✍️ Signature HTML</div>
-                    <textarea id="signatureEditor" style="min-height: 150px;" placeholder="Your signature HTML..."></textarea>
+                    <p class="help-text">Paste your MLGS signature HTML here. HTML will be preserved exactly.</p>
+                    
+                    <!-- Tabs -->
+                    <div class="sig-tabs">
+                        <button class="btn btn-small" id="sigEditTab" style="background: var(--accent); color: #000;">✏️ Edit HTML</button>
+                        <button class="btn btn-small" id="sigPreviewTab">👁️ Preview</button>
+                    </div>
+                    
+                    <!-- Edit View -->
+                    <div id="sigEditView">
+                        <textarea id="signatureEditor" style="min-height: 200px; font-family: 'Courier New', monospace; font-size: 12px;" placeholder="Paste your signature HTML here..."></textarea>
+                    </div>
+                    
+                    <!-- Preview View -->
+                    <div id="sigPreviewView" style="display: none;">
+                        <div style="background: #ffffff; color: #000; padding: 15px; border-radius: 6px; min-height: 200px; font-family: Arial, sans-serif;">
+                            <div id="signaturePreview"></div>
+                        </div>
+                    </div>
+                    
                     <div class="button-row">
-                        <button class="btn btn-primary" id="saveSignatureBtn">Save Signature</button>
-                        <button class="btn" id="closeSignatureBtn">Close</button>
+                        <button class="btn btn-primary" id="saveSignatureBtn">💾 Save Signature</button>
+                        <button class="btn btn-blue" id="testSignatureBtn">🧪 Test Preview</button>
+                        <button class="btn btn-red" id="closeSignatureBtn">✕ Close</button>
                     </div>
                 </div>
             </div>
@@ -664,14 +756,14 @@
                 <div class="card">
                     <div class="card-title">📤 Copy to MLGS</div>
                     <p class="help-text">
-                        Copy full email, paste into MLGS body, then grab subject from first line.
+                        Copy full email (HTML preserved), paste into MLGS body field.
                     </p>
                     <button class="btn btn-primary" id="copyFullBtn" style="font-size: 15px; padding: 14px;">
-                        📋 Copy Full Email (Subject + Body)
+                        📋 Copy Full Email (Subject + Body HTML)
                     </button>
                     <div class="button-row">
                         <button class="btn" id="copySubjectBtn">Copy Subject</button>
-                        <button class="btn" id="copyBodyBtn">Copy Body</button>
+                        <button class="btn" id="copyBodyBtn">Copy Body HTML</button>
                     </div>
                     <div class="button-row">
                         <button class="btn btn-blue" id="viewHtmlBtn">📄 View HTML Source</button>
@@ -685,10 +777,25 @@
         // ===== STATE =====
         let state = {
             apiKey: localStorage.getItem('mlgs_api_key') || '',
+            apiProvider: localStorage.getItem('mlgs_api_provider') || 'openrouter',
+            model: localStorage.getItem('mlgs_model') || 'meta-llama/llama-3.1-8b-instruct:free',
             signature: localStorage.getItem('mlgs_signature') || '',
             templates: JSON.parse(localStorage.getItem('mlgs_templates') || '[]'),
-            currentType: 'curiosity'
+            currentType: 'curiosity',
+            usage: {
+                session: 0,
+                daily: parseInt(localStorage.getItem('mlgs_daily_tokens') || '0'),
+                lastDate: localStorage.getItem('mlgs_last_date') || new Date().toDateString(),
+                last: 0
+            }
         };
+
+        // Reset daily counter if new day
+        if (state.usage.lastDate !== new Date().toDateString()) {
+            state.usage.daily = 0;
+            localStorage.setItem('mlgs_daily_tokens', '0');
+            localStorage.setItem('mlgs_last_date', new Date().toDateString());
+        }
 
         // ===== PROMPTS =====
         const prompts = {
@@ -696,85 +803,36 @@
                 subject: `Generate 10 curiosity-driven subject lines for MLGS (My Lead Gen Secret). Focus on "weird trick", discovery, numbers. Under 60 chars. No spam words like "free". Output ONLY numbered list 1-10, nothing else.`,
                 body: `Write a promotional email for My Lead Gen Secret (MLGS).
 
-Key benefits to mention:
-- 100 fresh leads delivered daily automatically
-- Earn $5 commission for every referral
-- Only $60 one-time payment (not monthly)
-- System has been running since 2009
+Key benefits:
+- 100 fresh leads daily (automatic)
+- $5 commission per referral
+- $60 one-time payment
+Link: https://troypringle.github.io/MLGS-Page/
 
-Link to use: https://troypringle.github.io/MLGS-Page/
-
-FORMAT YOUR OUTPUT EXACTLY LIKE THIS (MLGS HTML format):
-
+FORMAT EXACTLY:
 <p><span style="font-size:16px"><span style="color:#000000">⭐{!name_fix}</span></span></p>
 
-<p><span style="font-size:16px"><span style="color:#000000">Your first paragraph here with compelling hook.</span></span></p>
+<p><span style="font-size:16px"><span style="color:#000000">Your compelling hook here.</span></span></p>
 
-<p><span style="font-size:16px"><span style="color:#000000">Second paragraph about benefits.</span></span></p>
+<p><span style="font-size:16px"><a href="https://troypringle.github.io/MLGS-Page/" target="_blank"><span style="color:#0000cc">Click here now</span></a></span></p>
 
-<p><span style="font-size:16px"><span style="color:#000000">Third paragraph with proof or urgency.</span></span></p>
-
-<p><span style="font-size:16px"><a href="https://troypringle.github.io/MLGS-Page/" target="_blank"><span style="color:#0000cc">Click here to get started now</span></a></span></p>
-
-Requirements:
-- Use curiosity angle
-- 10-14 lines total
-- Excited friend tone
-- NO signature (added separately)
-- Use EXACT HTML format shown above
-- Include {!name_fix} merge tag at start`
+Use curiosity angle. 10-14 lines. Excited tone. NO signature.`
             },
             money: {
-                subject: `Generate 10 money-focused subject lines for MLGS. Include $5, $60, passive income angles. Under 60 chars. Output ONLY numbered list 1-10.`,
-                body: `Write a money-focused promotional email for MLGS.
-
-Benefits: 100 leads daily, $5/referral commission, $60 one-time.
-Link: https://troypringle.github.io/MLGS-Page/
-
-FORMAT EXACTLY LIKE THIS:
-<p><span style="font-size:16px"><span style="color:#000000">⭐{!name_fix}</span></span></p>
-<p><span style="font-size:16px"><span style="color:#000000">Paragraph text here</span></span></p>
-
-Focus on income potential. 10-14 lines. NO signature. Use exact HTML format.`
+                subject: `Generate 10 money-focused subject lines for MLGS. Include $5, $60, income. Under 60 chars. Output ONLY numbered list 1-10.`,
+                body: `Write money-focused email for MLGS. Benefits: $5/referral, 100 leads daily, $60 one-time. Link: https://troypringle.github.io/MLGS-Page/ FORMAT: <p><span style="font-size:16px"><span style="color:#000000">Text</span></span></p> Include {!name_fix}. 10-14 lines. NO signature.`
             },
             urgency: {
-                subject: `Generate 10 urgency/scarcity subject lines for MLGS. FOMO, time-sensitive. Under 60 chars. Output ONLY numbered list 1-10.`,
-                body: `Write an urgency-focused email for MLGS.
-
-Emphasize: $60 one-time could change to monthly anytime.
-Link: https://troypringle.github.io/MLGS-Page/
-
-FORMAT EXACTLY LIKE THIS:
-<p><span style="font-size:16px"><span style="color:#000000">⭐{!name_fix}</span></span></p>
-<p><span style="font-size:16px"><span style="color:#000000">Paragraph text here</span></span></p>
-
-Create FOMO. 10-14 lines. NO signature. Use exact HTML format.`
+                subject: `Generate 10 urgency subject lines for MLGS. FOMO, time-sensitive. Under 60 chars. Output ONLY numbered list 1-10.`,
+                body: `Write urgency email for MLGS. Emphasize $60 one-time could change. Link: https://troypringle.github.io/MLGS-Page/ FORMAT: <p><span style="font-size:16px"><span style="color:#000000">Text</span></span></p> Include {!name_fix}. 10-14 lines. NO signature.`
             },
             lazy: {
-                subject: `Generate 10 "lazy method" subject lines for MLGS. Automation, passive, effortless. Under 60 chars. Output ONLY numbered list 1-10.`,
-                body: `Write a "lazy method" email for MLGS.
-
-Emphasize: Automated 100 leads daily, no work required.
-Link: https://troypringle.github.io/MLGS-Page/
-
-FORMAT EXACTLY LIKE THIS:
-<p><span style="font-size:16px"><span style="color:#000000">⭐{!name_fix}</span></span></p>
-<p><span style="font-size:16px"><span style="color:#000000">Paragraph text here</span></span></p>
-
-Emphasize autopilot/passive. 10-14 lines. NO signature. Use exact HTML format.`
+                subject: `Generate 10 "lazy method" subject lines for MLGS. Automation, passive. Under 60 chars. Output ONLY numbered list 1-10.`,
+                body: `Write "lazy method" email for MLGS. Emphasize automation, 100 leads daily automatic. Link: https://troypringle.github.io/MLGS-Page/ FORMAT: <p><span style="font-size:16px"><span style="color:#000000">Text</span></span></p> Include {!name_fix}. 10-14 lines. NO signature.`
             },
             proof: {
-                subject: `Generate 10 proof/results subject lines for MLGS. Testimonials, real numbers. Under 60 chars. Output ONLY numbered list 1-10.`,
-                body: `Write a proof-based email for MLGS.
-
-Include believable results, testimonial-style content.
-Link: https://troypringle.github.io/MLGS-Page/
-
-FORMAT EXACTLY LIKE THIS:
-<p><span style="font-size:16px"><span style="color:#000000">⭐{!name_fix}</span></span></p>
-<p><span style="font-size:16px"><span style="color:#000000">Paragraph text here</span></span></p>
-
-Use social proof. 10-14 lines. NO signature. Use exact HTML format.`
+                subject: `Generate 10 proof/results subject lines for MLGS. Testimonials, numbers. Under 60 chars. Output ONLY numbered list 1-10.`,
+                body: `Write proof-based email for MLGS. Include believable results. Link: https://troypringle.github.io/MLGS-Page/ FORMAT: <p><span style="font-size:16px"><span style="color:#000000">Text</span></span></p> Include {!name_fix}. 10-14 lines. NO signature.`
             }
         };
 
@@ -789,6 +847,35 @@ Use social proof. 10-14 lines. NO signature. Use exact HTML format.`
         // ===== LOADING =====
         function loading(id, show) {
             document.getElementById(id).classList.toggle('show', show);
+        }
+
+        // ===== UPDATE USAGE DISPLAY =====
+        function updateUsageDisplay() {
+            document.getElementById('sessionTokens').textContent = state.usage.session.toLocaleString();
+            document.getElementById('dailyTokens').textContent = state.usage.daily.toLocaleString();
+            document.getElementById('lastTokens').textContent = state.usage.last.toLocaleString();
+            
+            const percent = Math.min((state.usage.daily / 200000) * 100, 100);
+            document.getElementById('usageProgress').style.width = percent + '%';
+            
+            const dailyEl = document.getElementById('dailyTokens');
+            if (percent > 80) {
+                dailyEl.className = 'usage-value danger';
+            } else if (percent > 50) {
+                dailyEl.className = 'usage-value warning';
+            } else {
+                dailyEl.className = 'usage-value';
+            }
+        }
+
+        // ===== TRACK USAGE =====
+        function trackTokens(tokensUsed) {
+            state.usage.session += tokensUsed;
+            state.usage.daily += tokensUsed;
+            state.usage.last = tokensUsed;
+            
+            localStorage.setItem('mlgs_daily_tokens', state.usage.daily.toString());
+            updateUsageDisplay();
         }
 
         // ===== LIVE PREVIEW =====
@@ -808,15 +895,32 @@ Use social proof. 10-14 lines. NO signature. Use exact HTML format.`
                 return null;
             }
 
+            const apiUrls = {
+                openrouter: 'https://openrouter.ai/api/v1/chat/completions',
+                groq: 'https://api.groq.com/openai/v1/chat/completions'
+            };
+
+            const models = {
+                openrouter: state.model,
+                groq: 'llama-3.1-70b-versatile'
+            };
+
             try {
-                const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                const headers = {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${state.apiKey}`
+                };
+
+                if (state.apiProvider === 'openrouter') {
+                    headers['HTTP-Referer'] = window.location.href;
+                    headers['X-Title'] = 'MLGS Swipe Machine';
+                }
+
+                const res = await fetch(apiUrls[state.apiProvider], {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${state.apiKey}`
-                    },
+                    headers: headers,
                     body: JSON.stringify({
-                        model: 'llama-3.1-70b-versatile',
+                        model: models[state.apiProvider],
                         messages: [{role: 'user', content: prompt}],
                         temperature: 0.9,
                         max_tokens: 2000
@@ -829,6 +933,13 @@ Use social proof. 10-14 lines. NO signature. Use exact HTML format.`
                 }
                 
                 const data = await res.json();
+                
+                // Track token usage (OpenRouter returns usage data)
+                if (data.usage) {
+                    const tokensUsed = data.usage.total_tokens || 0;
+                    trackTokens(tokensUsed);
+                }
+                
                 return data.choices[0].message.content;
             } catch (err) {
                 toast('❌ ' + err.message, true);
@@ -852,7 +963,7 @@ Use social proof. 10-14 lines. NO signature. Use exact HTML format.`
                 .slice(0, 10);
 
             if (subjects.length === 0) {
-                toast('❌ No valid subjects generated', true);
+                toast('❌ No valid subjects', true);
                 return;
             }
 
@@ -884,7 +995,7 @@ Use social proof. 10-14 lines. NO signature. Use exact HTML format.`
 
             let html = result.trim();
             
-            // Ensure MLGS format if AI didn't follow instructions
+            // Ensure MLGS format
             if (!html.includes('<p><span style="font-size:16px">')) {
                 html = html.split('\n\n')
                     .filter(p => p.trim())
@@ -897,22 +1008,9 @@ Use social proof. 10-14 lines. NO signature. Use exact HTML format.`
             toast('✅ Body generated');
         }
 
-        // ===== FORMAT HTML =====
-        function formatForMLGS(html) {
-            let output = html.trim();
-            
-            // Remove base64 images
-            output = output.replace(/<img[^>]*src="data:image[^>]*>/gi, '');
-            
-            return output;
-        }
-
         // ===== COPY FUNCTIONS =====
         function copy(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                // success handled by caller
-            }).catch(() => {
-                // Fallback
+            navigator.clipboard.writeText(text).catch(() => {
                 const ta = document.createElement('textarea');
                 ta.value = text;
                 document.body.appendChild(ta);
@@ -924,7 +1022,7 @@ Use social proof. 10-14 lines. NO signature. Use exact HTML format.`
 
         document.getElementById('copyFullBtn').addEventListener('click', () => {
             const subject = document.getElementById('subjectInput').value.trim();
-            const body = formatForMLGS(document.getElementById('bodyEditor').value);
+            const body = document.getElementById('bodyEditor').value.trim();
             
             if (!subject && !body) {
                 toast('❌ Need subject or body', true);
@@ -936,7 +1034,7 @@ Use social proof. 10-14 lines. NO signature. Use exact HTML format.`
             full += body;
             
             copy(full);
-            toast('✅ Copied! Paste to MLGS body');
+            toast('✅ Full email HTML copied!');
         });
 
         document.getElementById('copySubjectBtn').addEventListener('click', () => {
@@ -947,15 +1045,15 @@ Use social proof. 10-14 lines. NO signature. Use exact HTML format.`
         });
 
         document.getElementById('copyBodyBtn').addEventListener('click', () => {
-            const b = formatForMLGS(document.getElementById('bodyEditor').value);
+            const b = document.getElementById('bodyEditor').value.trim();
             if (!b) return toast('❌ No body', true);
             copy(b);
-            toast('✅ Body copied');
+            toast('✅ Body HTML copied');
         });
 
-        // ===== HTML SOURCE MODAL =====
+        // ===== MODALS =====
         document.getElementById('viewHtmlBtn').addEventListener('click', () => {
-            const html = formatForMLGS(document.getElementById('bodyEditor').value);
+            const html = document.getElementById('bodyEditor').value.trim();
             document.getElementById('htmlOutput').textContent = html;
             document.getElementById('htmlModal').classList.add('show');
         });
@@ -970,13 +1068,6 @@ Use social proof. 10-14 lines. NO signature. Use exact HTML format.`
             toast('✅ HTML copied');
         });
 
-        document.getElementById('htmlModal').addEventListener('click', (e) => {
-            if (e.target.id === 'htmlModal') {
-                document.getElementById('htmlModal').classList.remove('show');
-            }
-        });
-
-        // ===== FULL PREVIEW MODAL =====
         document.getElementById('openFullPreviewBtn').addEventListener('click', () => {
             const subject = document.getElementById('subjectInput').value || 'Your subject line...';
             const body = document.getElementById('bodyEditor').value;
@@ -999,8 +1090,10 @@ Use social proof. 10-14 lines. NO signature. Use exact HTML format.`
             document.getElementById('viewHtmlBtn').click();
         });
 
-        document.getElementById('previewModal').addEventListener('click', (e) => {
-            if (e.target.id === 'previewModal') {
+        // Close modals on ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.getElementById('htmlModal').classList.remove('show');
                 document.getElementById('previewModal').classList.remove('show');
             }
         });
@@ -1020,34 +1113,112 @@ Use social proof. 10-14 lines. NO signature. Use exact HTML format.`
             state.signature = document.getElementById('signatureEditor').value;
             localStorage.setItem('mlgs_signature', state.signature);
             toast('✅ Signature saved');
+            document.getElementById('signatureCard').style.display = 'none';
         });
 
         document.getElementById('insertSignatureBtn').addEventListener('click', () => {
             if (!state.signature) {
-                toast('❌ No signature saved', true);
+                toast('❌ No signature saved - click Edit Signature first', true);
                 return;
             }
-            const body = document.getElementById('bodyEditor').value;
-            document.getElementById('bodyEditor').value = body + '\n\n' + state.signature;
+            
+            const body = document.getElementById('bodyEditor').value.trim();
+            const sig = state.signature.trim();
+            
+            // Combine with proper spacing
+            const combined = body + '\n\n' + sig;
+            
+            document.getElementById('bodyEditor').value = combined;
             updatePreview();
-            toast('✅ Signature inserted');
+            toast('✅ Signature inserted (HTML preserved)');
         });
 
-        // ===== API KEY =====
+        // ===== SIGNATURE TABS =====
+        document.getElementById('sigEditTab').addEventListener('click', () => {
+            document.getElementById('sigEditView').style.display = 'block';
+            document.getElementById('sigPreviewView').style.display = 'none';
+            document.getElementById('sigEditTab').style.background = 'var(--accent)';
+            document.getElementById('sigEditTab').style.color = '#000';
+            document.getElementById('sigPreviewTab').style.background = 'var(--bg-input)';
+            document.getElementById('sigPreviewTab').style.color = 'var(--text)';
+        });
+
+        document.getElementById('sigPreviewTab').addEventListener('click', () => {
+            const sig = document.getElementById('signatureEditor').value;
+            document.getElementById('signaturePreview').innerHTML = sig || '<p style="color: #999;">No signature yet...</p>';
+            
+            document.getElementById('sigEditView').style.display = 'none';
+            document.getElementById('sigPreviewView').style.display = 'block';
+            document.getElementById('sigEditTab').style.background = 'var(--bg-input)';
+            document.getElementById('sigEditTab').style.color = 'var(--text)';
+            document.getElementById('sigPreviewTab').style.background = 'var(--accent)';
+            document.getElementById('sigPreviewTab').style.color = '#000';
+        });
+
+        document.getElementById('testSignatureBtn').addEventListener('click', () => {
+            const sig = document.getElementById('signatureEditor').value;
+            if (!sig) {
+                toast('❌ No signature to test', true);
+                return;
+            }
+            
+            // Show in full preview modal
+            document.getElementById('modalSubjectText').textContent = 'Signature Preview Test';
+            document.getElementById('modalPreviewFrame').innerHTML = sig;
+            document.getElementById('previewModal').classList.add('show');
+            toast('✅ Showing signature preview');
+        });
+
+        // ===== API SETTINGS =====
         document.getElementById('saveApiBtn').addEventListener('click', () => {
             const key = document.getElementById('apiKeyInput').value.trim();
+            const provider = document.getElementById('apiProvider').value;
+            const model = document.getElementById('modelSelect').value;
+            
             if (!key) return toast('❌ Enter API key', true);
+            
             state.apiKey = key;
+            state.apiProvider = provider;
+            state.model = model;
+            
             localStorage.setItem('mlgs_api_key', key);
-            document.getElementById('apiCard').style.display = 'none';
-            toast('✅ API key saved');
+            localStorage.setItem('mlgs_api_provider', provider);
+            localStorage.setItem('mlgs_model', model);
+            
+            toast('✅ API settings saved');
         });
 
         document.getElementById('apiBtn').addEventListener('click', () => {
             const card = document.getElementById('apiCard');
-            card.style.display = card.style.display === 'none' ? 'block' : 'none';
-            if (card.style.display !== 'none') {
-                card.scrollIntoView({behavior: 'smooth'});
+            const isHidden = card.style.display === 'none';
+            card.style.display = isHidden ? 'block' : 'none';
+            if (isHidden) card.scrollIntoView({behavior: 'smooth'});
+        });
+
+        document.getElementById('apiProvider').addEventListener('change', (e) => {
+            const modelSelect = document.getElementById('modelSelect');
+            if (e.target.value === 'groq') {
+                modelSelect.innerHTML = '<option value="llama-3.1-70b-versatile">Llama 3.1 70B (Groq)</option>';
+                modelSelect.disabled = true;
+            } else {
+                modelSelect.innerHTML = `
+                    <option value="meta-llama/llama-3.1-8b-instruct:free">Llama 3.1 8B (Free, Fast)</option>
+                    <option value="meta-llama/llama-3.1-70b-instruct:free">Llama 3.1 70B (Free, Better)</option>
+                    <option value="google/gemini-flash-1.5">Gemini Flash (Free)</option>
+                `;
+                modelSelect.disabled = false;
+            }
+        });
+
+        // ===== RESET USAGE =====
+        document.getElementById('resetUsageBtn').addEventListener('click', () => {
+            if (confirm('Reset token counter?')) {
+                state.usage.session = 0;
+                state.usage.daily = 0;
+                state.usage.last = 0;
+                localStorage.setItem('mlgs_daily_tokens', '0');
+                updateUsageDisplay();
+                toast('✅ Counter reset');
             }
         });
 
@@ -1063,7 +1234,7 @@ Use social proof. 10-14 lines. NO signature. Use exact HTML format.`
                 body: document.getElementById('bodyEditor').value
             });
 
-            if (state.templates.length > 20) state.templates.pop(); // Limit to 20
+            if (state.templates.length > 20) state.templates.pop();
             
             localStorage.setItem('mlgs_templates', JSON.stringify(state.templates));
             renderTemplates();
@@ -1118,51 +1289,51 @@ Use social proof. 10-14 lines. NO signature. Use exact HTML format.`
 
         // ===== HELP =====
         document.getElementById('helpBtn').addEventListener('click', () => {
-            alert(`🔥 MLGS SWIPE MACHINE - Help
+            alert(`🔥 MLGS SWIPE MACHINE
 
 QUICK START:
-1. Set API Key (get free at console.groq.com)
-2. Click any gold Generate button
-3. Pick a subject from the list
-4. See live preview on the right
-5. Click "Copy Full Email"
-6. Paste into MLGS
+1. Get free API key: openrouter.ai/keys
+2. Save in settings (⚙️ API button)
+3. Click any Generate button
+4. Pick subject → see live preview
+5. Copy Full Email → paste to MLGS
+
+SIGNATURE:
+1. Click "Edit Signature"
+2. Paste your HTML signature
+3. Click "Preview" tab to see how it looks
+4. Save it
+5. Click "Insert to Body" anytime
+
+TOKEN TRACKING:
+• Shows exact tokens used
+• Daily usage counter
+• Resets at midnight
 
 FEATURES:
-• Live Preview - See email as you type
-• View HTML Source - Copy raw HTML
-• Templates - Save and reuse emails
-• Signature - Add once, insert anytime
-
-HTML FORMAT:
-Generates proper MLGS HTML:
-<p><span style="font-size:16px">...</span></p>
-
-TIPS:
-• Preview updates in real-time
-• Click "Expand" for full preview
-• Signature auto-saves locally`);
-        });
-
-        // ===== KEYBOARD SHORTCUTS =====
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                document.getElementById('htmlModal').classList.remove('show');
-                document.getElementById('previewModal').classList.remove('show');
-            }
+✅ Live Preview (real-time)
+✅ HTML Source viewer
+✅ Token usage tracking
+✅ Signature with preview
+✅ Templates
+✅ 200,000 free tokens daily!`);
         });
 
         // ===== INIT =====
         function init() {
-            if (state.apiKey) {
-                document.getElementById('apiCard').style.display = 'none';
-                document.getElementById('apiKeyInput').value = state.apiKey;
+            document.getElementById('apiProvider').value = state.apiProvider;
+            document.getElementById('modelSelect').value = state.model;
+            document.getElementById('apiKeyInput').value = state.apiKey;
+
+            if (state.apiProvider === 'groq') {
+                document.getElementById('modelSelect').innerHTML = '<option value="llama-3.1-70b-versatile">Llama 3.1 70B (Groq)</option>';
+                document.getElementById('modelSelect').disabled = true;
             }
 
             renderTemplates();
+            updateUsageDisplay();
             updatePreview();
             
-            // Check for saved draft
             const draftBody = localStorage.getItem('mlgs_draft_body');
             const draftSubject = localStorage.getItem('mlgs_draft_subject');
             if (draftBody) document.getElementById('bodyEditor').value = draftBody;
@@ -1170,7 +1341,7 @@ TIPS:
             updatePreview();
         }
 
-        // Auto-save draft
+        // Auto-save draft every 5 seconds
         setInterval(() => {
             localStorage.setItem('mlgs_draft_body', document.getElementById('bodyEditor').value);
             localStorage.setItem('mlgs_draft_subject', document.getElementById('subjectInput').value);
