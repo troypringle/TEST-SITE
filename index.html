@@ -436,5 +436,70 @@
     };
 </script>
 
+   // --- DAILY EMAIL BUILDER? ---
+
+    <h2>Daily Email Builder (Save + Reuse Template)</h2>
+<textarea id="emailTemplate" rows="20" style="width:100%; font-family:Arial;">
+Hey [First Name],
+
+Quick question…
+
+What did your mailbox look like this morning? 😏
+
+Mine? Overflowing with fresh commissions again thanks to MLGS.
+
+Check this out:
+[📸 Insert Screenshot Here]
+
+That’s from the last 24 hours… while I was sleeping.
+
+Today’s mailing is already loaded and going out in a few hours.
+
+Want in before it’s gone?
+
+=> https://www.myleadgensecret.com/youridhere
+
+Talk soon,
+Troy Pringle
+[Your Photo]
+P.S. Still on the fence? Watch this: https://youtu.be/xxxxxx
+</textarea>
+
+<br><br>
+<button onclick="saveTemplate()">💾 Save Template</button>
+<button onclick="copyEmail()">📋 Copy Full Email</button>
+<button onclick="loadTemplate()">📂 Load Saved Template</button>
+
+<script>
+// Auto-save every time you type
+document.getElementById('emailTemplate').addEventListener('input', function() {
+  localStorage.setItem('mlgsTemplate', this.value);
+});
+
+// Load on page open
+window.onload = function() {
+  if (localStorage.getItem('mlgsTemplate')) {
+    document.getElementById('emailTemplate').value = localStorage.getItem('mlgsTemplate');
+  }
+};
+
+function saveTemplate() {
+  alert('Template saved forever in your browser!');
+}
+
+function copyEmail() {
+  const textarea = document.getElementById('emailTemplate');
+  textarea.select();
+  document.execCommand('copy');
+  alert('Full email copied – paste straight into MLGS!');
+}
+
+function loadTemplate() {
+  document.getElementById('emailTemplate').value = localStorage.getItem('mlgsTemplate') || '';
+}
+</script>
+
 </body>
 </html>
+
+
