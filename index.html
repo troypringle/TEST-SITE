@@ -434,70 +434,246 @@
         if (lastStr) lastSavedDisplay.innerText = lastStr;
         setInterval(updateMailingTimer, 1000);
     };
-</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLGS Email Builder</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
+        .container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .sticky-section { background: #e3f2fd; padding: 15px; margin-bottom: 20px; border-radius: 5px; border-left: 4px solid #2196f3; }
+        label { display: block; font-weight: bold; margin-top: 15px; color: #333; }
+        textarea, input[type="text"] { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; font-family: monospace; }
+        textarea { min-height: 100px; resize: vertical; }
+        .editor-area { min-height: 200px; background: #fff; border: 2px solid #2196f3; }
+        .btn { background: #2196f3; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-right: 10px; margin-top: 10px; font-weight: bold; }
+        .btn:hover { background: #1976d2; }
+        .btn-secondary { background: #ff9800; }
+        .btn-secondary:hover { background: #f57c00; }
+        .btn-success { background: #4caf50; }
+        .history-item { background: #f5f5f5; padding: 10px; margin: 5px 0; border-radius: 4px; cursor: pointer; border-left: 3px solid #ccc; }
+        .history-item:hover { background: #e0e0e0; border-left-color: #2196f3; }
+        .preview-box { background: #fafafa; border: 1px solid #ddd; padding: 15px; margin-top: 20px; white-space: pre-wrap; font-family: monospace; max-height: 300px; overflow-y: auto; }
+        .flex-row { display: flex; gap: 10px; flex-wrap: wrap; }
+        select { padding: 8px; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📧 MLGS Email Builder</h1>
+        <p>Build once, reuse forever. Your signature and header are saved automatically.</p>
 
-   // --- DAILY EMAIL BUILDER? ---
+        <!-- STICKY ELEMENTS (Never Delete) -->
+        <div class="sticky-section">
+            <h3>🔒 Persistent Blocks (Saved Automatically)</h3>
+            
+            <label>Subject Line:</label>
+            <input type="text" id="subject" placeholder="e.g., [URGENT] Your leads are waiting...">
+            
+            <label>Header (Name, Image URL, Greeting):</label>
+            <textarea id="header" placeholder="Hey [FIRST_NAME]!&#10;&#10;Troy here...&#10;&#10;[IMAGE: https://yourimage.com/proof.jpg]"></textarea>
+            
+            <label>Footer (Signature, PS, Links):</label>
+            <textarea id="footer" placeholder="To your success,&#10;Troy Pringle&#10;&#10;P.S. Click here to grab MLGS now"></textarea>
+        </div>
 
-    <h2>Daily Email Builder (Save + Reuse Template)</h2>
-<textarea id="emailTemplate" rows="20" style="width:100%; font-family:Arial;">
-Hey [First Name],
+        <!-- DYNAMIC CONTENT -->
+        <label>📄 Email Body (This changes daily):</label>
+        <textarea id="body" class="editor-area" placeholder="Today's content goes here..."></textarea>
 
-Quick question…
+        <!-- CONTROLS -->
+        <div style="margin-top: 20px;">
+            <div class="flex-row">
+                <button class="btn" onclick="saveTemplate()">💾 Save as Template</button>
+                <button class="btn btn-secondary" onclick="loadTemplate()">📂 Load Template</button>
+                <button class="btn btn-secondary" onclick="saveToHistory()">⏱️ Save to History</button>
+                <button class="btn btn-success" onclick="copyToClipboard()">📋 Copy for MLGS</button>
+                <button class="btn" style="background:#666" onclick="clearBody()">🗑️ Clear Body Only</button>
+            </div>
+            
+            <div style="margin-top: 15px;">
+                <label>Quick Load Template:</label>
+                <select id="templateSelect" onchange="loadSelectedTemplate()">
+                    <option value="">-- Select Saved Template --</option>
+                </select>
+                <span id="status" style="margin-left: 10px; color: green; font-weight: bold;"></span>
+            </div>
+        </div>
 
-What did your mailbox look like this morning? 😏
+        <!-- HISTORY -->
+        <h3 style="margin-top: 30px;">🕐 Recent Emails (Click to load as starting point)</h3>
+        <div id="historyList"></div>
 
-Mine? Overflowing with fresh commissions again thanks to MLGS.
+        <!-- PREVIEW -->
+        <h3>👁️ Preview (What goes to MLGS):</h3>
+        <div class="preview-box" id="preview"></div>
+    </div>
 
-Check this out:
-[📸 Insert Screenshot Here]
+    <script>
+        // Initialize
+        window.onload = function() {
+            loadStickyData();
+            updatePreview();
+            loadHistoryList();
+            updateTemplateDropdown();
+        };
 
-That’s from the last 24 hours… while I was sleeping.
+        // Auto-save sticky elements
+        ['subject', 'header', 'footer'].forEach(id => {
+            document.getElementById(id).addEventListener('input', function() {
+                localStorage.setItem('mlgs_' + id, this.value);
+                updatePreview();
+            });
+        });
 
-Today’s mailing is already loaded and going out in a few hours.
+        // Update preview on body change
+        document.getElementById('body').addEventListener('input', updatePreview);
 
-Want in before it’s gone?
+        function loadStickyData() {
+            ['subject', 'header', 'footer'].forEach(id => {
+                const saved = localStorage.getItem('mlgs_' + id);
+                if (saved) document.getElementById(id).value = saved;
+            });
+        }
 
-=> https://www.myleadgensecret.com/youridhere
+        function getFullEmail() {
+            const subject = document.getElementById('subject').value;
+            const header = document.getElementById('header').value;
+            const body = document.getElementById('body').value;
+            const footer = document.getElementById('footer').value;
+            
+            return `Subject: ${subject}\n\n${header}\n\n${body}\n\n${footer}`;
+        }
 
-Talk soon,
-Troy Pringle
-[Your Photo]
-P.S. Still on the fence? Watch this: https://youtu.be/xxxxxx
-</textarea>
+        function updatePreview() {
+            document.getElementById('preview').textContent = getFullEmail();
+        }
 
-<br><br>
-<button onclick="saveTemplate()">💾 Save Template</button>
-<button onclick="copyEmail()">📋 Copy Full Email</button>
-<button onclick="loadTemplate()">📂 Load Saved Template</button>
+        function copyToClipboard() {
+            navigator.clipboard.writeText(getFullEmail()).then(() => {
+                showStatus('✅ Copied! Paste into MLGS now.');
+            });
+        }
 
-<script>
-// Auto-save every time you type
-document.getElementById('emailTemplate').addEventListener('input', function() {
-  localStorage.setItem('mlgsTemplate', this.value);
-});
+        function clearBody() {
+            if(confirm('Clear only the body text? (Header/Footer stay safe)')) {
+                document.getElementById('body').value = '';
+                updatePreview();
+            }
+        }
 
-// Load on page open
-window.onload = function() {
-  if (localStorage.getItem('mlgsTemplate')) {
-    document.getElementById('emailTemplate').value = localStorage.getItem('mlgsTemplate');
-  }
-};
+        // Template System
+        function saveTemplate() {
+            const name = prompt('Name this template (e.g., "Daily Value", "Scarcity"):');
+            if (!name) return;
+            
+            const template = {
+                subject: document.getElementById('subject').value,
+                header: document.getElementById('header').value,
+                body: document.getElementById('body').value,
+                footer: document.getElementById('footer').value
+            };
+            
+            let templates = JSON.parse(localStorage.getItem('mlgs_templates') || '{}');
+            templates[name] = template;
+            localStorage.setItem('mlgs_templates', JSON.stringify(templates));
+            
+            updateTemplateDropdown();
+            showStatus('Template saved!');
+        }
 
-function saveTemplate() {
-  alert('Template saved forever in your browser!');
-}
+        function updateTemplateDropdown() {
+            const select = document.getElementById('templateSelect');
+            const templates = JSON.parse(localStorage.getItem('mlgs_templates') || '{}');
+            
+            select.innerHTML = '<option value="">-- Select Saved Template --</option>';
+            Object.keys(templates).forEach(name => {
+                select.innerHTML += `<option value="${name}">${name}</option>`;
+            });
+        }
 
-function copyEmail() {
-  const textarea = document.getElementById('emailTemplate');
-  textarea.select();
-  document.execCommand('copy');
-  alert('Full email copied – paste straight into MLGS!');
-}
+        function loadSelectedTemplate() {
+            const name = document.getElementById('templateSelect').value;
+            if (!name) return;
+            
+            const templates = JSON.parse(localStorage.getItem('mlgs_templates') || '{}');
+            const t = templates[name];
+            
+            if (t) {
+                document.getElementById('subject').value = t.subject;
+                document.getElementById('header').value = t.header;
+                document.getElementById('body').value = t.body;
+                document.getElementById('footer').value = t.footer;
+                
+                // Re-save sticky parts
+                localStorage.setItem('mlgs_subject', t.subject);
+                localStorage.setItem('mlgs_header', t.header);
+                localStorage.setItem('mlgs_footer', t.footer);
+                
+                updatePreview();
+                showStatus('Template loaded!');
+            }
+        }
 
-function loadTemplate() {
-  document.getElementById('emailTemplate').value = localStorage.getItem('mlgsTemplate') || '';
-}
-</script>
+        // History System (Load previous emails as base)
+        function saveToHistory() {
+            const history = JSON.parse(localStorage.getItem('mlgs_history') || '[]');
+            const email = {
+                date: new Date().toLocaleString(),
+                subject: document.getElementById('subject').value,
+                content: getFullEmail()
+            };
+            
+            history.unshift(email);
+            if (history.length > 10) history.pop(); // Keep last 10
+            
+            localStorage.setItem('mlgs_history', JSON.stringify(history));
+            loadHistoryList();
+            showStatus('Saved to history!');
+        }
+
+        function loadHistoryList() {
+            const history = JSON.parse(localStorage.getItem('mlgs_history') || '[]');
+            const container = document.getElementById('historyList');
+            
+            if (history.length === 0) {
+                container.innerHTML = '<p style="color: #999;">No history yet...</p>';
+                return;
+            }
+            
+            container.innerHTML = history.map((h, i) => `
+                <div class="history-item" onclick="loadHistoryItem(${i})">
+                    <strong>${h.date}</strong> - ${h.subject.substring(0, 50)}...
+                </div>
+            `).join('');
+        }
+
+        function loadHistoryItem(index) {
+            const history = JSON.parse(localStorage.getItem('mlgs_history') || '[]');
+            const h = history[index];
+            
+            // Parse the full email back (simple parse)
+            const lines = h.content.split('\n');
+            document.getElementById('subject').value = lines[0].replace('Subject: ', '');
+            
+            // Load into body as a starting point, but keep sticky header/footer if user wants
+            if(confirm('Load this into the BODY area? (Your sticky Header/Footer stay unchanged)')) {
+                // Extract just the body portion (between header and footer)
+                document.getElementById('body').value = lines.slice(1).join('\n');
+                updatePreview();
+            }
+        }
+
+        function showStatus(msg) {
+            const s = document.getElementById('status');
+            s.textContent = msg;
+            setTimeout(() => s.textContent = '', 3000);
+        }
+    </script>
+</body>
+</html>
 
 </body>
 </html>
