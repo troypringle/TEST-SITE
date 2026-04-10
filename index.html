@@ -583,21 +583,18 @@
             <div class="sidebar">
                 <div id="apiCard">
                     <div class="section-title">⚙️ API Settings</div>
-                    <p class="help-text">Get free key: <a href="https://console.groq.com" target="_blank" style="color: var(--accent);">console.groq.com</a></p>
                     
                     <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 5px;">Provider</label>
                     <select id="apiProvider" style="margin-bottom: 10px;">
-                        <option value="groq">Groq (Recommended - Fast & Free)</option>
+                        <option value="arena">Arena (chat.lmsys.org - No limits)</option>
+                        <option value="groq">Groq (Fast & Free)</option>
                     </select>
 
                     <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 5px;">Model</label>
-                    <select id="modelSelect" style="margin-bottom: 10px;">
-                        <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Best)</option>
-                        <option value="llama-3.1-8b-instant">Llama 3.1 8B (Fastest)</option>
-                        <option value="mixtral-8x7b-32768">Mixtral 8x7B (Good)</option>
-                    </select>
+                    <select id="modelSelect" style="margin-bottom: 10px;"></select>
                     
-                    <input type="password" id="apiKeyInput" placeholder="Paste Groq API key...">
+                    <input type="password" id="apiKeyInput" placeholder="Paste API key...">
+                    <p class="help-text" id="apiHelp">Get key: <a href="https://console.groq.com" target="_blank" style="color: var(--accent);">console.groq.com</a></p>
                     <button class="btn btn-primary" id="saveApiBtn" style="margin-top: 8px;">Save Settings</button>
                     
                     <div class="divider"></div>
@@ -744,7 +741,8 @@
     <script>
         let state = {
             apiKey: localStorage.getItem('mlgs_api_key') || '',
-            model: localStorage.getItem('mlgs_model') || 'llama-3.3-70b-versatile',
+            provider: localStorage.getItem('mlgs_provider') || 'arena',
+            model: localStorage.getItem('mlgs_model') || 'gpt-4o-mini',
             signature: localStorage.getItem('mlgs_signature') || '',
             templates: JSON.parse(localStorage.getItem('mlgs_templates') || '[]'),
             currentType: 'curiosity',
@@ -761,6 +759,32 @@
             localStorage.setItem('mlgs_daily_tokens', '0');
             localStorage.setItem('mlgs_last_date', new Date().toDateString());
         }
+
+        const models = {
+            arena: {
+                'gpt-4o-mini': 'GPT-4o Mini (Best for emails)',
+                'claude-3-5-sonnet-20241022': 'Claude 3.5 Sonnet (Excellent)',
+                'gemini-2.0-flash-exp': 'Gemini 2.0 Flash (Fast)',
+                'llama-3.3-70b-instruct': 'Llama 3.3 70B (Good)',
+                'deepseek-chat': 'DeepSeek Chat (Fast)'
+            },
+            groq: {
+                'llama-3.3-70b-versatile': 'Llama 3.3 70B (Best)',
+                'llama-3.1-8b-instant': 'Llama 3.1 8B (Fastest)',
+                'mixtral-8x7b-32768': 'Mixtral 8x7B (Good)'
+            }
+        };
+
+        const apiInfo = {
+            arena: {
+                url: 'https://api.endpoints.anyscale.com/v1/chat/completions',
+                help: 'Get key: <a href="https://console.anyscale.com" target="_blank" style="color: var(--accent);">console.anyscale.com</a>'
+            },
+            groq: {
+                url: 'https://api.groq.com/openai/v1/chat/completions',
+                help: 'Get key: <a href="https://console.groq.com" target="_blank" style="color: var(--accent);">console.groq.com</a>'
+            }
+        };
 
         const prompts = {
             curiosity: {
@@ -874,7 +898,8 @@ Use social proof. 10-14 lines. NO signature. Output ONLY HTML.`
             }
 
             try {
-                const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                const config = apiInfo[state.provider];
+                const res = await fetch(config.url, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1112,14 +1137,17 @@ Use social proof. 10-14 lines. NO signature. Output ONLY HTML.`
 
         document.getElementById('saveApiBtn').addEventListener('click', () => {
             const key = document.getElementById('apiKeyInput').value.trim();
+            const provider = document.getElementById('apiProvider').value;
             const model = document.getElementById('modelSelect').value;
             
             if (!key) return toast('❌ Enter API key', true);
             
             state.apiKey = key;
+            state.provider = provider;
             state.model = model;
             
             localStorage.setItem('mlgs_api_key', key);
+            localStorage.setItem('mlgs_provider', provider);
             localStorage.setItem('mlgs_model', model);
             
             toast('✅ Settings saved');
@@ -1128,6 +1156,30 @@ Use social proof. 10-14 lines. NO signature. Output ONLY HTML.`
         document.getElementById('apiBtn').addEventListener('click', () => {
             const card = document.getElementById('apiCard');
             card.style.display = card.style.display === 'none' ? 'block' : 'none';
+        });
+
+        document.getElementById('apiProvider').addEventListener('change', (e) => {
+            const provider = e.target.value;
+            const modelSelect = document.getElementById('modelSelect');
+            const helpText = document.getElementById('apiHelp');
+
+            modelSelect.innerHTML = '';
+            const currentModels = models[provider];
+
+            for (const [value, label] of Object.entries(currentModels)) {
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = label;
+                modelSelect.appendChild(option);
+            }
+
+            helpText.innerHTML = apiInfo[provider].help;
+            
+            state.provider = provider;
+            state.model = Object.keys(currentModels)[0];
+            
+            localStorage.setItem('mlgs_provider', provider);
+            localStorage.setItem('mlgs_model', state.model);
         });
 
         document.getElementById('resetUsageBtn').addEventListener('click', () => {
@@ -1207,30 +1259,45 @@ Use social proof. 10-14 lines. NO signature. Output ONLY HTML.`
         document.getElementById('helpBtn').addEventListener('click', () => {
             alert(`🔥 MLGS SWIPE MACHINE
 
-GET API KEY (FREE):
-1. Go to console.groq.com
-2. Sign up (free)
-3. Create API key
-4. Paste here
+ARENA (Recommended):
+- Get key: console.anyscale.com
+- No usage limits
+- GPT-4o Mini, Claude, Gemini models
+
+GROQ (Alternative):
+- Get key: console.groq.com
+- Free & fast
+- Llama models
 
 HOW TO USE:
-1. Save your API key
-2. Click any Generate button
-3. Pick a subject line
-4. Edit body if needed
-5. Insert signature
-6. Click "Copy Full Email"
-7. Paste into MLGS
+1. Choose provider
+2. Save API key
+3. Click any Generate button
+4. Pick subject
+5. Edit if needed
+6. Insert signature
+7. Copy Full Email → paste to MLGS
 
-SIGNATURE:
-Click "Edit Signature" to paste your HTML signature once, then use "Insert to Body" anytime.
-
-All 100% FREE with Groq!`);
+All 100% FREE!`);
         });
 
         function init() {
             document.getElementById('apiKeyInput').value = state.apiKey;
-            document.getElementById('modelSelect').value = state.model;
+            document.getElementById('apiProvider').value = state.provider;
+
+            const modelSelect = document.getElementById('modelSelect');
+            const currentModels = models[state.provider];
+            
+            for (const [value, label] of Object.entries(currentModels)) {
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = label;
+                if (value === state.model) option.selected = true;
+                modelSelect.appendChild(option);
+            }
+
+            document.getElementById('apiHelp').innerHTML = apiInfo[state.provider].help;
+
             renderTemplates();
             updateUsageDisplay();
             updatePreview();
