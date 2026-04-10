@@ -3,679 +3,1265 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MLGS Content Hub - Professional Edition</title>
+    <title>MLGS Swipe Machine - AI Email Generator</title>
+    
+    <!-- Toast UI Editor CSS -->
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
+    
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
-            --pro-blue: #0056b3;
-            --pro-blue-hover: #004494;
-            --pro-green: #28a745;
-            --pro-green-hover: #218838;
-            --bg-page: #f4f7f9;
-            --border: #ced4da;
-            --syn-tag: #0000ff;
-            --syn-attr: #ff0000;
-            --syn-val: #8000ff;
-            --syn-token: #d63384;
+            --bg-dark: #0d1117;
+            --bg-panel: #161b22;
+            --bg-input: #1c2128;
+            --border: #30363d;
+            --text: #e6edf3;
+            --text-muted: #8b949e;
+            --accent: #00ff88;
+            --accent-hover: #00cc6a;
+            --gold: #ffd700;
+            --danger: #ff4444;
         }
 
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: var(--bg-page);
-            margin: 0;
-            padding: 25px; 
-            color: #333;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            line-height: 1.6;
         }
 
-        .main-hub {
-            max-width: 1600px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            border: 1px solid #ddd;
+        .container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+            gap: 0;
         }
 
-        header {
+        /* Header */
+        .header {
+            grid-column: 1 / -1;
+            background: var(--bg-panel);
+            padding: 20px 30px;
+            border-bottom: 2px solid var(--accent);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 4px solid var(--pro-blue);
-            padding-bottom: 15px;
-            margin-bottom: 20px;
         }
 
-        h1 { margin: 0; color: var(--pro-blue); font-size: 28px; font-weight: 900; text-transform: uppercase; }
-
-        #top-timer-banner {
-            font-size: 22px;
-            font-weight: 900;
-            padding: 10px 20px;
-            border-radius: 6px;
-            background: #eafff0;
-            color: #28a745;
-            border: 2px solid #c3e6cb;
+        .header h1 {
+            font-size: 24px;
+            background: linear-gradient(135deg, var(--accent), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
         }
 
-        .subject-row { margin-bottom: 20px; }
-
-        #mlgs-subject-field-unique {
-            width: 100%;
-            padding: 15px;
-            font-size: 20px;
-            font-weight: bold;
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            background: #fdfdfd;
-        }
-
-        .workspace {
+        .header-actions {
             display: flex;
-            gap: 20px;
-            height: 600px;
-            margin-bottom: 20px;
+            gap: 10px;
         }
 
-        .pane {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            overflow: hidden;
-            background: white;
+        /* Sidebar */
+        .sidebar {
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border);
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(100vh - 80px);
         }
 
-        .pane-header {
-            background: var(--pro-blue);
-            color: white;
-            padding: 10px 15px;
-            font-weight: bold;
+        .sidebar-section {
+            margin-bottom: 30px;
+        }
+
+        .sidebar-section h3 {
+            font-size: 12px;
             text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 30px;
+            overflow-y: auto;
+            max-height: calc(100vh - 80px);
+        }
+
+        /* Buttons */
+        .btn {
+            background: var(--bg-input);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            background: var(--bg-panel);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), #00cc6a);
+            border: none;
+            color: #000;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #00cc6a, var(--accent));
+            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold), #ffed4e);
+            border: none;
+            color: #000;
+            font-weight: 600;
+        }
+
+        .btn-gold:hover {
+            background: linear-gradient(135deg, #ffed4e, var(--gold));
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn-small {
+            padding: 6px 12px;
             font-size: 12px;
         }
 
-        .wysiwyg-toolbar { background: #f8f9fa; border-bottom: 1px solid var(--border); padding: 8px; display: flex; gap: 5px; }
-        .wysiwyg-toolbar button, .wysiwyg-toolbar select { padding: 5px 10px; font-weight: bold; cursor: pointer; border: 1px solid #ccc; border-radius: 4px; }
-
-        #visual-view { flex: 1; padding: 20px; overflow-y: auto; outline: none; background: white; font-size: 16px; }
-
-        .code-container { position: relative; flex: 1; overflow: hidden; }
-        #html-raw, #html-colored {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            margin: 0; padding: 20px; font-family: 'Consolas', monospace; font-size: 14px;
-            line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; box-sizing: border-box; border: none; overflow-y: auto;
-        }
-        #html-raw { color: transparent; background: transparent; caret-color: black; z-index: 2; outline: none; resize: none;}
-        #html-colored { z-index: 1; color: #333; pointer-events: none; }
-
-        .tag { color: var(--syn-tag); font-weight: bold; }
-        .attr { color: var(--syn-attr); }
-        .val { color: var(--syn-val); }
-        .mlgs-var { color: white; background: var(--syn-token); padding: 0 3px; border-radius: 3px; font-weight: bold; }
-
-        .action-bar { display: flex; gap: 10px; margin-bottom: 25px; }
-        .btn { padding: 15px; font-size: 14px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; text-align: center; text-decoration: none; transition: 0.2s; flex: 1; }
-        .btn-green { background: var(--pro-green); color: white; }
-        .btn-blue { background: var(--pro-blue); color: white; }
-        .btn-grey { background: #6c757d; color: white; }
-
-        footer {
-            border-top: 3px solid var(--pro-blue);
-            padding-top: 25px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+        .btn-danger {
+            background: var(--danger);
+            border: none;
         }
 
-        .timer-grid {
-            display: grid;
-            grid-template-columns: 1.5fr 1.2fr 1fr;
-            gap: 20px;
-            align-items: center;
-            background: #fff;
+        .btn-danger:hover {
+            background: #cc0000;
+        }
+
+        /* Input Fields */
+        input[type="text"],
+        input[type="password"],
+        textarea,
+        select {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
             padding: 20px;
-            border-radius: 10px;
-            border: 1px solid #ddd;
+            margin-bottom: 20px;
         }
 
-        .timer-display-box { text-align: center; border-right: 2px solid #eee; }
-        .timer-val { font-size: 32px; font-weight: 900; color: #d9534f; display: block; }
-        .timer-label { font-size: 12px; font-weight: bold; color: #777; text-transform: uppercase; }
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-        .manual-override-box { display: flex; flex-direction: column; gap: 8px; }
-        .manual-override-box label { font-size: 12px; font-weight: bold; color: var(--pro-blue); }
-        .manual-override-box input { padding: 10px; border: 1px solid var(--border); border-radius: 5px; font-weight: bold; }
+        /* Subject Line Generator */
+        .subject-results {
+            margin-top: 15px;
+        }
 
-        .footer-buttons { display: flex; gap: 15px; }
-        .btn-huge { flex: 1; padding: 25px; font-size: 24px; font-weight: 900; }
-    </style>
-</head>
-<body>
+        .subject-option {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-<div class="main-hub">
-    <header>
-        <h1>MLGS Content Hub</h1>
-        <div id="top-timer-banner">READY TO MAIL</div>
-    </header>
+        .subject-option:hover {
+            border-color: var(--accent);
+            background: var(--bg-panel);
+        }
 
-    <div class="subject-row">
-        <input type="text" id="mlgs-subject-field-unique" placeholder="Subject Line / Email Title..." autocomplete="off">
-    </div>
+        .subject-option.selected {
+            border-color: var(--accent);
+            background: rgba(0, 255, 136, 0.1);
+        }
 
-    <div class="workspace">
-        <div class="pane">
-            <div class="pane-header">Visual Editor & Preview</div>
-            <div class="wysiwyg-toolbar">
-                <button onclick="exec('bold')">B</button>
-                <button onclick="exec('italic')">I</button>
-                <button onclick="exec('underline')">U</button>
-                <select onchange="exec('fontSize', this.value); this.selectedIndex=0;"><option value="">Size</option><option value="3">Small</option><option value="4">Normal</option><option value="5">Large</option><option value="7">Huge</option></select>
-                <input type="color" oninput="exec('foreColor', this.value)" title="Color">
-                <button onclick="exec('createLink', prompt('URL:'))">Link</button>
-                <button onclick="exec('removeFormat')">Clear Style</button>
-            </div>
-            <div id="visual-view" contenteditable="true" oninput="syncFromVisual()"></div>
-        </div>
+        .subject-option input[type="radio"] {
+            width: auto;
+        }
 
-        <div class="pane">
-            <div class="pane-header">HTML Source Code</div>
-            <div class="code-container">
-                <div id="html-colored"></div>
-                <textarea id="html-raw" spellcheck="false" oninput="syncFromCode()" onscroll="syncCodeScroll()"></textarea>
-            </div>
-        </div>
-    </div>
+        /* Toast Editor Overrides */
+        .toastui-editor-defaultUI {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
 
-    <div class="action-bar">
-        <button class="btn btn-green" onclick="downloadHTML()">Save & Download</button>
-        <button class="btn btn-blue" onclick="openLivePreview()">Live Preview Test</button>
-        <button class="btn btn-blue" onclick="restoreCheckpoint()">Restore Last Download</button>
-        <button class="btn btn-grey" onclick="document.getElementById('file-input').click()">Browse PC Files</button>
-        <button class="btn btn-grey" onclick="copyHTML()">Copy HTML Source</button>
-    </div>
-    <input type="file" id="file-input" style="display:none" accept=".html">
+        .toastui-editor-toolbar {
+            background: var(--bg-input) !important;
+            border-bottom: 1px solid var(--border) !important;
+        }
 
-    <footer>
-        <div class="timer-grid">
-            <div class="timer-display-box">
-                <span class="timer-label">Next Mailing Available In:</span>
-                <span id="countdown-timer" class="timer-val">00:00:00</span>
-            </div>
+        .toastui-editor-main {
+            background: var(--bg-panel) !important;
+        }
+
+        .toastui-editor-contents {
+            color: var(--text) !important;
+        }
+
+        /* Signature Section */
+        .signature-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .lock-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            background: var(--bg-input);
+            border-radius: 13px;
+            cursor: pointer;
+            transition: background 0.3s;
+            border: 1px solid var(--border);
+        }
+
+        .toggle-switch.active {
+            background: var(--accent);
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(24px);
+        }
+
+        /* Copy Actions */
+        .copy-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .copy-actions .btn-primary {
+            grid-column: 1 / -1;
+        }
+
+        /* Template List */
+        .template-item {
+            background: var(--bg-input);
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .template-item:hover {
+            background: var(--bg-panel);
+            border-color: var(--accent);
+        }
+
+        .template-name {
+            font-size: 14px;
+            flex: 1;
+        }
+
+        .template-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        /* Prompt Library */
+        .prompt-btn {
+            margin-bottom: 8px;
+            justify-content: flex-start;
+            text-align: left;
+        }
+
+        /* API Settings Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close-modal {
+            cursor: pointer;
+            font-size: 24px;
+            color: var(--text-muted);
+        }
+
+        .close-modal:hover {
+            color: var(--text);
+        }
+
+        /* Status Messages */
+        .status-message {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .status-message.success {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+        }
+
+        .status-message.error {
+            background: rgba(255, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+
+        .status-message.active {
+            display: block;
+        }
+
+        /* Loading Spinner */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid var(--bg-input);
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
             
-            <div class="timer-display-box">
-                <span class="timer-label">Last Mailing Recorded:</span>
-                <span id="last-saved-time-str" style="font-weight: bold; font-size: 14px; margin-top: 10px; display: block; color: #555;">NEVER RECORDED</span>
-            </div>
-
-            <div class="manual-override-box">
-                <label>Manual Time Override:</label>
-                <input type="datetime-local" id="manual-time-input">
-                <button class="btn btn-blue" style="padding: 5px; font-size: 11px;" onclick="applyManualTime()">Set Custom Action Time</button>
-            </div>
-        </div>
-
-        <div class="footer-buttons">
-            <a href="https://www.myleadgensecret.com/index.php" target="_blank" class="btn btn-green btn-huge">OPEN MLGS LOGIN</a>
-            <button class="btn btn-blue btn-huge" onclick="triggerMailingAction()">UPDATE TIME / DATE NOW</button>
-        </div>
-    </footer>
-</div>
-
-<script>
-    const visualView = document.getElementById('visual-view');
-    const htmlRaw = document.getElementById('html-raw');
-    const htmlColored = document.getElementById('html-colored');
-    const titleInput = document.getElementById('mlgs-subject-field-unique');
-    const fileInput = document.getElementById('file-input');
-    const countdownDisplay = document.getElementById('countdown-timer');
-    const lastSavedDisplay = document.getElementById('last-saved-time-str');
-    const topBanner = document.getElementById('top-timer-banner');
-    const manualTimeInput = document.getElementById('manual-time-input');
-
-    // --- UNDO/REDO SYSTEM ---
-    let historyStack = [];
-    let redoStack = [];
-    const maxHistory = 50;
-
-    function saveState() {
-        const currentState = {
-            title: titleInput.value,
-            content: htmlRaw.value
-        };
-        if (historyStack.length === 0 || JSON.stringify(currentState) !== JSON.stringify(historyStack[historyStack.length - 1])) {
-            historyStack.push(currentState);
-            if (historyStack.length > maxHistory) historyStack.shift();
-            redoStack = []; 
+            .sidebar {
+                max-height: none;
+            }
         }
-    }
-
-    function undo() {
-        if (historyStack.length > 1) {
-            redoStack.push(historyStack.pop());
-            const previousState = historyStack[historyStack.length - 1];
-            applyState(previousState);
-        }
-    }
-
-    function redo() {
-        if (redoStack.length > 0) {
-            const nextState = redoStack.pop();
-            historyStack.push(nextState);
-            applyState(nextState);
-        }
-    }
-
-    function applyState(state) {
-        titleInput.value = state.title;
-        htmlRaw.value = state.content;
-        visualView.innerHTML = state.content;
-        applySyntax(state.content);
-        autoSaveContent();
-    }
-
-    window.addEventListener('keydown', (e) => {
-        if (e.ctrlKey && e.key.toLowerCase() === 'z') {
-            e.preventDefault();
-            undo();
-        }
-        if (e.ctrlKey && e.key.toLowerCase() === 'y') {
-            e.preventDefault();
-            redo();
-        }
-    });
-
-    // --- CORE EDITOR FUNCTIONS ---
-    function applySyntax(code) {
-        let escaped = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        escaped = escaped.replace(/&lt;(\/?[a-z1-6]+)(.*?)&gt;/gi, (match, tag, attrs) => {
-            let highlightedAttrs = attrs.replace(/([a-z-]+)=(['"].*?['"])/gi, '<span class="attr">$1</span>=<span class="val">$2</span>');
-            return `<span class="tag">&lt;${tag}</span>${highlightedAttrs}<span class="tag">&gt;</span>`;
-        });
-        escaped = escaped.replace(/\{!(.*?)\}/g, '<span class="mlgs-var">{!$1}</span>');
-        htmlColored.innerHTML = escaped + "\n";
-    }
-
-    let saveTimer;
-    function syncFromCode() { 
-        applySyntax(htmlRaw.value); 
-        visualView.innerHTML = htmlRaw.value; 
-        autoSaveContent(); 
-        clearTimeout(saveTimer);
-        saveTimer = setTimeout(saveState, 500);
-    }
-
-    function syncFromVisual() { 
-        htmlRaw.value = visualView.innerHTML; 
-        applySyntax(htmlRaw.value); 
-        autoSaveContent(); 
-        clearTimeout(saveTimer);
-        saveTimer = setTimeout(saveState, 500);
-    }
-
-    function syncCodeScroll() { htmlColored.scrollTop = htmlRaw.scrollTop; }
-    
-    function exec(cmd, val = null) { 
-        saveState();
-        document.execCommand(cmd, false, val); 
-        syncFromVisual(); 
-    }
-
-    // --- SAVE, DOWNLOAD & FILE FUNCTIONS ---
-    function downloadHTML() {
-        const content = htmlRaw.value;
-        const title = titleInput.value || "Untitled_Email";
-        const blob = new Blob([content], { type: "text/html" });
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = `${title.replace(/\s+/g, '_')}.html`;
-        a.click();
-        
-        // Save checkpoint
-        localStorage.setItem('mlgs_checkpoint', JSON.stringify({ title: title, content: content }));
-        alert("File Downloaded & Checkpoint Saved!");
-    }
-
-    function restoreCheckpoint() {
-        const saved = localStorage.getItem('mlgs_checkpoint');
-        if (saved) {
-            saveState();
-            const data = JSON.parse(saved);
-            titleInput.value = data.title;
-            htmlRaw.value = data.content;
-            syncFromCode();
-            alert("Last download restored.");
-        } else {
-            alert("No checkpoint found.");
-        }
-    }
-
-    function copyHTML() {
-        navigator.clipboard.writeText(htmlRaw.value);
-        alert("HTML Source Copied to Clipboard!");
-    }
-
-    function openLivePreview() {
-        const content = htmlRaw.value;
-        const previewWin = window.open("", "MLGSPreview", "width=800,height=800");
-        previewWin.document.write('<html><head><title>Preview</title></head><body>' + content + '</body></html>');
-        previewWin.document.close();
-    }
-
-    fileInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            saveState();
-            htmlRaw.value = e.target.result;
-            titleInput.value = file.name.replace('.html', '');
-            syncFromCode();
-        };
-        reader.readAsText(file);
-    });
-
-    // --- TIMER & MAILING ---
-    function updateMailingTimer() {
-        const lastSavedTimestamp = localStorage.getItem('mlgs_timestamp_ms');
-        if (!lastSavedTimestamp || lastSavedTimestamp === "null") return;
-        const waitPeriod = 23 * 60 * 60 * 1000; 
-        const nextMailTime = parseInt(lastSavedTimestamp) + waitPeriod;
-        const diff = nextMailTime - Date.now();
-        if (diff <= 0) {
-            countdownDisplay.innerText = "00:00:00";
-            topBanner.innerText = "READY TO MAIL";
-            topBanner.style.background = "#eafff0";
-            topBanner.style.color = "#28a745";
-        } else {
-            const h = Math.floor(diff / 3600000).toString().padStart(2, '0');
-            const m = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
-            const s = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
-            countdownDisplay.innerText = `${h}:${m}:${s}`;
-            topBanner.innerText = `NEXT MAIL IN: ${h}:${m}:${s}`;
-            topBanner.style.background = "#fff4f4";
-            topBanner.style.color = "#d9534f";
-        }
-    }
-
-    function triggerMailingAction(customMs = null) {
-        const ms = customMs || Date.now();
-        localStorage.setItem('mlgs_timestamp_ms', ms);
-        const dateString = new Date(ms).toLocaleString();
-        localStorage.setItem('mlgs_last_timestamp_str', dateString);
-        lastSavedDisplay.innerText = dateString;
-    }
-
-    function applyManualTime() {
-        const val = manualTimeInput.value;
-        if (!val) return alert("Select a date/time first.");
-        const customMs = new Date(val).getTime();
-        triggerMailingAction(customMs);
-        alert("Mailing time updated!");
-    }
-
-    function autoSaveContent() {
-        localStorage.setItem('mlgs_session_content', JSON.stringify({ 
-            title: titleInput.value, 
-            content: htmlRaw.value 
-        }));
-    }
-
-    window.onload = () => {
-        const session = localStorage.getItem('mlgs_session_content');
-        if (session) {
-            const data = JSON.parse(session);
-            titleInput.value = data.title || "";
-            htmlRaw.value = data.content || "";
-            syncFromCode();
-            saveState(); 
-        }
-        const lastStr = localStorage.getItem('mlgs_last_timestamp_str');
-        if (lastStr) lastSavedDisplay.innerText = lastStr;
-        setInterval(updateMailingTimer, 1000);
-    };
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MLGS Email Builder</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
-        .container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .sticky-section { background: #e3f2fd; padding: 15px; margin-bottom: 20px; border-radius: 5px; border-left: 4px solid #2196f3; }
-        label { display: block; font-weight: bold; margin-top: 15px; color: #333; }
-        textarea, input[type="text"] { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; font-family: monospace; }
-        textarea { min-height: 100px; resize: vertical; }
-        .editor-area { min-height: 200px; background: #fff; border: 2px solid #2196f3; }
-        .btn { background: #2196f3; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-right: 10px; margin-top: 10px; font-weight: bold; }
-        .btn:hover { background: #1976d2; }
-        .btn-secondary { background: #ff9800; }
-        .btn-secondary:hover { background: #f57c00; }
-        .btn-success { background: #4caf50; }
-        .history-item { background: #f5f5f5; padding: 10px; margin: 5px 0; border-radius: 4px; cursor: pointer; border-left: 3px solid #ccc; }
-        .history-item:hover { background: #e0e0e0; border-left-color: #2196f3; }
-        .preview-box { background: #fafafa; border: 1px solid #ddd; padding: 15px; margin-top: 20px; white-space: pre-wrap; font-family: monospace; max-height: 300px; overflow-y: auto; }
-        .flex-row { display: flex; gap: 10px; flex-wrap: wrap; }
-        select { padding: 8px; font-size: 16px; }
     </style>
 </head>
 <body>
+
+    <!-- Header -->
+    <div class="header">
+        <h1>🔥 MLGS SWIPE MACHINE</h1>
+        <div class="header-actions">
+            <button class="btn btn-small" id="helpBtn">❓ Help</button>
+            <button class="btn btn-small" id="apiSettingsBtn">⚙️ API Settings</button>
+        </div>
+    </div>
+
     <div class="container">
-        <h1>📧 MLGS Email Builder</h1>
-        <p>Build once, reuse forever. Your signature and header are saved automatically.</p>
-
-        <!-- STICKY ELEMENTS (Never Delete) -->
-        <div class="sticky-section">
-            <h3>🔒 Persistent Blocks (Saved Automatically)</h3>
-            
-            <label>Subject Line:</label>
-            <input type="text" id="subject" placeholder="e.g., [URGENT] Your leads are waiting...">
-            
-            <label>Header (Name, Image URL, Greeting):</label>
-            <textarea id="header" placeholder="Hey [FIRST_NAME]!&#10;&#10;Troy here...&#10;&#10;[IMAGE: https://yourimage.com/proof.jpg]"></textarea>
-            
-            <label>Footer (Signature, PS, Links):</label>
-            <textarea id="footer" placeholder="To your success,&#10;Troy Pringle&#10;&#10;P.S. Click here to grab MLGS now"></textarea>
-        </div>
-
-        <!-- DYNAMIC CONTENT -->
-        <label>📄 Email Body (This changes daily):</label>
-        <textarea id="body" class="editor-area" placeholder="Today's content goes here..."></textarea>
-
-        <!-- CONTROLS -->
-        <div style="margin-top: 20px;">
-            <div class="flex-row">
-                <button class="btn" onclick="saveTemplate()">💾 Save as Template</button>
-                <button class="btn btn-secondary" onclick="loadTemplate()">📂 Load Template</button>
-                <button class="btn btn-secondary" onclick="saveToHistory()">⏱️ Save to History</button>
-                <button class="btn btn-success" onclick="copyToClipboard()">📋 Copy for MLGS</button>
-                <button class="btn" style="background:#666" onclick="clearBody()">🗑️ Clear Body Only</button>
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <!-- Prompt Library -->
+            <div class="sidebar-section">
+                <h3>📋 Prompt Library</h3>
+                <button class="btn prompt-btn" data-type="subject-curiosity">🧠 Curiosity Hook</button>
+                <button class="btn prompt-btn" data-type="subject-money">💰 Money Angle</button>
+                <button class="btn prompt-btn" data-type="subject-urgency">⏰ Urgency/Scarcity</button>
+                <button class="btn prompt-btn" data-type="subject-lazy">😴 Lazy Method</button>
+                <button class="btn prompt-btn" data-type="subject-proof">📊 Proof/Results</button>
+                <hr style="border-color: var(--border); margin: 15px 0;">
+                <button class="btn prompt-btn" data-type="body-full">🔥 Full Email</button>
+                <button class="btn prompt-btn" data-type="body-story">📖 Story Angle</button>
+                <button class="btn prompt-btn" data-type="body-cta">🎯 Direct CTA</button>
+                <button class="btn prompt-btn" data-type="body-question">❓ Question Hook</button>
             </div>
-            
-            <div style="margin-top: 15px;">
-                <label>Quick Load Template:</label>
-                <select id="templateSelect" onchange="loadSelectedTemplate()">
-                    <option value="">-- Select Saved Template --</option>
-                </select>
-                <span id="status" style="margin-left: 10px; color: green; font-weight: bold;"></span>
+
+            <!-- Templates -->
+            <div class="sidebar-section">
+                <h3>💾 Saved Templates</h3>
+                <div id="templateList"></div>
+                <button class="btn btn-primary" id="saveTemplateBtn">💾 Save Current</button>
             </div>
-        </div>
 
-        <!-- HISTORY -->
-        <h3 style="margin-top: 30px;">🕐 Recent Emails (Click to load as starting point)</h3>
-        <div id="historyList"></div>
+            <!-- Signature -->
+            <div class="sidebar-section">
+                <h3>✍️ Signature</h3>
+                <button class="btn" id="editSignatureBtn">Edit Signature</button>
+                <button class="btn" id="insertSignatureBtn">Insert to Editor</button>
+            </div>
 
-        <!-- PREVIEW -->
-        <h3>👁️ Preview (What goes to MLGS):</h3>
-        <div class="preview-box" id="preview"></div>
+            <!-- Backup -->
+            <div class="sidebar-section">
+                <h3>💼 Backup</h3>
+                <button class="btn" id="backupBtn">📥 Backup All</button>
+                <button class="btn" id="restoreBtn">📤 Restore</button>
+                <input type="file" id="restoreFileInput" accept=".json" style="display: none;">
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div id="statusMessage" class="status-message"></div>
+
+            <!-- Subject Line Generator -->
+            <div class="card">
+                <div class="card-title">📧 Subject Line Generator</div>
+                <button class="btn btn-gold" id="generateSubjectsBtn">⚡ Generate 10 Subject Lines</button>
+                <div class="loading" id="subjectLoading">
+                    <div class="spinner"></div>
+                    <p style="margin-top: 10px;">Generating subjects...</p>
+                </div>
+                <div id="subjectResults" class="subject-results"></div>
+            </div>
+
+            <!-- Subject Field -->
+            <div class="card">
+                <div class="card-title">📝 Email Subject</div>
+                <input type="text" id="subjectInput" placeholder="Your subject line here...">
+            </div>
+
+            <!-- Email Body Editor -->
+            <div class="card">
+                <div class="card-title">✉️ Email Body</div>
+                <div id="editor"></div>
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button class="btn btn-gold" id="generateBodyBtn">⚡ Generate Body</button>
+                    <button class="btn" id="regenerateBodyBtn">🔄 Regenerate</button>
+                    <button class="btn btn-danger" id="clearEditorBtn">🗑️ Clear</button>
+                </div>
+                <div class="loading" id="bodyLoading">
+                    <div class="spinner"></div>
+                    <p style="margin-top: 10px;">Generating email body...</p>
+                </div>
+            </div>
+
+            <!-- Signature Section -->
+            <div class="card">
+                <div class="signature-header">
+                    <div class="card-title">✍️ Signature</div>
+                    <div class="lock-toggle">
+                        <span id="lockStatus">🔒 Locked</span>
+                        <div class="toggle-switch active" id="signatureLockToggle">
+                            <div class="toggle-slider"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="signatureEditor"></div>
+                <button class="btn btn-primary" id="saveSignatureBtn" style="margin-top: 15px;">💾 Save Signature</button>
+            </div>
+
+            <!-- Copy Actions -->
+            <div class="card">
+                <div class="card-title">📤 Copy & Export</div>
+                <div class="copy-actions">
+                    <button class="btn btn-primary" id="copyFullEmailBtn">📋 Copy Full Email (Subject + Body)</button>
+                    <button class="btn" id="copySubjectBtn">Copy Subject Only</button>
+                    <button class="btn" id="copyBodyBtn">Copy Body Only</button>
+                    <button class="btn" id="viewHtmlBtn">👁️ View HTML Source</button>
+                </div>
+            </div>
+        </main>
     </div>
+
+    <!-- API Settings Modal -->
+    <div class="modal" id="apiModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⚙️ API Settings</h2>
+                <span class="close-modal" id="closeApiModal">×</span>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-size: 14px;">API Provider</label>
+                <select id="apiProvider">
+                    <option value="groq">Groq (Recommended)</option>
+                    <option value="openrouter">OpenRouter</option>
+                </select>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-size: 14px;">API Key</label>
+                <input type="password" id="apiKeyInput" placeholder="Paste your API key here...">
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">
+                    Get free API key: 
+                    <a href="https://console.groq.com" target="_blank" style="color: var(--accent);">console.groq.com</a>
+                </p>
+            </div>
+            <button class="btn btn-primary" id="saveApiKeyBtn">💾 Save API Key</button>
+        </div>
+    </div>
+
+    <!-- Toast UI Editor -->
+    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 
     <script>
-        // Initialize
-        window.onload = function() {
-            loadStickyData();
-            updatePreview();
-            loadHistoryList();
-            updateTemplateDropdown();
+        // ============================================
+        // MLGS SWIPE MACHINE - Main Application
+        // ============================================
+
+        // Initialize Toast UI Editors
+        const bodyEditor = new toastui.Editor({
+            el: document.querySelector('#editor'),
+            height: '400px',
+            initialEditType: 'wysiwyg',
+            previewStyle: 'vertical',
+            toolbarItems: [
+                ['heading', 'bold', 'italic'],
+                ['ul', 'ol'],
+                ['link', 'image'],
+                ['code'],
+                ['scrollSync']
+            ],
+            theme: 'dark'
+        });
+
+        const signatureEditor = new toastui.Editor({
+            el: document.querySelector('#signatureEditor'),
+            height: '200px',
+            initialEditType: 'wysiwyg',
+            previewStyle: 'vertical',
+            toolbarItems: [
+                ['bold', 'italic'],
+                ['link'],
+            ],
+            theme: 'dark'
+        });
+
+        // ============================================
+        // Local Storage Management
+        // ============================================
+
+        const Storage = {
+            get(key, defaultValue = null) {
+                const item = localStorage.getItem(`mlgs_${key}`);
+                return item ? JSON.parse(item) : defaultValue;
+            },
+            set(key, value) {
+                localStorage.setItem(`mlgs_${key}`, JSON.stringify(value));
+            },
+            remove(key) {
+                localStorage.removeItem(`mlgs_${key}`);
+            }
         };
 
-        // Auto-save sticky elements
-        ['subject', 'header', 'footer'].forEach(id => {
-            document.getElementById(id).addEventListener('input', function() {
-                localStorage.setItem('mlgs_' + id, this.value);
-                updatePreview();
+        // ============================================
+        // State Management
+        // ============================================
+
+        let state = {
+            apiKey: Storage.get('api_key', ''),
+            apiProvider: Storage.get('api_provider', 'groq'),
+            signature: Storage.get('signature', ''),
+            signatureLocked: Storage.get('signature_locked', true),
+            templates: Storage.get('templates', []),
+            currentSubjects: [],
+            prompts: Storage.get('prompts', getDefaultPrompts())
+        };
+
+        function getDefaultPrompts() {
+            return {
+                'subject-curiosity': `Generate 10 highly curiosity-driven subject lines for My Lead Gen Secret (MLGS). Focus on:
+- "Weird trick" angles
+- "What nobody tells you" hooks
+- Discovery/reveal language
+- Numbers and specifics
+- Keep under 60 characters
+- High open rate triggers
+
+Context: MLGS gives users 100 fresh leads daily + $5 commissions per referral for a $60 one-time payment.`,
+
+                'subject-money': `Generate 10 money-focused subject lines for MLGS. Include:
+- Dollar amounts ($5, $60, daily income)
+- "Getting paid while..." angles
+- Passive income hooks
+- Proof-based language
+- Keep under 60 characters
+
+Context: MLGS pays $5 per referral + provides 100 leads daily for $60 one-time.`,
+
+                'subject-urgency': `Generate 10 urgency/scarcity subject lines for MLGS:
+- Time-sensitive language
+- "Before it's gone" angles
+- Limited availability hints
+- FOMO triggers
+- Keep under 60 characters
+
+Context: MLGS is $60 one-time (could change to monthly), gives 100 leads daily + $5/referral.`,
+
+                'subject-lazy': `Generate 10 "lazy method" subject lines for MLGS:
+- "No work required" angles
+- Automation language
+- "While you sleep" hooks
+- Effort-free positioning
+- Keep under 60 characters
+
+Context: MLGS automatically delivers 100 leads daily, pays $5 per referral, $60 one-time.`,
+
+                'subject-proof': `Generate 10 proof/results-based subject lines for MLGS:
+- Testimonial language
+- Specific results
+- "This morning I..." angles
+- Real numbers
+- Keep under 60 characters
+
+Context: MLGS members get 100 leads daily + earn $5 per referral for $60 one-time.`,
+
+                'body-full': `Write a complete high-converting promotional email for My Lead Gen Secret (MLGS).
+
+Structure:
+- Attention-grabbing opening (personal story or bold claim)
+- Main benefit: 100 fresh leads delivered daily automatically
+- Secondary benefit: Earn $5 every time someone joins under you
+- Price point: $60 one-time payment (mention could become monthly)
+- Social proof or urgency element
+- Strong call-to-action with link: https://troypringle.github.io/MLGS-Page/
+- Keep it 12-18 lines max
+- Tone: Excited friend who just made money
+- Use "I" and "you" language
+- NO signature (will be added separately)
+
+Make it feel authentic, not salesy.`,
+
+                'body-story': `Write a story-based email for MLGS that follows this structure:
+- Start with a relatable problem (needing leads, spending on ads, time-consuming prospecting)
+- Transition: "Then I found..."
+- Discovery: MLGS gives 100 leads daily + $5 commissions
+- Proof: Personal result or testimonial
+- Urgency: $60 one-time (not monthly yet)
+- CTA: https://troypringle.github.io/MLGS-Page/
+- Keep conversational, 14-20 lines
+- NO signature`,
+
+                'body-cta': `Write a direct, CTA-focused email for MLGS:
+- Open with benefit-driven question
+- List 3-4 bullet points of core benefits:
+  * 100 leads daily (automatic)
+  * $5 per referral
+  * $60 one-time payment
+  * No recruiting required
+- Address common objection
+- Strong urgency close
+- Link: https://troypringle.github.io/MLGS-Page/
+- Keep punchy, 10-14 lines
+- NO signature`,
+
+                'body-question': `Write a question-hook email for MLGS:
+- Open with provocative question
+- Answer with MLGS benefit
+- Explain how it works (briefly)
+- Mention 100 leads + $5 commissions
+- Price: $60 one-time
+- Question-based CTA
+- Link: https://troypringle.github.io/MLGS-Page/
+- Keep engaging, 12-16 lines
+- NO signature`
+            };
+        }
+
+        // ============================================
+        // UI Functions
+        // ============================================
+
+        function showStatus(message, type = 'success') {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = `status-message ${type} active`;
+            setTimeout(() => {
+                statusEl.classList.remove('active');
+            }, 3000);
+        }
+
+        function showLoading(elementId, show = true) {
+            const el = document.getElementById(elementId);
+            if (show) {
+                el.classList.add('active');
+            } else {
+                el.classList.remove('active');
+            }
+        }
+
+        // ============================================
+        // API Integration
+        // ============================================
+
+        async function callAI(prompt, systemPrompt = '') {
+            if (!state.apiKey) {
+                showStatus('Please set your API key in settings first', 'error');
+                throw new Error('No API key');
+            }
+
+            const apiUrls = {
+                groq: 'https://api.groq.com/openai/v1/chat/completions',
+                openrouter: 'https://openrouter.ai/api/v1/chat/completions'
+            };
+
+            const models = {
+                groq: 'llama-3.1-70b-versatile',
+                openrouter: 'meta-llama/llama-3.1-70b-instruct:free'
+            };
+
+            try {
+                const response = await fetch(apiUrls[state.apiProvider], {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${state.apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: models[state.apiProvider],
+                        messages: [
+                            ...(systemPrompt ? [{role: 'system', content: systemPrompt}] : []),
+                            {role: 'user', content: prompt}
+                        ],
+                        temperature: 0.9,
+                        max_tokens: 1000
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                return data.choices[0].message.content;
+            } catch (error) {
+                showStatus(`AI Error: ${error.message}`, 'error');
+                throw error;
+            }
+        }
+
+        // ============================================
+        // Subject Generation
+        // ============================================
+
+        document.getElementById('generateSubjectsBtn').addEventListener('click', async () => {
+            showLoading('subjectLoading', true);
+            
+            try {
+                const prompt = state.prompts['subject-curiosity']; // Default prompt
+                const result = await callAI(prompt, 'You are an expert email marketer specializing in high-converting subject lines for make-money-online offers. Output ONLY the subject lines, numbered 1-10, nothing else.');
+                
+                // Parse subjects
+                const subjects = result.split('\n')
+                    .filter(line => line.trim())
+                    .map(line => line.replace(/^\d+[\.\)]\s*/, '').trim())
+                    .filter(line => line.length > 0)
+                    .slice(0, 10);
+
+                state.currentSubjects = subjects;
+                renderSubjects(subjects);
+                showStatus('Generated 10 fresh subject lines!');
+            } catch (error) {
+                console.error(error);
+            } finally {
+                showLoading('subjectLoading', false);
+            }
+        });
+
+        function renderSubjects(subjects) {
+            const container = document.getElementById('subjectResults');
+            container.innerHTML = subjects.map((subject, index) => `
+                <div class="subject-option" data-index="${index}">
+                    <input type="radio" name="subject" id="subject${index}" value="${index}">
+                    <label for="subject${index}" style="flex: 1; cursor: pointer;">${subject}</label>
+                </div>
+            `).join('');
+
+            // Add click handlers
+            container.querySelectorAll('.subject-option').forEach(option => {
+                option.addEventListener('click', (e) => {
+                    const index = parseInt(option.dataset.index);
+                    document.getElementById(`subject${index}`).checked = true;
+                    document.getElementById('subjectInput').value = subjects[index];
+                    
+                    // Visual feedback
+                    container.querySelectorAll('.subject-option').forEach(o => o.classList.remove('selected'));
+                    option.classList.add('selected');
+                    
+                    showStatus('Subject line selected!');
+                });
+            });
+        }
+
+        // ============================================
+        // Body Generation
+        // ============================================
+
+        document.getElementById('generateBodyBtn').addEventListener('click', async () => {
+            showLoading('bodyLoading', true);
+            
+            try {
+                const prompt = state.prompts['body-full'];
+                const result = await callAI(prompt, 'You are an expert email copywriter for affiliate marketing. Write compelling, authentic promotional emails that convert.');
+                
+                bodyEditor.setHTML(formatEmailHTML(result));
+                
+                if (state.signatureLocked) {
+                    appendSignature();
+                }
+                
+                showStatus('Email body generated!');
+            } catch (error) {
+                console.error(error);
+            } finally {
+                showLoading('bodyLoading', false);
+            }
+        });
+
+        document.getElementById('regenerateBodyBtn').addEventListener('click', () => {
+            document.getElementById('generateBodyBtn').click();
+        });
+
+        // ============================================
+        // Signature Management
+        // ============================================
+
+        document.getElementById('signatureLockToggle').addEventListener('click', () => {
+            state.signatureLocked = !state.signatureLocked;
+            Storage.set('signature_locked', state.signatureLocked);
+            updateLockUI();
+            showStatus(state.signatureLocked ? 'Signature locked (auto-appends)' : 'Signature unlocked');
+        });
+
+        function updateLockUI() {
+            const toggle = document.getElementById('signatureLockToggle');
+            const status = document.getElementById('lockStatus');
+            
+            if (state.signatureLocked) {
+                toggle.classList.add('active');
+                status.textContent = '🔒 Locked';
+            } else {
+                toggle.classList.remove('active');
+                status.textContent = '🔓 Unlocked';
+            }
+        }
+
+        document.getElementById('saveSignatureBtn').addEventListener('click', () => {
+            state.signature = signatureEditor.getHTML();
+            Storage.set('signature', state.signature);
+            showStatus('Signature saved!');
+        });
+
+        document.getElementById('insertSignatureBtn').addEventListener('click', () => {
+            appendSignature();
+            showStatus('Signature inserted!');
+        });
+
+        function appendSignature() {
+            if (state.signature) {
+                const currentContent = bodyEditor.getHTML();
+                bodyEditor.setHTML(currentContent + '<br><br>' + state.signature);
+            }
+        }
+
+        document.getElementById('editSignatureBtn').addEventListener('click', () => {
+            signatureEditor.setHTML(state.signature);
+        });
+
+        // ============================================
+        // Copy Functions
+        // ============================================
+
+        document.getElementById('copySubjectBtn').addEventListener('click', () => {
+            const subject = document.getElementById('subjectInput').value;
+            copyToClipboard(subject);
+            showStatus('Subject copied!');
+        });
+
+        document.getElementById('copyBodyBtn').addEventListener('click', () => {
+            const html = cleanEmailHTML(bodyEditor.getHTML());
+            copyToClipboard(html);
+            showStatus('Body HTML copied!');
+        });
+
+        document.getElementById('copyFullEmailBtn').addEventListener('click', () => {
+            const subject = document.getElementById('subjectInput').value;
+            const body = cleanEmailHTML(bodyEditor.getHTML());
+            const fullEmail = `SUBJECT: ${subject}\n\n---\n\n${body}`;
+            copyToClipboard(fullEmail);
+            showStatus('Full email copied! (Subject + Body)');
+        });
+
+        document.getElementById('viewHtmlBtn').addEventListener('click', () => {
+            const html = cleanEmailHTML(bodyEditor.getHTML());
+            const win = window.open('', 'HTML Source', 'width=800,height=600');
+            win.document.write(`<pre style="background:#1e1e1e;color:#d4d4d4;padding:20px;font-family:monospace;white-space:pre-wrap;">${escapeHtml(html)}</pre>`);
+        });
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ============================================
+        // HTML Formatting
+        // ============================================
+
+        function formatEmailHTML(text) {
+            // Convert plain text to basic HTML paragraphs
+            return text.split('\n\n').map(para => {
+                if (para.trim()) {
+                    return `<p><span style="font-size:16px">${para.trim()}</span></p>`;
+                }
+                return '';
+            }).join('\n');
+        }
+
+        function cleanEmailHTML(html) {
+            // Remove Toast UI wrapper classes and keep only inline styles
+            // This matches MLGS format
+            let clean = html;
+            
+            // Remove unnecessary attributes but keep inline styles
+            clean = clean.replace(/class="[^"]*"/g, '');
+            clean = clean.replace(/data-[^=]*="[^"]*"/g, '');
+            clean = clean.replace(/contenteditable="[^"]*"/g, '');
+            
+            return clean;
+        }
+
+        // ============================================
+        // Template Management
+        // ============================================
+
+        document.getElementById('saveTemplateBtn').addEventListener('click', () => {
+            const name = prompt('Template name:');
+            if (!name) return;
+
+            const template = {
+                id: Date.now(),
+                name: name,
+                subject: document.getElementById('subjectInput').value,
+                body: bodyEditor.getHTML(),
+                created: new Date().toISOString()
+            };
+
+            state.templates.push(template);
+            Storage.set('templates', state.templates);
+            renderTemplates();
+            showStatus('Template saved!');
+        });
+
+        function renderTemplates() {
+            const container = document.getElementById('templateList');
+            if (state.templates.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-muted); font-size: 12px;">No saved templates</p>';
+                return;
+            }
+
+            container.innerHTML = state.templates.map(t => `
+                <div class="template-item" data-id="${t.id}">
+                    <span class="template-name">${t.name}</span>
+                    <div class="template-actions">
+                        <button class="btn btn-small load-template">Load</button>
+                        <button class="btn btn-small btn-danger delete-template">×</button>
+                    </div>
+                </div>
+            `).join('');
+
+            // Add event listeners
+            container.querySelectorAll('.load-template').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const id = parseInt(btn.closest('.template-item').dataset.id);
+                    loadTemplate(id);
+                });
+            });
+
+            container.querySelectorAll('.delete-template').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const id = parseInt(btn.closest('.template-item').dataset.id);
+                    deleteTemplate(id);
+                });
+            });
+        }
+
+        function loadTemplate(id) {
+            const template = state.templates.find(t => t.id === id);
+            if (template) {
+                document.getElementById('subjectInput').value = template.subject;
+                bodyEditor.setHTML(template.body);
+                showStatus(`Loaded: ${template.name}`);
+            }
+        }
+
+        function deleteTemplate(id) {
+            if (!confirm('Delete this template?')) return;
+            state.templates = state.templates.filter(t => t.id !== id);
+            Storage.set('templates', state.templates);
+            renderTemplates();
+            showStatus('Template deleted');
+        }
+
+        // ============================================
+        // Backup & Restore
+        // ============================================
+
+        document.getElementById('backupBtn').addEventListener('click', () => {
+            const backup = {
+                version: '1.0',
+                date: new Date().toISOString(),
+                signature: state.signature,
+                signatureLocked: state.signatureLocked,
+                templates: state.templates,
+                prompts: state.prompts
+            };
+
+            const blob = new Blob([JSON.stringify(backup, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `mlgs-backup-${Date.now()}.json`;
+            a.click();
+            showStatus('Backup downloaded!');
+        });
+
+        document.getElementById('restoreBtn').addEventListener('click', () => {
+            document.getElementById('restoreFileInput').click();
+        });
+
+        document.getElementById('restoreFileInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const backup = JSON.parse(event.target.result);
+                    
+                    state.signature = backup.signature || '';
+                    state.signatureLocked = backup.signatureLocked !== undefined ? backup.signatureLocked : true;
+                    state.templates = backup.templates || [];
+                    state.prompts = backup.prompts || getDefaultPrompts();
+
+                    Storage.set('signature', state.signature);
+                    Storage.set('signature_locked', state.signatureLocked);
+                    Storage.set('templates', state.templates);
+                    Storage.set('prompts', state.prompts);
+
+                    signatureEditor.setHTML(state.signature);
+                    updateLockUI();
+                    renderTemplates();
+
+                    showStatus('Backup restored successfully!');
+                } catch (error) {
+                    showStatus('Invalid backup file', 'error');
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        // ============================================
+        // API Settings Modal
+        // ============================================
+
+        document.getElementById('apiSettingsBtn').addEventListener('click', () => {
+            document.getElementById('apiModal').classList.add('active');
+            document.getElementById('apiProvider').value = state.apiProvider;
+            document.getElementById('apiKeyInput').value = state.apiKey;
+        });
+
+        document.getElementById('closeApiModal').addEventListener('click', () => {
+            document.getElementById('apiModal').classList.remove('active');
+        });
+
+        document.getElementById('saveApiKeyBtn').addEventListener('click', () => {
+            state.apiKey = document.getElementById('apiKeyInput').value;
+            state.apiProvider = document.getElementById('apiProvider').value;
+            
+            Storage.set('api_key', state.apiKey);
+            Storage.set('api_provider', state.apiProvider);
+            
+            document.getElementById('apiModal').classList.remove('active');
+            showStatus('API settings saved!');
+        });
+
+        // ============================================
+        // Prompt Library
+        // ============================================
+
+        document.querySelectorAll('.prompt-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const type = btn.dataset.type;
+                const prompt = state.prompts[type];
+                copyToClipboard(prompt);
+                showStatus(`Copied ${btn.textContent.trim()} prompt!`);
             });
         });
 
-        // Update preview on body change
-        document.getElementById('body').addEventListener('input', updatePreview);
+        // ============================================
+        // Clear Editor
+        // ============================================
 
-        function loadStickyData() {
-            ['subject', 'header', 'footer'].forEach(id => {
-                const saved = localStorage.getItem('mlgs_' + id);
-                if (saved) document.getElementById(id).value = saved;
-            });
-        }
-
-        function getFullEmail() {
-            const subject = document.getElementById('subject').value;
-            const header = document.getElementById('header').value;
-            const body = document.getElementById('body').value;
-            const footer = document.getElementById('footer').value;
-            
-            return `Subject: ${subject}\n\n${header}\n\n${body}\n\n${footer}`;
-        }
-
-        function updatePreview() {
-            document.getElementById('preview').textContent = getFullEmail();
-        }
-
-        function copyToClipboard() {
-            navigator.clipboard.writeText(getFullEmail()).then(() => {
-                showStatus('✅ Copied! Paste into MLGS now.');
-            });
-        }
-
-        function clearBody() {
-            if(confirm('Clear only the body text? (Header/Footer stay safe)')) {
-                document.getElementById('body').value = '';
-                updatePreview();
+        document.getElementById('clearEditorBtn').addEventListener('click', () => {
+            if (confirm('Clear the editor?')) {
+                bodyEditor.setHTML('');
+                showStatus('Editor cleared');
             }
-        }
+        });
 
-        // Template System
-        function saveTemplate() {
-            const name = prompt('Name this template (e.g., "Daily Value", "Scarcity"):');
-            if (!name) return;
-            
-            const template = {
-                subject: document.getElementById('subject').value,
-                header: document.getElementById('header').value,
-                body: document.getElementById('body').value,
-                footer: document.getElementById('footer').value
-            };
-            
-            let templates = JSON.parse(localStorage.getItem('mlgs_templates') || '{}');
-            templates[name] = template;
-            localStorage.setItem('mlgs_templates', JSON.stringify(templates));
-            
-            updateTemplateDropdown();
-            showStatus('Template saved!');
-        }
+        // ============================================
+        // Help Button
+        // ============================================
 
-        function updateTemplateDropdown() {
-            const select = document.getElementById('templateSelect');
-            const templates = JSON.parse(localStorage.getItem('mlgs_templates') || '{}');
-            
-            select.innerHTML = '<option value="">-- Select Saved Template --</option>';
-            Object.keys(templates).forEach(name => {
-                select.innerHTML += `<option value="${name}">${name}</option>`;
-            });
-        }
+        document.getElementById('helpBtn').addEventListener('click', () => {
+            alert(`🔥 MLGS SWIPE MACHINE - Quick Guide
 
-        function loadSelectedTemplate() {
-            const name = document.getElementById('templateSelect').value;
-            if (!name) return;
-            
-            const templates = JSON.parse(localStorage.getItem('mlgs_templates') || '{}');
-            const t = templates[name];
-            
-            if (t) {
-                document.getElementById('subject').value = t.subject;
-                document.getElementById('header').value = t.header;
-                document.getElementById('body').value = t.body;
-                document.getElementById('footer').value = t.footer;
-                
-                // Re-save sticky parts
-                localStorage.setItem('mlgs_subject', t.subject);
-                localStorage.setItem('mlgs_header', t.header);
-                localStorage.setItem('mlgs_footer', t.footer);
-                
-                updatePreview();
-                showStatus('Template loaded!');
-            }
-        }
+1. Set API Key (Settings button)
+   - Get free key: console.groq.com
+   
+2. Generate Subjects
+   - Click "Generate 10 Subject Lines"
+   - Click any subject to use it
+   
+3. Generate Body
+   - Click "Generate Body"
+   - Edit in visual editor
+   - Images, links, formatting all work
+   
+4. Signature
+   - Edit your signature once
+   - Lock it to auto-append
+   - Or unlock for custom emails
+   
+5. Copy & Paste
+   - "Copy Full Email" = Subject + Body together
+   - Paste into MLGS, grab subject from top
+   - Or copy Subject/Body separately
+   
+6. Save Templates
+   - Save winning emails
+   - Load anytime
+   
+7. Backup
+   - Download all your data
+   - Restore anytime
 
-        // History System (Load previous emails as base)
-        function saveToHistory() {
-            const history = JSON.parse(localStorage.getItem('mlgs_history') || '[]');
-            const email = {
-                date: new Date().toLocaleString(),
-                subject: document.getElementById('subject').value,
-                content: getFullEmail()
-            };
-            
-            history.unshift(email);
-            if (history.length > 10) history.pop(); // Keep last 10
-            
-            localStorage.setItem('mlgs_history', JSON.stringify(history));
-            loadHistoryList();
-            showStatus('Saved to history!');
-        }
+Never lose your work. Never wait for MLGS timer.`);
+        });
 
-        function loadHistoryList() {
-            const history = JSON.parse(localStorage.getItem('mlgs_history') || '[]');
-            const container = document.getElementById('historyList');
-            
-            if (history.length === 0) {
-                container.innerHTML = '<p style="color: #999;">No history yet...</p>';
-                return;
+        // ============================================
+        // Initialize App
+        // ============================================
+
+        function init() {
+            // Load signature
+            if (state.signature) {
+                signatureEditor.setHTML(state.signature);
             }
             
-            container.innerHTML = history.map((h, i) => `
-                <div class="history-item" onclick="loadHistoryItem(${i})">
-                    <strong>${h.date}</strong> - ${h.subject.substring(0, 50)}...
-                </div>
-            `).join('');
+            // Update UI
+            updateLockUI();
+            renderTemplates();
+            
+            console.log('🔥 MLGS Swipe Machine Ready');
         }
 
-        function loadHistoryItem(index) {
-            const history = JSON.parse(localStorage.getItem('mlgs_history') || '[]');
-            const h = history[index];
-            
-            // Parse the full email back (simple parse)
-            const lines = h.content.split('\n');
-            document.getElementById('subject').value = lines[0].replace('Subject: ', '');
-            
-            // Load into body as a starting point, but keep sticky header/footer if user wants
-            if(confirm('Load this into the BODY area? (Your sticky Header/Footer stay unchanged)')) {
-                // Extract just the body portion (between header and footer)
-                document.getElementById('body').value = lines.slice(1).join('\n');
-                updatePreview();
-            }
-        }
-
-        function showStatus(msg) {
-            const s = document.getElementById('status');
-            s.textContent = msg;
-            setTimeout(() => s.textContent = '', 3000);
-        }
+        init();
     </script>
-</body>
-</html>
 
 </body>
 </html>
-
-
