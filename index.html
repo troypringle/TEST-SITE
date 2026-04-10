@@ -13,21 +13,23 @@
         }
 
         :root {
-            --bg-dark: #0d1117;
-            --bg-panel: #161b22;
-            --bg-input: #1c2128;
-            --border: #30363d;
-            --text: #e6edf3;
-            --text-muted: #8b949e;
-            --accent: #00ff88;
+            --bg-main: #f5f0e8;
+            --bg-panel: #ffffff;
+            --bg-input: #fafaf8;
+            --border: #d4c5a9;
+            --text: #2c2416;
+            --text-muted: #8b7d6b;
+            --accent: #d4a574;
+            --accent-dark: #b8915f;
             --gold: #ffd700;
-            --red: #ff4444;
-            --blue: #58a6ff;
+            --red: #c74444;
+            --blue: #5b8db8;
+            --green: #6b9b6e;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--bg-dark);
+            background: var(--bg-main);
             color: var(--text);
             line-height: 1.6;
         }
@@ -44,26 +46,24 @@
             border-radius: 8px;
             margin-bottom: 20px;
             border: 2px solid var(--accent);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .header h1 {
-            background: linear-gradient(135deg, var(--accent), var(--gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--accent-dark);
             font-size: 28px;
+            font-weight: 700;
         }
 
         .header-actions {
             display: flex;
             gap: 10px;
+            margin-top: 10px;
         }
 
         .grid {
             display: grid;
-            grid-template-columns: 300px 1fr 1fr;
+            grid-template-columns: 320px 1fr 1fr;
             gap: 20px;
         }
 
@@ -75,6 +75,7 @@
             height: fit-content;
             position: sticky;
             top: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .editor-col, .preview-col {
@@ -88,25 +89,17 @@
             border: 1px solid var(--border);
             border-radius: 8px;
             padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .card-title {
             font-size: 16px;
             font-weight: 600;
             margin-bottom: 15px;
-            color: var(--accent);
+            color: var(--accent-dark);
             display: flex;
             align-items: center;
             gap: 8px;
-        }
-
-        .card-title .badge {
-            background: var(--accent);
-            color: #000;
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 4px;
-            text-transform: uppercase;
         }
 
         .section-title {
@@ -137,36 +130,32 @@
         }
 
         .btn:hover {
-            background: var(--bg-dark);
-            border-color: var(--accent);
-            color: var(--text);
+            background: var(--accent);
+            color: white;
             transform: translateY(-1px);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--accent), #00cc6a);
+            background: var(--accent-dark);
             border: none;
-            color: #000;
+            color: white;
             font-weight: 600;
         }
 
         .btn-primary:hover {
-            background: linear-gradient(135deg, #00cc6a, var(--accent));
-            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
-            color: #000;
+            background: var(--accent);
+            box-shadow: 0 4px 8px rgba(180, 145, 95, 0.3);
         }
 
         .btn-gold {
-            background: linear-gradient(135deg, var(--gold), #ffed4e);
+            background: var(--gold);
             border: none;
             color: #000;
             font-weight: 600;
         }
 
         .btn-gold:hover {
-            background: linear-gradient(135deg, #ffed4e, var(--gold));
-            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
-            color: #000;
+            background: #ffed4e;
         }
 
         .btn-red {
@@ -176,20 +165,13 @@
         }
 
         .btn-red:hover {
-            background: #cc0000;
-            color: white;
+            background: #a83838;
         }
 
         .btn-blue {
             background: var(--blue);
             border: none;
-            color: #000;
-            font-weight: 600;
-        }
-
-        .btn-blue:hover {
-            background: #79b8ff;
-            color: #000;
+            color: white;
         }
 
         .btn-small {
@@ -216,8 +198,9 @@
         textarea {
             min-height: 300px;
             resize: vertical;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
+            font-family: inherit;
+            font-size: 14px;
+            line-height: 1.6;
         }
 
         input:focus,
@@ -225,59 +208,6 @@
         select:focus {
             outline: none;
             border-color: var(--accent);
-        }
-
-        .usage-stats {
-            background: var(--bg-input);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 12px;
-            margin-top: 10px;
-        }
-
-        .usage-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 6px 0;
-            border-bottom: 1px solid var(--border);
-            font-size: 12px;
-        }
-
-        .usage-row:last-child {
-            border-bottom: none;
-        }
-
-        .usage-label {
-            color: var(--text-muted);
-        }
-
-        .usage-value {
-            color: var(--accent);
-            font-weight: 600;
-        }
-
-        .usage-value.warning {
-            color: var(--gold);
-        }
-
-        .usage-value.danger {
-            color: var(--red);
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 6px;
-            background: var(--bg-dark);
-            border-radius: 3px;
-            overflow: hidden;
-            margin-top: 8px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent), var(--gold));
-            transition: width 0.3s;
         }
 
         .subject-list {
@@ -299,13 +229,13 @@
 
         .subject-item:hover {
             border-color: var(--accent);
-            background: var(--bg-dark);
-            color: var(--text);
+            background: #fff;
         }
 
         .subject-item.selected {
-            border-color: var(--accent);
-            background: rgba(0, 255, 136, 0.1);
+            border-color: var(--accent-dark);
+            background: #fff9f0;
+            font-weight: 600;
         }
 
         .preview-frame {
@@ -318,6 +248,7 @@
             font-size: 16px;
             line-height: 1.6;
             overflow: auto;
+            border: 1px solid var(--border);
         }
 
         .preview-frame img {
@@ -340,18 +271,6 @@
             align-items: center;
         }
 
-        .preview-header-title {
-            font-size: 12px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .preview-body {
-            border: 1px solid var(--border);
-            border-radius: 0 0 6px 6px;
-        }
-
         .preview-subject {
             background: var(--bg-input);
             padding: 12px 15px;
@@ -360,7 +279,7 @@
         }
 
         .preview-subject strong {
-            color: var(--gold);
+            color: var(--accent-dark);
         }
 
         .toast {
@@ -368,10 +287,10 @@
             bottom: 20px;
             right: 20px;
             background: var(--bg-panel);
-            border: 1px solid var(--accent);
+            border: 2px solid var(--accent);
             padding: 15px 20px;
             border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             display: none;
             z-index: 1000;
             max-width: 350px;
@@ -402,7 +321,7 @@
         }
 
         .spinner {
-            border: 3px solid var(--bg-input);
+            border: 3px solid var(--border);
             border-top: 3px solid var(--accent);
             border-radius: 50%;
             width: 30px;
@@ -449,7 +368,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.7);
             z-index: 2000;
             padding: 20px;
             overflow: auto;
@@ -487,30 +406,76 @@
             font-size: 14px;
         }
 
-        .modal-close:hover {
-            background: #cc0000;
-        }
-
-        .html-output {
-            background: #0a0a0a;
-            color: #00ff88;
-            padding: 15px;
+        .prompt-item {
+            background: var(--bg-input);
+            padding: 12px;
             border-radius: 6px;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            max-height: 500px;
-            overflow: auto;
+            margin-bottom: 8px;
             border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        .sig-tabs {
+        .prompt-item:hover {
+            background: white;
+            border-color: var(--accent);
+        }
+
+        .prompt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: var(--accent-dark);
+        }
+
+        .template-item {
+            background: var(--bg-input);
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            border: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .template-name {
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .template-name:hover {
+            color: var(--accent-dark);
+        }
+
+        .sig-selector {
             display: flex;
             gap: 5px;
+            flex-wrap: wrap;
             margin-bottom: 10px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 8px;
+        }
+
+        .sig-tab {
+            padding: 6px 12px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .sig-tab:hover {
+            background: white;
+        }
+
+        .sig-tab.active {
+            background: var(--accent-dark);
+            color: white;
+            border-color: var(--accent-dark);
         }
 
         @media (max-width: 1200px) {
@@ -521,10 +486,6 @@
             .sidebar {
                 position: static;
             }
-
-            .preview-col {
-                order: -1;
-            }
         }
     </style>
 </head>
@@ -534,38 +495,43 @@
         <span id="toastMessage"></span>
     </div>
 
-    <div class="modal" id="htmlModal">
+    <!-- Edit Prompt Modal -->
+    <div class="modal" id="promptModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 style="color: var(--accent);">📄 HTML Source Code</h2>
-                <button class="modal-close" id="closeHtmlModal">✕ Close</button>
+                <h2 style="color: var(--accent-dark);">✏️ Edit Prompt</h2>
+                <button class="modal-close" id="closePromptModal">✕</button>
             </div>
-            <p class="help-text">Copy this HTML and paste into MLGS email body:</p>
-            <pre class="html-output" id="htmlOutput"></pre>
-            <div class="button-row" style="margin-top: 15px;">
-                <button class="btn btn-primary" id="copyHtmlBtn">📋 Copy HTML Code</button>
+            <div style="margin-bottom: 15px;">
+                <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 5px;">Prompt Name</label>
+                <input type="text" id="promptName" placeholder="e.g., Money Angle">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 5px;">Subject Prompt</label>
+                <textarea id="promptSubject" rows="4"></textarea>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 5px;">Body Prompt</label>
+                <textarea id="promptBody" rows="8"></textarea>
+            </div>
+            <div class="button-row">
+                <button class="btn btn-primary" id="savePromptBtn">💾 Save Prompt</button>
+                <button class="btn btn-red" id="deletePromptBtn">🗑️ Delete</button>
             </div>
         </div>
     </div>
 
-    <div class="modal" id="previewModal">
-        <div class="modal-content" style="max-width: 700px;">
+    <!-- HTML View Modal -->
+    <div class="modal" id="htmlModal">
+        <div class="modal-content">
             <div class="modal-header">
-                <h2 style="color: var(--accent);">👁️ Full Email Preview</h2>
-                <button class="modal-close" id="closePreviewModal">✕ Close</button>
+                <h2 style="color: var(--accent-dark);">📄 HTML Source</h2>
+                <button class="modal-close" id="closeHtmlModal">✕</button>
             </div>
-            <div class="preview-header">
-                <span class="preview-header-title">Email Preview</span>
-            </div>
-            <div class="preview-body">
-                <div class="preview-subject" id="modalPreviewSubject">
-                    <strong>Subject:</strong> <span id="modalSubjectText"></span>
-                </div>
-                <div class="preview-frame" id="modalPreviewFrame"></div>
-            </div>
+            <textarea id="htmlEditor" style="min-height: 400px; font-family: 'Courier New', monospace; font-size: 12px;"></textarea>
             <div class="button-row" style="margin-top: 15px;">
-                <button class="btn btn-primary" id="copyFromPreviewBtn">📋 Copy Full Email</button>
-                <button class="btn btn-blue" id="viewHtmlFromPreviewBtn">📄 View HTML</button>
+                <button class="btn btn-primary" id="applyHtmlBtn">✓ Apply Changes</button>
+                <button class="btn" id="copyHtmlBtn">📋 Copy HTML</button>
             </div>
         </div>
     </div>
@@ -574,78 +540,54 @@
         <div class="header">
             <h1>🔥 MLGS Swipe Machine</h1>
             <div class="header-actions">
-                <button class="btn btn-small" id="apiBtn">⚙️ API</button>
+                <button class="btn btn-small" id="apiBtn">⚙️ API Key</button>
                 <button class="btn btn-small" id="helpBtn">❓ Help</button>
             </div>
         </div>
 
         <div class="grid">
+            <!-- Sidebar -->
             <div class="sidebar">
-                <div id="apiCard">
-                    <div class="section-title">⚙️ Groq API (Free Forever)</div>
-                    <p class="help-text">Get permanent key: <a href="https://console.groq.com" target="_blank" style="color: var(--accent);">console.groq.com</a></p>
+                <div id="apiCard" style="display: none;">
+                    <div class="section-title">⚙️ Groq API Key</div>
+                    <p class="help-text">Get free key: <a href="https://console.groq.com" target="_blank" style="color: var(--accent-dark);">console.groq.com</a></p>
                     
-                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 5px;">Model</label>
                     <select id="modelSelect" style="margin-bottom: 10px;">
-                        <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Best Quality)</option>
-                        <option value="llama-3.1-8b-instant">Llama 3.1 8B (Fastest)</option>
-                        <option value="mixtral-8x7b-32768">Mixtral 8x7B (Good Balance)</option>
+                        <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Best)</option>
+                        <option value="llama-3.1-8b-instant">Llama 3.1 8B (Fast)</option>
+                        <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
                     </select>
                     
-                    <input type="password" id="apiKeyInput" placeholder="Paste Groq API key...">
-                    <button class="btn btn-primary" id="saveApiBtn" style="margin-top: 8px;">Save API Key</button>
-                    
+                    <input type="password" id="apiKeyInput" placeholder="Paste API key...">
+                    <button class="btn btn-primary" id="saveApiBtn" style="margin-top: 8px;">Save Key</button>
                     <div class="divider"></div>
                 </div>
 
-                <div class="section-title">📊 Usage Stats</div>
-                <div class="usage-stats">
-                    <div class="usage-row">
-                        <span class="usage-label">This Session:</span>
-                        <span class="usage-value" id="sessionTokens">0</span>
-                    </div>
-                    <div class="usage-row">
-                        <span class="usage-label">Today:</span>
-                        <span class="usage-value" id="dailyTokens">0</span>
-                    </div>
-                    <div class="usage-row">
-                        <span class="usage-label">Last Request:</span>
-                        <span class="usage-value" id="lastTokens">0</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="usageProgress" style="width: 0%"></div>
-                    </div>
-                    <button class="btn btn-small" id="resetUsageBtn" style="margin-top: 8px; width: 100%;">Reset Counter</button>
-                </div>
-
-                <div class="divider"></div>
-
-                <div class="section-title">⚡ Generate Email</div>
-                <p class="help-text">Click to generate subject + body:</p>
-                <button class="btn btn-gold" data-type="curiosity">🧠 Curiosity</button>
-                <button class="btn btn-gold" data-type="money">💰 Money</button>
-                <button class="btn btn-gold" data-type="urgency">⏰ Urgency</button>
-                <button class="btn btn-gold" data-type="lazy">😴 Lazy</button>
-                <button class="btn btn-gold" data-type="proof">📊 Proof</button>
+                <div class="section-title">⚡ Prompt Library</div>
+                <p class="help-text">Click to generate, right-click to edit</p>
+                <div id="promptList"></div>
+                <button class="btn btn-primary" id="addPromptBtn" style="margin-top: 8px;">➕ Add New Prompt</button>
                 
                 <div class="divider"></div>
                 
-                <div class="section-title">💾 Templates</div>
-                <button class="btn btn-primary" id="saveTemplateBtn">Save Current</button>
-                <div id="templateList" style="margin-top: 10px;"></div>
+                <div class="section-title">💾 Email Templates</div>
+                <div id="templateList"></div>
+                <button class="btn btn-primary" id="saveTemplateBtn" style="margin-top: 8px;">💾 Save Current</button>
 
                 <div class="divider"></div>
 
-                <div class="section-title">✍️ Signature</div>
-                <button class="btn" id="editSignatureBtn">Edit Signature</button>
-                <button class="btn" id="insertSignatureBtn">Insert to Body</button>
+                <div class="section-title">✍️ Signatures</div>
+                <div class="sig-selector" id="sigSelector"></div>
+                <button class="btn" id="manageSigBtn">⚙️ Manage Signatures</button>
+                <button class="btn btn-primary" id="insertSigBtn">Insert Selected</button>
             </div>
 
+            <!-- Editor Column -->
             <div class="editor-col">
                 <div class="card">
                     <div class="card-title">📧 Subject Line</div>
                     <input type="text" id="subjectInput" placeholder="Your subject line..." oninput="updatePreview()">
-                    <button class="btn btn-gold" id="generateSubjectsBtn" style="margin-top: 10px;">Generate 10 Subjects</button>
+                    <button class="btn btn-gold" id="generateSubjectsBtn" style="margin-top: 10px;">⚡ Generate 10 Subjects</button>
                     <div class="loading" id="subjectLoading">
                         <div class="spinner"></div>
                         <p style="margin-top: 10px; font-size: 13px;">Generating...</p>
@@ -654,13 +596,12 @@
                 </div>
 
                 <div class="card">
-                    <div class="card-title">
-                        ✉️ Email Body 
-                        <span class="badge">HTML</span>
-                    </div>
-                    <textarea id="bodyEditor" placeholder="Your email HTML..." oninput="updatePreview()"></textarea>
+                    <div class="card-title">✉️ Email Body</div>
+                    <p class="help-text">Type naturally - HTML formatting added automatically</p>
+                    <textarea id="bodyEditor" placeholder="Start typing your email here..." oninput="updatePreview()"></textarea>
                     <div class="button-row">
-                        <button class="btn btn-gold" id="generateBodyBtn">Generate Body</button>
+                        <button class="btn btn-gold" id="generateBodyBtn">⚡ Generate Body</button>
+                        <button class="btn btn-blue" id="editHtmlBtn">📝 Edit HTML</button>
                         <button class="btn btn-red" id="clearBtn">Clear</button>
                     </div>
                     <div class="loading" id="bodyLoading">
@@ -668,68 +609,34 @@
                         <p style="margin-top: 10px; font-size: 13px;">Generating...</p>
                     </div>
                 </div>
-
-                <div class="card" id="signatureCard" style="display: none;">
-                    <div class="card-title">✍️ Signature HTML</div>
-                    <p class="help-text">Paste your MLGS signature HTML here. HTML will be preserved exactly.</p>
-                    
-                    <div class="sig-tabs">
-                        <button class="btn btn-small" id="sigEditTab" style="background: var(--accent); color: #000;">✏️ Edit HTML</button>
-                        <button class="btn btn-small" id="sigPreviewTab">👁️ Preview</button>
-                    </div>
-                    
-                    <div id="sigEditView">
-                        <textarea id="signatureEditor" style="min-height: 200px; font-family: 'Courier New', monospace; font-size: 12px;" placeholder="Paste your signature HTML here..."></textarea>
-                    </div>
-                    
-                    <div id="sigPreviewView" style="display: none;">
-                        <div style="background: #ffffff; color: #000; padding: 15px; border-radius: 6px; min-height: 200px; font-family: Arial, sans-serif;">
-                            <div id="signaturePreview"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="button-row">
-                        <button class="btn btn-primary" id="saveSignatureBtn">💾 Save Signature</button>
-                        <button class="btn btn-blue" id="testSignatureBtn">🧪 Test Preview</button>
-                        <button class="btn btn-red" id="closeSignatureBtn">✕ Close</button>
-                    </div>
-                </div>
             </div>
 
+            <!-- Preview Column -->
             <div class="preview-col">
                 <div class="card">
-                    <div class="card-title">
-                        👁️ Live Preview
-                        <span class="badge">Real-time</span>
-                    </div>
+                    <div class="card-title">👁️ Live Preview</div>
                     <div class="preview-header">
-                        <span class="preview-header-title">Email Preview</span>
-                        <button class="btn btn-small btn-blue" id="openFullPreviewBtn">⛶ Expand</button>
+                        <span style="font-size: 12px; color: var(--text-muted);">Email Preview</span>
                     </div>
-                    <div class="preview-body">
+                    <div style="border: 1px solid var(--border); border-top: none; border-radius: 0 0 6px 6px;">
                         <div class="preview-subject">
                             <strong>Subject:</strong> <span id="previewSubject">Your subject line...</span>
                         </div>
                         <div class="preview-frame" id="previewFrame">
-                            <p style="color: #999;">Start typing or generate an email to see preview...</p>
+                            <p style="color: #999;">Start typing to see preview...</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="card">
                     <div class="card-title">📤 Copy to MLGS</div>
-                    <p class="help-text">
-                        Copy full email (HTML preserved), paste into MLGS body field.
-                    </p>
+                    <p class="help-text">Copy and paste into your MLGS email editor</p>
                     <button class="btn btn-primary" id="copyFullBtn" style="font-size: 15px; padding: 14px;">
-                        📋 Copy Full Email (Subject + Body HTML)
+                        📋 Copy Full Email (Subject + Body)
                     </button>
                     <div class="button-row">
                         <button class="btn" id="copySubjectBtn">Copy Subject</button>
-                        <button class="btn" id="copyBodyBtn">Copy Body HTML</button>
-                    </div>
-                    <div class="button-row">
-                        <button class="btn btn-blue" id="viewHtmlBtn">📄 View HTML Source</button>
+                        <button class="btn" id="copyBodyBtn">Copy Body</button>
                     </div>
                 </div>
             </div>
@@ -740,90 +647,47 @@
         let state = {
             apiKey: localStorage.getItem('mlgs_api_key') || '',
             model: localStorage.getItem('mlgs_model') || 'llama-3.3-70b-versatile',
-            signature: localStorage.getItem('mlgs_signature') || '',
             templates: JSON.parse(localStorage.getItem('mlgs_templates') || '[]'),
-            currentType: 'curiosity',
-            usage: {
-                session: 0,
-                daily: parseInt(localStorage.getItem('mlgs_daily_tokens') || '0'),
-                lastDate: localStorage.getItem('mlgs_last_date') || new Date().toDateString(),
-                last: 0
-            }
+            signatures: JSON.parse(localStorage.getItem('mlgs_signatures') || '[{"id":1,"name":"MLGS","content":""}]'),
+            currentSig: parseInt(localStorage.getItem('mlgs_current_sig') || '1'),
+            prompts: JSON.parse(localStorage.getItem('mlgs_prompts') || 'null') || getDefaultPrompts(),
+            currentPrompt: null
         };
 
-        if (state.usage.lastDate !== new Date().toDateString()) {
-            state.usage.daily = 0;
-            localStorage.setItem('mlgs_daily_tokens', '0');
-            localStorage.setItem('mlgs_last_date', new Date().toDateString());
+        function getDefaultPrompts() {
+            return [
+                {
+                    id: 1,
+                    name: "💰 Money Angle",
+                    subject: "Generate 10 compelling subject lines for MLGS (My Lead Gen Secret) focused on making money. Each subject should:\n- Mention $5 commissions or $60 one-time cost\n- Create urgency or curiosity\n- Be under 60 characters\n- Avoid spam words\n\nOutput ONLY the numbered list 1-10, nothing else.",
+                    body: "Write a promotional email for MLGS (My Lead Gen Secret) using a money-focused angle.\n\nKey points:\n- 100 leads delivered daily automatically\n- Earn $5 per referral\n- Only $60 one-time (not monthly)\n- Link: https://troypringle.github.io/MLGS-Page/\n\nWrite in a conversational, excited tone. 10-15 sentences. Start with ⭐{!name_fix}. NO signature (added separately).\n\nOutput clean paragraph text, not HTML."
+                },
+                {
+                    id: 2,
+                    name: "😴 Lazy/Autopilot",
+                    subject: "Generate 10 subject lines emphasizing the automated/passive nature of MLGS. Focus on:\n- 'While you sleep' angles\n- Automation\n- No work required\n- Under 60 characters\n\nOutput ONLY numbered list 1-10.",
+                    body: "Write an email for MLGS emphasizing automation and passive income.\n\nHighlight:\n- 100 leads arrive automatically every day\n- No prospecting needed\n- Set it and forget it\n- $5 per referral on autopilot\n- Link: https://troypringle.github.io/MLGS-Page/\n\nConversational tone. 10-15 sentences. Start with ⭐{!name_fix}. NO signature.\n\nOutput plain text paragraphs."
+                },
+                {
+                    id: 3,
+                    name: "⏰ Urgency/Scarcity",
+                    subject: "Generate 10 urgency-driven subject lines for MLGS:\n- Limited time angles\n- Price could increase\n- FOMO triggers\n- Under 60 characters\n\nOutput ONLY numbered list 1-10.",
+                    body: "Write urgent email for MLGS emphasizing limited-time opportunity.\n\nMention:\n- $60 one-time could become monthly subscription\n- Act now messaging\n- 100 daily leads\n- $5 commissions\n- Link: https://troypringle.github.io/MLGS-Page/\n\nUrgent but not pushy. 10-15 sentences. Start with ⭐{!name_fix}. NO signature.\n\nOutput plain text."
+                },
+                {
+                    id: 4,
+                    name: "📊 Proof/Results",
+                    subject: "Generate 10 proof-based subject lines:\n- Real results\n- Testimonial style\n- Specific numbers\n- Under 60 characters\n\nOutput ONLY numbered list 1-10.",
+                    body: "Write results-focused email for MLGS.\n\nInclude:\n- How it's working for others\n- 100 daily leads fact\n- $5 per signup proof\n- Believable success story\n- Link: https://troypringle.github.io/MLGS-Page/\n\nAuthentic tone. 10-15 sentences. Start with ⭐{!name_fix}. NO signature.\n\nOutput plain text."
+                },
+                {
+                    id: 5,
+                    name: "🧠 Curiosity Hook",
+                    subject: "Generate 10 curiosity-driven subject lines:\n- 'Weird trick' style\n- Question format\n- Mystery/discovery\n- Under 60 characters\n\nOutput ONLY numbered list 1-10.",
+                    body: "Write curiosity-based email for MLGS.\n\nFocus on:\n- Discovering something new\n- How it works (briefly)\n- 100 leads + $5 commissions\n- Link: https://troypringle.github.io/MLGS-Page/\n\nIntriguing tone. 10-15 sentences. Start with ⭐{!name_fix}. NO signature.\n\nOutput plain text."
+                }
+            ];
         }
-
-        const prompts = {
-            curiosity: {
-                subject: `Generate 10 curiosity-driven subject lines for MLGS (My Lead Gen Secret). Focus on "weird trick", discovery, numbers. Under 60 chars. No spam words like "free". Output ONLY numbered list 1-10, nothing else.`,
-                body: `Write a promotional email for My Lead Gen Secret (MLGS).
-
-Key benefits:
-- 100 fresh leads daily (automatic)
-- $5 commission per referral
-- $60 one-time payment
-Link: https://troypringle.github.io/MLGS-Page/
-
-FORMAT EXACTLY LIKE THIS:
-<p><span style="font-size:16px"><span style="color:#000000">⭐{!name_fix}</span></span></p>
-
-<p><span style="font-size:16px"><span style="color:#000000">Your compelling hook paragraph here.</span></span></p>
-
-<p><span style="font-size:16px"><span style="color:#000000">Another paragraph about benefits.</span></span></p>
-
-<p><span style="font-size:16px"><a href="https://troypringle.github.io/MLGS-Page/" target="_blank"><span style="color:#0000cc">Click here to get started now</span></a></span></p>
-
-Use curiosity angle. 10-14 lines. Excited friend tone. NO signature. Output ONLY the HTML, nothing else.`
-            },
-            money: {
-                subject: `Generate 10 money-focused subject lines for MLGS. Include $5, $60, income angles. Under 60 chars. Output ONLY numbered list 1-10.`,
-                body: `Write money-focused email for MLGS. Benefits: $5/referral, 100 leads daily, $60 one-time. Link: https://troypringle.github.io/MLGS-Page/
-
-FORMAT EXACTLY:
-<p><span style="font-size:16px"><span style="color:#000000">⭐{!name_fix}</span></span></p>
-
-<p><span style="font-size:16px"><span style="color:#000000">Text here</span></span></p>
-
-Focus on income. 10-14 lines. NO signature. Output ONLY HTML.`
-            },
-            urgency: {
-                subject: `Generate 10 urgency subject lines for MLGS. FOMO, time-sensitive. Under 60 chars. Output ONLY numbered list 1-10.`,
-                body: `Write urgency email for MLGS. Emphasize $60 one-time could change to monthly. Link: https://troypringle.github.io/MLGS-Page/
-
-FORMAT EXACTLY:
-<p><span style="font-size:16px"><span style="color:#000000">⭐{!name_fix}</span></span></p>
-
-<p><span style="font-size:16px"><span style="color:#000000">Text here</span></span></p>
-
-Create FOMO. 10-14 lines. NO signature. Output ONLY HTML.`
-            },
-            lazy: {
-                subject: `Generate 10 "lazy method" subject lines for MLGS. Automation, passive, effortless. Under 60 chars. Output ONLY numbered list 1-10.`,
-                body: `Write "lazy method" email for MLGS. Emphasize automation, 100 leads daily automatic. Link: https://troypringle.github.io/MLGS-Page/
-
-FORMAT EXACTLY:
-<p><span style="font-size:16px"><span style="color:#000000">⭐{!name_fix}</span></span></p>
-
-<p><span style="font-size:16px"><span style="color:#000000">Text here</span></span></p>
-
-Emphasize autopilot. 10-14 lines. NO signature. Output ONLY HTML.`
-            },
-            proof: {
-                subject: `Generate 10 proof/results subject lines for MLGS. Testimonials, numbers. Under 60 chars. Output ONLY numbered list 1-10.`,
-                body: `Write proof-based email for MLGS. Include believable results. Link: https://troypringle.github.io/MLGS-Page/
-
-FORMAT EXACTLY:
-<p><span style="font-size:16px"><span style="color:#000000">⭐{!name_fix}</span></span></p>
-
-<p><span style="font-size:16px"><span style="color:#000000">Text here</span></span></p>
-
-Use social proof. 10-14 lines. NO signature. Output ONLY HTML.`
-            }
-        };
 
         function toast(msg, isError = false) {
             const el = document.getElementById('toast');
@@ -836,35 +700,24 @@ Use social proof. 10-14 lines. NO signature. Output ONLY HTML.`
             document.getElementById(id).classList.toggle('show', show);
         }
 
-        function updateUsageDisplay() {
-            document.getElementById('sessionTokens').textContent = state.usage.session.toLocaleString();
-            document.getElementById('dailyTokens').textContent = state.usage.daily.toLocaleString();
-            document.getElementById('lastTokens').textContent = state.usage.last.toLocaleString();
-            
-            const percent = Math.min((state.usage.daily / 500000) * 100, 100);
-            document.getElementById('usageProgress').style.width = percent + '%';
-        }
-
-        function trackTokens(tokensUsed) {
-            state.usage.session += tokensUsed;
-            state.usage.daily += tokensUsed;
-            state.usage.last = tokensUsed;
-            
-            localStorage.setItem('mlgs_daily_tokens', state.usage.daily.toString());
-            updateUsageDisplay();
-        }
-
         function updatePreview() {
             const subject = document.getElementById('subjectInput').value || 'Your subject line...';
             const body = document.getElementById('bodyEditor').value;
             
             document.getElementById('previewSubject').textContent = subject;
-            document.getElementById('previewFrame').innerHTML = body || '<p style="color: #999;">Start typing or generate an email...</p>';
+            
+            const formatted = body.split('\n\n').map(p => {
+                if (!p.trim()) return '';
+                return `<p style="font-size: 16px; color: #000; margin-bottom: 12px;">${p.trim().replace(/\n/g, '<br>')}</p>`;
+            }).join('');
+            
+            document.getElementById('previewFrame').innerHTML = formatted || '<p style="color: #999;">Start typing to see preview...</p>';
         }
 
         async function callAI(prompt) {
             if (!state.apiKey) {
                 toast('❌ Set API key first', true);
+                document.getElementById('apiBtn').click();
                 return null;
             }
 
@@ -883,17 +736,8 @@ Use social proof. 10-14 lines. NO signature. Output ONLY HTML.`
                     })
                 });
 
-                if (!res.ok) {
-                    const err = await res.json();
-                    throw new Error(err.error?.message || 'API error');
-                }
-
+                if (!res.ok) throw new Error('API error');
                 const data = await res.json();
-
-                if (data.usage) {
-                    trackTokens(data.usage.total_tokens || 0);
-                }
-
                 return data.choices[0].message.content;
             } catch (err) {
                 toast('❌ ' + err.message, true);
@@ -901,22 +745,23 @@ Use social proof. 10-14 lines. NO signature. Output ONLY HTML.`
             }
         }
 
-        async function generateSubjects(type) {
+        async function generateSubjects(promptId) {
+            const prompt = state.prompts.find(p => p.id === promptId);
+            if (!prompt) return;
+
             loading('subjectLoading', true);
-            document.getElementById('subjectList').innerHTML = '';
-            
-            const result = await callAI(prompts[type].subject);
+            const result = await callAI(prompt.subject);
             loading('subjectLoading', false);
 
             if (!result) return;
 
             const subjects = result.split('\n')
                 .map(l => l.replace(/^\d+[\.\)]\s*/, '').replace(/^["']|["']$/g, '').trim())
-                .filter(l => l.length > 5 && l.length < 100)
+                .filter(l => l.length > 10 && l.length < 120)
                 .slice(0, 10);
 
             if (subjects.length === 0) {
-                toast('❌ No valid subjects', true);
+                toast('❌ No valid subjects generated', true);
                 return;
             }
 
@@ -938,26 +783,230 @@ Use social proof. 10-14 lines. NO signature. Output ONLY HTML.`
             toast(`✅ Generated ${subjects.length} subjects`);
         }
 
-        async function generateBody(type) {
+        async function generateBody(promptId) {
+            const prompt = state.prompts.find(p => p.id === promptId);
+            if (!prompt) return;
+
             loading('bodyLoading', true);
-            const result = await callAI(prompts[type].body);
+            const result = await callAI(prompt.body);
             loading('bodyLoading', false);
 
             if (!result) return;
 
-            let html = result.trim();
-            
-            if (!html.includes('<p><span style="font-size:16px">')) {
-                html = html.split('\n\n')
-                    .filter(p => p.trim())
-                    .map(p => `<p><span style="font-size:16px"><span style="color:#000000">${p.trim()}</span></span></p>`)
-                    .join('\n\n');
-            }
-
-            document.getElementById('bodyEditor').value = html;
+            document.getElementById('bodyEditor').value = result.trim();
             updatePreview();
             toast('✅ Body generated');
         }
+
+        function renderPrompts() {
+            const list = document.getElementById('promptList');
+            list.innerHTML = state.prompts.map(p => `
+                <div class="prompt-item" data-id="${p.id}">
+                    <div class="prompt-header">
+                        <span>${p.name}</span>
+                        <span style="font-size: 11px; color: var(--text-muted);">✏️ Edit</span>
+                    </div>
+                </div>
+            `).join('');
+
+            list.querySelectorAll('.prompt-item').forEach(el => {
+                el.addEventListener('click', () => {
+                    const id = parseInt(el.dataset.id);
+                    generateSubjects(id);
+                    generateBody(id);
+                });
+
+                el.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    openEditPrompt(parseInt(el.dataset.id));
+                });
+            });
+        }
+
+        function openEditPrompt(id) {
+            const prompt = state.prompts.find(p => p.id === id);
+            if (!prompt) return;
+
+            state.currentPrompt = id;
+            document.getElementById('promptName').value = prompt.name;
+            document.getElementById('promptSubject').value = prompt.subject;
+            document.getElementById('promptBody').value = prompt.body;
+            document.getElementById('promptModal').classList.add('show');
+        }
+
+        document.getElementById('addPromptBtn').addEventListener('click', () => {
+            state.currentPrompt = null;
+            document.getElementById('promptName').value = '';
+            document.getElementById('promptSubject').value = '';
+            document.getElementById('promptBody').value = '';
+            document.getElementById('promptModal').classList.add('show');
+        });
+
+        document.getElementById('savePromptBtn').addEventListener('click', () => {
+            const name = document.getElementById('promptName').value.trim();
+            const subject = document.getElementById('promptSubject').value.trim();
+            const body = document.getElementById('promptBody').value.trim();
+
+            if (!name || !subject || !body) {
+                toast('❌ Fill all fields', true);
+                return;
+            }
+
+            if (state.currentPrompt) {
+                const prompt = state.prompts.find(p => p.id === state.currentPrompt);
+                prompt.name = name;
+                prompt.subject = subject;
+                prompt.body = body;
+            } else {
+                state.prompts.push({
+                    id: Date.now(),
+                    name,
+                    subject,
+                    body
+                });
+            }
+
+            localStorage.setItem('mlgs_prompts', JSON.stringify(state.prompts));
+            renderPrompts();
+            document.getElementById('promptModal').classList.remove('show');
+            toast('✅ Prompt saved');
+        });
+
+        document.getElementById('deletePromptBtn').addEventListener('click', () => {
+            if (!state.currentPrompt) return;
+            if (!confirm('Delete this prompt?')) return;
+
+            state.prompts = state.prompts.filter(p => p.id !== state.currentPrompt);
+            localStorage.setItem('mlgs_prompts', JSON.stringify(state.prompts));
+            renderPrompts();
+            document.getElementById('promptModal').classList.remove('show');
+            toast('✅ Prompt deleted');
+        });
+
+        document.getElementById('closePromptModal').addEventListener('click', () => {
+            document.getElementById('promptModal').classList.remove('show');
+        });
+
+        function renderTemplates() {
+            const list = document.getElementById('templateList');
+            if (state.templates.length === 0) {
+                list.innerHTML = '<p class="help-text">No templates saved</p>';
+                return;
+            }
+
+            list.innerHTML = state.templates.map(t => `
+                <div class="template-item">
+                    <span class="template-name" data-id="${t.id}">${t.name}</span>
+                    <button class="btn btn-small btn-red" onclick="deleteTemplate(${t.id})">🗑️</button>
+                </div>
+            `).join('');
+
+            list.querySelectorAll('.template-name').forEach(el => {
+                el.addEventListener('click', () => {
+                    const t = state.templates.find(x => x.id === parseInt(el.dataset.id));
+                    if (!t) return;
+                    document.getElementById('subjectInput').value = t.subject;
+                    document.getElementById('bodyEditor').value = t.body;
+                    updatePreview();
+                    toast(`✅ Loaded: ${t.name}`);
+                });
+            });
+        }
+
+        document.getElementById('saveTemplateBtn').addEventListener('click', () => {
+            const name = prompt('Template name:');
+            if (!name) return;
+
+            state.templates.unshift({
+                id: Date.now(),
+                name,
+                subject: document.getElementById('subjectInput').value,
+                body: document.getElementById('bodyEditor').value
+            });
+
+            if (state.templates.length > 20) state.templates.pop();
+            localStorage.setItem('mlgs_templates', JSON.stringify(state.templates));
+            renderTemplates();
+            toast('✅ Template saved');
+        });
+
+        function deleteTemplate(id) {
+            if (!confirm('Delete this template?')) return;
+            state.templates = state.templates.filter(t => t.id !== id);
+            localStorage.setItem('mlgs_templates', JSON.stringify(state.templates));
+            renderTemplates();
+            toast('✅ Template deleted');
+        }
+
+        function renderSignatures() {
+            const selector = document.getElementById('sigSelector');
+            selector.innerHTML = state.signatures.map(s => `
+                <div class="sig-tab ${s.id === state.currentSig ? 'active' : ''}" data-id="${s.id}">${s.name}</div>
+            `).join('');
+
+            selector.querySelectorAll('.sig-tab').forEach(el => {
+                el.addEventListener('click', () => {
+                    state.currentSig = parseInt(el.dataset.id);
+                    localStorage.setItem('mlgs_current_sig', state.currentSig);
+                    renderSignatures();
+                    toast(`✅ Selected: ${el.textContent}`);
+                });
+            });
+        }
+
+        document.getElementById('insertSigBtn').addEventListener('click', () => {
+            const sig = state.signatures.find(s => s.id === state.currentSig);
+            if (!sig || !sig.content) {
+                toast('❌ No signature content', true);
+                return;
+            }
+
+            const body = document.getElementById('bodyEditor').value.trim();
+            document.getElementById('bodyEditor').value = body + '\n\n' + sig.content;
+            updatePreview();
+            toast('✅ Signature inserted');
+        });
+
+        document.getElementById('manageSigBtn').addEventListener('click', () => {
+            const action = prompt('Options:\n1. Edit current signature\n2. Add new signature\n3. Delete signature\n\nEnter 1, 2, or 3:');
+            
+            if (action === '1') {
+                const sig = state.signatures.find(s => s.id === state.currentSig);
+                const newContent = prompt('Edit signature content:', sig?.content || '');
+                if (newContent !== null) {
+                    sig.content = newContent;
+                    localStorage.setItem('mlgs_signatures', JSON.stringify(state.signatures));
+                    toast('✅ Signature updated');
+                }
+            } else if (action === '2') {
+                const name = prompt('New signature name (e.g., Herculist, MLGS, TrafficHub):');
+                if (!name) return;
+                const content = prompt('Signature content:');
+                if (content !== null) {
+                    state.signatures.push({
+                        id: Date.now(),
+                        name,
+                        content
+                    });
+                    localStorage.setItem('mlgs_signatures', JSON.stringify(state.signatures));
+                    renderSignatures();
+                    toast('✅ Signature added');
+                }
+            } else if (action === '3') {
+                if (state.signatures.length === 1) {
+                    toast('❌ Cannot delete last signature', true);
+                    return;
+                }
+                if (confirm('Delete current signature?')) {
+                    state.signatures = state.signatures.filter(s => s.id !== state.currentSig);
+                    state.currentSig = state.signatures[0].id;
+                    localStorage.setItem('mlgs_signatures', JSON.stringify(state.signatures));
+                    localStorage.setItem('mlgs_current_sig', state.currentSig);
+                    renderSignatures();
+                    toast('✅ Signature deleted');
+                }
+            }
+        });
 
         function copy(text) {
             navigator.clipboard.writeText(text).catch(() => {
@@ -970,6 +1019,14 @@ Use social proof. 10-14 lines. NO signature. Output ONLY HTML.`
             });
         }
 
+        function formatToHTML(text) {
+            return text.split('\n\n').map(p => {
+                if (!p.trim()) return '';
+                const content = p.trim().replace(/\n/g, '<br />');
+                return `<p><span style="font-size:16px"><span style="color:#000000">${content}</span></span></p>`;
+            }).join('\n\n');
+        }
+
         document.getElementById('copyFullBtn').addEventListener('click', () => {
             const subject = document.getElementById('subjectInput').value.trim();
             const body = document.getElementById('bodyEditor').value.trim();
@@ -979,12 +1036,13 @@ Use social proof. 10-14 lines. NO signature. Output ONLY HTML.`
                 return;
             }
 
+            const htmlBody = formatToHTML(body);
             let full = '';
             if (subject) full += `SUBJECT: ${subject}\n\n`;
-            full += body;
+            full += htmlBody;
             
             copy(full);
-            toast('✅ Full email HTML copied!');
+            toast('✅ Full email copied!');
         });
 
         document.getElementById('copySubjectBtn').addEventListener('click', () => {
@@ -995,114 +1053,53 @@ Use social proof. 10-14 lines. NO signature. Output ONLY HTML.`
         });
 
         document.getElementById('copyBodyBtn').addEventListener('click', () => {
-            const b = document.getElementById('bodyEditor').value.trim();
+            const b = formatToHTML(document.getElementById('bodyEditor').value.trim());
             if (!b) return toast('❌ No body', true);
             copy(b);
             toast('✅ Body HTML copied');
         });
 
-        document.getElementById('viewHtmlBtn').addEventListener('click', () => {
-            const html = document.getElementById('bodyEditor').value.trim();
-            document.getElementById('htmlOutput').textContent = html;
+        document.getElementById('editHtmlBtn').addEventListener('click', () => {
+            const html = formatToHTML(document.getElementById('bodyEditor').value);
+            document.getElementById('htmlEditor').value = html;
             document.getElementById('htmlModal').classList.add('show');
+        });
+
+        document.getElementById('applyHtmlBtn').addEventListener('click', () => {
+            const html = document.getElementById('htmlEditor').value;
+            const text = html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+            document.getElementById('bodyEditor').value = text;
+            updatePreview();
+            document.getElementById('htmlModal').classList.remove('show');
+            toast('✅ HTML applied');
+        });
+
+        document.getElementById('copyHtmlBtn').addEventListener('click', () => {
+            copy(document.getElementById('htmlEditor').value);
+            toast('✅ HTML copied');
         });
 
         document.getElementById('closeHtmlModal').addEventListener('click', () => {
             document.getElementById('htmlModal').classList.remove('show');
         });
 
-        document.getElementById('copyHtmlBtn').addEventListener('click', () => {
-            const html = document.getElementById('htmlOutput').textContent;
-            copy(html);
-            toast('✅ HTML copied');
-        });
-
-        document.getElementById('openFullPreviewBtn').addEventListener('click', () => {
-            const subject = document.getElementById('subjectInput').value || 'Your subject line...';
-            const body = document.getElementById('bodyEditor').value;
-            
-            document.getElementById('modalSubjectText').textContent = subject;
-            document.getElementById('modalPreviewFrame').innerHTML = body || '<p style="color: #999;">No content yet...</p>';
-            document.getElementById('previewModal').classList.add('show');
-        });
-
-        document.getElementById('closePreviewModal').addEventListener('click', () => {
-            document.getElementById('previewModal').classList.remove('show');
-        });
-
-        document.getElementById('copyFromPreviewBtn').addEventListener('click', () => {
-            document.getElementById('copyFullBtn').click();
-        });
-
-        document.getElementById('viewHtmlFromPreviewBtn').addEventListener('click', () => {
-            document.getElementById('previewModal').classList.remove('show');
-            document.getElementById('viewHtmlBtn').click();
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                document.getElementById('htmlModal').classList.remove('show');
-                document.getElementById('previewModal').classList.remove('show');
+        document.getElementById('clearBtn').addEventListener('click', () => {
+            if (confirm('Clear editor?')) {
+                document.getElementById('bodyEditor').value = '';
+                updatePreview();
             }
         });
 
-        document.getElementById('editSignatureBtn').addEventListener('click', () => {
-            document.getElementById('signatureCard').style.display = 'block';
-            document.getElementById('signatureEditor').value = state.signature;
-            document.getElementById('signatureCard').scrollIntoView({behavior: 'smooth'});
-        });
-
-        document.getElementById('closeSignatureBtn').addEventListener('click', () => {
-            document.getElementById('signatureCard').style.display = 'none';
-        });
-
-        document.getElementById('saveSignatureBtn').addEventListener('click', () => {
-            state.signature = document.getElementById('signatureEditor').value;
-            localStorage.setItem('mlgs_signature', state.signature);
-            toast('✅ Signature saved');
-            document.getElementById('signatureCard').style.display = 'none';
-        });
-
-        document.getElementById('insertSignatureBtn').addEventListener('click', () => {
-            if (!state.signature) {
-                toast('❌ No signature saved', true);
-                return;
+        document.getElementById('generateSubjectsBtn').addEventListener('click', () => {
+            if (state.prompts.length > 0) {
+                generateSubjects(state.prompts[0].id);
             }
-            
-            const body = document.getElementById('bodyEditor').value.trim();
-            document.getElementById('bodyEditor').value = body + '\n\n' + state.signature.trim();
-            updatePreview();
-            toast('✅ Signature inserted');
         });
 
-        document.getElementById('sigEditTab').addEventListener('click', () => {
-            document.getElementById('sigEditView').style.display = 'block';
-            document.getElementById('sigPreviewView').style.display = 'none';
-            document.getElementById('sigEditTab').style.background = 'var(--accent)';
-            document.getElementById('sigEditTab').style.color = '#000';
-            document.getElementById('sigPreviewTab').style.background = 'var(--bg-input)';
-            document.getElementById('sigPreviewTab').style.color = 'var(--text)';
-        });
-
-        document.getElementById('sigPreviewTab').addEventListener('click', () => {
-            document.getElementById('signaturePreview').innerHTML = document.getElementById('signatureEditor').value || '<p style="color: #999;">No signature yet...</p>';
-            document.getElementById('sigEditView').style.display = 'none';
-            document.getElementById('sigPreviewView').style.display = 'block';
-            document.getElementById('sigEditTab').style.background = 'var(--bg-input)';
-            document.getElementById('sigEditTab').style.color = 'var(--text)';
-            document.getElementById('sigPreviewTab').style.background = 'var(--accent)';
-            document.getElementById('sigPreviewTab').style.color = '#000';
-        });
-
-        document.getElementById('testSignatureBtn').addEventListener('click', () => {
-            const sig = document.getElementById('signatureEditor').value;
-            if (!sig) {
-                toast('❌ No signature to test', true);
-                return;
+        document.getElementById('generateBodyBtn').addEventListener('click', () => {
+            if (state.prompts.length > 0) {
+                generateBody(state.prompts[0].id);
             }
-            document.getElementById('modalSubjectText').textContent = 'Signature Preview';
-            document.getElementById('modalPreviewFrame').innerHTML = sig;
-            document.getElementById('previewModal').classList.add('show');
         });
 
         document.getElementById('saveApiBtn').addEventListener('click', () => {
@@ -1117,6 +1114,7 @@ Use social proof. 10-14 lines. NO signature. Output ONLY HTML.`
             localStorage.setItem('mlgs_api_key', key);
             localStorage.setItem('mlgs_model', model);
             
+            document.getElementById('apiCard').style.display = 'none';
             toast('✅ API key saved');
         });
 
@@ -1125,113 +1123,39 @@ Use social proof. 10-14 lines. NO signature. Output ONLY HTML.`
             card.style.display = card.style.display === 'none' ? 'block' : 'none';
         });
 
-        document.getElementById('resetUsageBtn').addEventListener('click', () => {
-            if (confirm('Reset token counter?')) {
-                state.usage.session = 0;
-                state.usage.daily = 0;
-                state.usage.last = 0;
-                localStorage.setItem('mlgs_daily_tokens', '0');
-                updateUsageDisplay();
-                toast('✅ Counter reset');
-            }
-        });
-
-        document.getElementById('saveTemplateBtn').addEventListener('click', () => {
-            const name = prompt('Template name:');
-            if (!name) return;
-
-            state.templates.unshift({
-                id: Date.now(),
-                name,
-                subject: document.getElementById('subjectInput').value,
-                body: document.getElementById('bodyEditor').value
-            });
-
-            if (state.templates.length > 20) state.templates.pop();
-            
-            localStorage.setItem('mlgs_templates', JSON.stringify(state.templates));
-            renderTemplates();
-            toast('✅ Template saved');
-        });
-
-        function renderTemplates() {
-            const list = document.getElementById('templateList');
-            if (state.templates.length === 0) {
-                list.innerHTML = '<p class="help-text">No templates</p>';
-                return;
-            }
-
-            list.innerHTML = state.templates.slice(0, 10).map(t => `
-                <button class="btn" style="font-size: 12px;" onclick="loadTemplate(${t.id})">${t.name}</button>
-            `).join('');
-        }
-
-        function loadTemplate(id) {
-            const t = state.templates.find(x => x.id === id);
-            if (!t) return;
-            document.getElementById('subjectInput').value = t.subject;
-            document.getElementById('bodyEditor').value = t.body;
-            updatePreview();
-            toast(`✅ Loaded: ${t.name}`);
-        }
-
-        document.querySelectorAll('[data-type]').forEach(btn => {
-            btn.addEventListener('click', async () => {
-                const type = btn.dataset.type;
-                state.currentType = type;
-                await generateSubjects(type);
-                await generateBody(type);
-            });
-        });
-
-        document.getElementById('generateSubjectsBtn').addEventListener('click', () => {
-            generateSubjects(state.currentType);
-        });
-
-        document.getElementById('generateBodyBtn').addEventListener('click', () => {
-            generateBody(state.currentType);
-        });
-
-        document.getElementById('clearBtn').addEventListener('click', () => {
-            if (confirm('Clear body?')) {
-                document.getElementById('bodyEditor').value = '';
-                updatePreview();
-            }
-        });
-
         document.getElementById('helpBtn').addEventListener('click', () => {
             alert(`🔥 MLGS SWIPE MACHINE
 
-GET GROQ API KEY (FREE & PERMANENT):
-1. Go to console.groq.com
-2. Sign up (100% free)
-3. Create API key
-4. Paste here
+QUICK START:
+1. Get free API key from console.groq.com
+2. Click ⚙️ API Key button and save it
+3. Click any prompt in the library to generate
+4. Pick a subject line
+5. Edit body if needed
+6. Insert signature
+7. Copy Full Email → paste to MLGS
 
-HOW TO USE:
-1. Save your API key
-2. Click any Generate button (🧠 Curiosity, etc.)
-3. Pick a subject line from the list
-4. Edit body if needed
-5. Click "Insert to Body" to add signature
-6. Click "Copy Full Email"
-7. Paste into MLGS
+FEATURES:
+✏️ Edit prompts - Right-click any prompt
+🗑️ Delete templates - Click trash icon
+✍️ Multiple signatures - Switch between MLGS/Herculist/etc
+📝 WYSIWYG editor - Type naturally, not HTML
+👁️ White preview - Matches real email look
 
-MODELS:
-• Llama 3.3 70B - Best quality
-• Llama 3.1 8B - Fastest
-• Mixtral 8x7B - Good balance
-
-100% FREE FOREVER!
-No expiring keys.`);
+100% FREE with Groq!`);
         });
 
         function init() {
             document.getElementById('apiKeyInput').value = state.apiKey;
             document.getElementById('modelSelect').value = state.model;
+            
+            if (state.apiKey) {
+                document.getElementById('apiCard').style.display = 'none';
+            }
 
+            renderPrompts();
             renderTemplates();
-            updateUsageDisplay();
+            renderSignatures();
             updatePreview();
 
             const draftBody = localStorage.getItem('mlgs_draft_body');
