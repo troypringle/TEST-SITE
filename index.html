@@ -6,7 +6,7 @@
   <title>Email Swipe Machine</title>
   <style>
     :root{
-      --bg:#d4c4a8;
+      --bg:#d4c4a8; /* default tan */
       --panel:#f5f0e6;
       --panel2:#efe6d8;
       --border:#c9b896;
@@ -19,6 +19,7 @@
       --editorText:#000000;
     }
     body.theme-slate{
+      /* Arena-like dark gray */
       --bg:#111827;
       --panel:#1f2937;
       --panel2:#243244;
@@ -217,23 +218,19 @@
 </head>
 <body>
   <div class="toast" id="toast"></div>
-
-  <!-- Raw Output Modal -->
   <div class="modal" id="rawModal">
     <div class="modalInner">
       <div class="modalHeader">
         <h2 style="margin:0;color:var(--gold)">Raw AI Output (Debug)</h2>
         <button class="btn btnRed" id="closeRaw">Close</button>
       </div>
-      <p class="help">If subjects or body fail, this shows exactly what the API returned.</p>
-      <textarea id="rawText" class="mono" style="min-height:320px; width:100%"></textarea>
+      <p class="help">If subjects fail, this shows exactly what the API returned.</p>
+      <textarea id="rawText" class="mono" style="min-height:320px"></textarea>
       <div class="row" style="margin-top:10px">
         <button class="btn btnBlue" id="copyRaw">Copy Raw</button>
       </div>
     </div>
   </div>
-
-  <!-- Signature Modal -->
   <div class="modal" id="sigModal">
     <div class="modalInner">
       <div class="modalHeader">
@@ -253,18 +250,32 @@
     </div>
   </div>
 
+  <!-- NEW: Prompt Library Modal (separate window, auto-generates generic MLM/affiliate ideas) -->
+  <div class="modal" id="promptModal">
+    <div class="modalInner">
+      <div class="modalHeader">
+        <h2 style="margin:0;color:var(--gold)">Prompt Library – Generic MLM / Affiliate</h2>
+        <button class="btn btnRed" id="closePrompt">Close</button>
+      </div>
+      <p class="help">Defaults auto-load for home business / MLM / affiliate. Edit any field, save automatically, delete, or click "Generate" buttons.</p>
+      <div id="promptList"></div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn btnGreen" id="addPromptBtn">+ Add New Prompt</button>
+      </div>
+    </div>
+  </div>
+
   <div class="wrap">
     <div class="topbar">
       <div class="title">Email Swipe Machine</div>
       <div class="topActions">
         <button class="btn btnSmall" id="toggleTheme">Toggle Slate Theme</button>
         <button class="btn btnSmall" id="openRaw">Raw Output</button>
-        <button class="btn btnSmall" id="manageTemplates">Templates</button>
+        <button class="btn btnSmall" id="openPromptLibrary">Prompt Library</button>
       </div>
     </div>
-
     <div class="grid">
-      <!-- LEFT -->
+      <!-- LEFT (API + Offer only – prefixes & signatures moved) -->
       <div class="card">
         <h2>API + Offer Setup</h2>
         <label>Groq API Key</label>
@@ -277,9 +288,9 @@
         <label>Model</label>
         <select id="model">
           <option value="llama-3.1-70b-versatile">llama-3.1-70b-versatile (best)</option>
-          <option value="mixtral-8x7b-32768">mixtral-8x7b-32768</option>
           <option value="llama-3.1-8b-instant">llama-3.1-8b-instant (fast)</option>
         </select>
+        <p class="smallNote">If you ever get “model not found”, switch model here.</p>
         <div class="divider"></div>
         <label>Offer Name (generic)</label>
         <input id="offerName" type="text" placeholder="e.g., My automation tool / my affiliate offer" />
@@ -289,14 +300,49 @@
         <textarea id="benefits" placeholder="Benefit 1&#10;Benefit 2&#10;Benefit 3"></textarea>
         <label>Call-To-Action Text</label>
         <input id="ctaText" type="text" value="Click here to see it now" />
-        <div class="divider"></div>
-        <h2>Subject Prefix (⭐ only)</h2>
+      </div>
+
+      <!-- MIDDLE (Subject + Body) – prefixes moved to top, signatures moved under body -->
+      <div class="card">
+        <h2>Subject + Body</h2>
+        
+        <!-- Subject Prefix moved here (top of subject area) -->
+        <h2 style="margin:12px 0 6px 0;font-size:15px;color:var(--gold)">Subject Prefix (⭐ only)</h2>
         <p class="help">Click to insert at the start of your subject line.</p>
         <div class="pillRow">
           <div class="pill" data-prefix="{!firstname_fix}⭐ "> {!firstname_fix}⭐</div>
           <div class="pill" data-prefix="{!lastname_fix}⭐ "> {!lastname_fix}⭐</div>
           <div class="pill" data-prefix="⭐ "> ⭐</div>
         </div>
+
+        <label style="margin-top:16px">Subject Line (required: 36+ chars AND 7+ words)</label>
+        <input id="subject" type="text" placeholder="Your subject line..." />
+        <div class="smallNote" id="subjectCounter"></div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn btnGreen" id="genSubjects">Generate 3 Subjects (Fix enforced)</button>
+          <button class="btn" id="clearSubjects">Clear Subjects</button>
+        </div>
+        <div class="subjects" id="subjectResults"></div>
+        <div class="divider"></div>
+        
+        <label>Email Body (AI will format into 1–2 short paragraphs)</label>
+        <textarea id="body" placeholder="Write here..."></textarea>
+
+        <!-- NEW: Body insert options (directly under body area) -->
+        <h2 style="margin:12px 0 6px 0;font-size:15px;color:var(--gold)">Quick Body Inserts</h2>
+        <p class="help">Click to insert personalization tags anywhere in body</p>
+        <div class="pillRow">
+          <div class="pill" data-bodytag="{!firstname_fix}⭐ ">Insert {!firstname_fix}⭐</div>
+          <div class="pill" data-bodytag="{!lastname_fix}⭐ ">Insert {!lastname_fix}⭐</div>
+        </div>
+
+        <div class="row" style="margin-top:10px">
+          <button class="btn btnGreen" id="genBody">Generate Body</button>
+          <button class="btn btnBlue" id="undoBody">Undo</button>
+          <button class="btn btnRed" id="clearBody">Clear Body</button>
+        </div>
+
+        <!-- Signatures moved here (directly under email body area) -->
         <div class="divider"></div>
         <h2>Signatures</h2>
         <div class="row">
@@ -304,27 +350,6 @@
           <button class="btn btnGreen" id="insertSig">Insert Selected</button>
         </div>
         <p class="smallNote" id="sigStatus"></p>
-      </div>
-
-      <!-- MIDDLE -->
-      <div class="card">
-        <h2>Subject + Body</h2>
-        <label>Subject Line (required: 36+ chars AND 7+ words)</label>
-        <input id="subject" type="text" placeholder="Your subject line..." />
-        <div class="smallNote" id="subjectCounter"></div>
-        <div class="row" style="margin-top:10px">
-          <button class="btn btnGreen" id="genSubjects">Generate 3 Subjects (Fixed + JSON)</button>
-          <button class="btn" id="clearSubjects">Clear Subjects</button>
-        </div>
-        <div class="subjects" id="subjectResults"></div>
-        <div class="divider"></div>
-        <label>Email Body (AI will format into 2–3 sentence paragraphs)</label>
-        <textarea id="body" placeholder="Write here..."></textarea>
-        <div class="row" style="margin-top:10px">
-          <button class="btn btnGreen" id="genBody">Generate Body</button>
-          <button class="btn btnBlue" id="undoBody">Undo</button>
-          <button class="btn btnRed" id="clearBody">Clear Body</button>
-        </div>
       </div>
 
       <!-- RIGHT -->
@@ -343,9 +368,10 @@
   </div>
 
 <script>
-// ==================== UTILITIES & CORE ====================
+/* ---------------------------
+   Utilities
+----------------------------*/
 const $ = (id) => document.getElementById(id);
-
 function showToast(msg, isErr=false){
   const t = $("toast");
   t.textContent = msg;
@@ -353,11 +379,9 @@ function showToast(msg, isErr=false){
   t.classList.add("show");
   setTimeout(()=>t.classList.remove("show"), 3200);
 }
-
 function safeJsonParse(text){
   try { return JSON.parse(text); } catch { return null; }
 }
-
 function stripLinePrefix(line){
   return line
     .replace(/^\s*(?:SUBJECT\s*:)?\s*/i,'')
@@ -366,13 +390,11 @@ function stripLinePrefix(line){
     .replace(/^["']|["']$/g,'')
     .trim();
 }
-
 function countWords(s){
   const t = s.trim();
   if(!t) return 0;
   return t.split(/\s+/).filter(Boolean).length;
 }
-
 function validateSubject(s){
   const cleaned = s.trim();
   return {
@@ -381,7 +403,6 @@ function validateSubject(s){
     ok: cleaned.length >= 36 && countWords(cleaned) >= 7
   };
 }
-
 function normalizeSubjects(arr){
   return arr
     .map(x => typeof x === "string" ? x : String(x))
@@ -389,7 +410,6 @@ function normalizeSubjects(arr){
     .map(s => s.replace(/\s+/g,' ').trim())
     .filter(Boolean);
 }
-
 function toEmailHtmlFromPlain(text){
   const paras = text
     .replace(/\r\n/g,"\n")
@@ -401,7 +421,6 @@ function toEmailHtmlFromPlain(text){
     return `<p><span style="font-size:16px"><span style="color:#000000">${withBreaks}</span></span></p>`;
   }).join("\n\n");
 }
-
 function updatePreview(){
   const sub = $("subject").value.trim();
   $("prevSub").textContent = sub || "...";
@@ -420,25 +439,36 @@ function updatePreview(){
     ${v.chars} chars, ${v.words} words ${v.ok ? '✓' : '(need 36+ chars + 7+ words)'}
   </span>`;
 }
-
-// ==================== UNDO STACK ====================
+/* ---------------------------
+   Undo (Body) stack
+----------------------------*/
 const undoStack = [];
+const UNDO_MAX = 25;
 function pushUndo(){
   const current = $("body").value;
   if(undoStack.length === 0 || undoStack[undoStack.length-1] !== current){
     undoStack.push(current);
-    if(undoStack.length > 25) undoStack.shift();
+    if(undoStack.length > UNDO_MAX) undoStack.shift();
   }
 }
 function undoBody(){
-  if(undoStack.length <= 1){ showToast("Nothing to undo", true); return; }
+  if(undoStack.length <= 1){
+    showToast("Nothing to undo", true);
+    return;
+  }
   undoStack.pop();
   $("body").value = undoStack[undoStack.length-1];
   updatePreview();
   showToast("Undone");
 }
-
-// ==================== STORAGE ====================
+/* ---------------------------
+   Storage + Prompt Library defaults
+----------------------------*/
+const DEFAULT_PROMPTS = [
+  {id:1,name:"MLM Opportunity",subjectPrompt:`Return ONLY valid JSON array ["sub1","sub2","sub3"]\n3 curiosity subject lines for a new MLM / matrix launch. 36-80 chars, 7+ words each. Natural human tone. Optional ⭐ only. No spam words.`,bodyPrompt:`Write SHORT plain-text email (exactly 1-2 paragraphs, blank line between if 2). Total 5-9 sentences max.\nStart first line EXACTLY with: ⭐{!name_fix}\nPromote MLM benefits + CTA. Output body only.`},
+  {id:2,name:"Affiliate Offer",subjectPrompt:`Return ONLY valid JSON array ["sub1","sub2","sub3"]\n3 curiosity subject lines for an affiliate marketing offer. 36-80 chars, 7+ words each. Natural human tone. Optional ⭐ only. No spam words.`,bodyPrompt:`Write SHORT plain-text email (exactly 1-2 paragraphs, blank line between if 2). Total 5-9 sentences max.\nStart first line EXACTLY with: ⭐{!name_fix}\nPromote affiliate benefits + CTA. Output body only.`},
+  {id:3,name:"Passive Income",subjectPrompt:`Return ONLY valid JSON array ["sub1","sub2","sub3"]\n3 curiosity subject lines for a passive income system. 36-80 chars, 7+ words each. Natural human tone. Optional ⭐ only. No spam words.`,bodyPrompt:`Write SHORT plain-text email (exactly 1-2 paragraphs, blank line between if 2). Total 5-9 sentences max.\nStart first line EXACTLY with: ⭐{!name_fix}\nPromote passive income benefits + CTA. Output body only.`}
+];
 function loadState(){
   $("apiKey").value = localStorage.getItem("esm_apiKey") || "";
   $("model").value = localStorage.getItem("esm_model") || "llama-3.1-70b-versatile";
@@ -446,49 +476,70 @@ function loadState(){
   $("offerLink").value = localStorage.getItem("esm_offerLink") || "";
   $("benefits").value = localStorage.getItem("esm_benefits") || "";
   $("ctaText").value = localStorage.getItem("esm_ctaText") || "Click here to see it now";
-
-  if(localStorage.getItem("esm_theme") === "slate") document.body.classList.add("theme-slate");
-
+  const theme = localStorage.getItem("esm_theme") || "";
+  if(theme === "slate") document.body.classList.add("theme-slate");
+  
   // Signatures
-  let sigs = safeJsonParse(localStorage.getItem("esm_sigs")) || [{id:1,name:"Default",content:""}];
+  const sigs = safeJsonParse(localStorage.getItem("esm_sigs") || "null") || [{id:1,name:"Default",content:""}];
   window.__SIGS__ = sigs;
-  window.__SIGSEL__ = Number(localStorage.getItem("esm_sigSel")) || sigs[0].id;
+  window.__SIGSEL__ = Number(localStorage.getItem("esm_sigSel") || sigs[0].id);
   renderSigStatus();
-
-  // Drafts
+  
+  // Prompt Library (auto-generates generic MLM/affiliate ideas)
+  window.__PROMPTS__ = safeJsonParse(localStorage.getItem("esm_prompts")) || DEFAULT_PROMPTS;
+  if(window.__PROMPTS__.length === 0) window.__PROMPTS__ = DEFAULT_PROMPTS;
+  
+  // drafts
   $("subject").value = localStorage.getItem("esm_draft_subject") || "";
   $("body").value = localStorage.getItem("esm_draft_body") || "";
   pushUndo();
   updatePreview();
 }
-
 function saveDraft(){
   localStorage.setItem("esm_draft_subject", $("subject").value);
   localStorage.setItem("esm_draft_body", $("body").value);
 }
-
-// ==================== GROQ CALL ====================
+function savePrompts(){
+  localStorage.setItem("esm_prompts", JSON.stringify(window.__PROMPTS__));
+}
+/* ---------------------------
+   Groq Call
+----------------------------*/
 async function callGroq(messages){
   const key = $("apiKey").value.trim() || localStorage.getItem("esm_apiKey") || "";
   const model = $("model").value;
-  if(!key){ showToast("Set your Groq API key first", true); return {ok:false, error:"Missing API key"}; }
-
+  if(!key){
+    showToast("Set your Groq API key first", true);
+    return { ok:false, error:"Missing API key" };
+  }
   try{
     const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method:"POST",
-      headers:{ "Content-Type":"application/json", "Authorization":`Bearer ${key}` },
-      body: JSON.stringify({ model, messages, temperature: 0.7, max_tokens: 1800 })
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":`Bearer ${key}`
+      },
+      body: JSON.stringify({
+        model,
+        messages,
+        temperature: 0.7,
+        max_tokens: 1800
+      })
     });
     const data = await res.json().catch(()=> ({}));
-    if(!res.ok) return { ok:false, error: data?.error?.message || `HTTP ${res.status}`, raw: JSON.stringify(data, null, 2) };
+    if(!res.ok){
+      const msg = data?.error?.message || `HTTP ${res.status}`;
+      return { ok:false, error: msg, raw: JSON.stringify(data, null, 2) };
+    }
     const text = data?.choices?.[0]?.message?.content ?? "";
     return { ok:true, text, data };
   }catch(e){
     return { ok:false, error: e?.message || "Fetch failed" };
   }
 }
-
-// ==================== SUBJECT GENERATION (FIXED) ====================
+/* ---------------------------
+   Subject Generation (unchanged – fixed)
+----------------------------*/
 function buildSubjectPrompt(){
   const offerName = $("offerName").value.trim() || "the offer";
   const benefits = $("benefits").value.trim().split("\n").map(x=>x.trim()).filter(Boolean).slice(0,6);
@@ -498,44 +549,77 @@ Return ONLY valid JSON (no markdown, no commentary) in this exact format:
 ["subject 1","subject 2","subject 3"]
 Write 3 email subject lines about: ${offerName}
 Rules (MUST follow):
-- Each subject 36 to 80 characters long.
-- Each subject at least 7 words.
-- No emojis except ⭐.
-- Avoid spam words: free, guarantee, winner, urgent, act now, limited time.
-- Natural, curious, human tone.
+- Each subject MUST be 36 to 80 characters long.
+- Each subject MUST be at least 7 words.
+- Do NOT use any emojis except ⭐ (star). (Better: use no emojis unless user adds ⭐)
+- Avoid spam words: free, guarantee, winner, urgent, act now.
+- Natural human tone. High curiosity. Not clickbait.
+- Do NOT surround subjects with quotes other than JSON quotes (required).
 Offer context:
 ${benefitBlock}
-Output JSON array only.
+Now output the JSON array only.
 `.trim();
 }
-
 async function generateSubjectsHard(){
   $("subjectResults").innerHTML = "";
   const sys = { role:"system", content:"You are a strict subject-line generator. Output must be valid JSON only." };
   const user = { role:"user", content: buildSubjectPrompt() };
-
+  let lastRaw = "";
   for(let attempt=1; attempt<=3; attempt++){
     const r = await callGroq([sys, user]);
     if(!r.ok){
       $("rawText").value = r.raw || r.error || "";
-      showToast("API error. Open Raw Output.", true);
+      showToast("Subject generation API error. Open Raw Output.", true);
       return;
     }
-    $("rawText").value = r.text;
-
-    let arr = safeJsonParse(r.text);
-    if(!Array.isArray(arr)) arr = normalizeSubjects(r.text.split("\n"));
-    else arr = normalizeSubjects(arr);
-
+    lastRaw = r.text;
+    $("rawText").value = lastRaw;
+    let arr = safeJsonParse(lastRaw);
+    if(!Array.isArray(arr)){
+      arr = normalizeSubjects(lastRaw.split("\n"));
+      arr = arr.slice(0,3);
+    }else{
+      arr = normalizeSubjects(arr).slice(0,3);
+    }
     if(arr.length < 3) continue;
-
+    const validations = arr.map(validateSubject);
+    const badIdx = validations.map((v,i)=> v.ok ? -1 : i).filter(i=>i>=0);
+    if(badIdx.length){
+      const toFix = badIdx.map(i=>arr[i]);
+      const fixUser = { role:"user", content: buildFixSubjectsPrompt(toFix) };
+      const fixRes = await callGroq([{role:"system", content:"You rewrite subject lines and output JSON only."}, fixUser]);
+      if(fixRes.ok){
+        let fixed = safeJsonParse(fixRes.text);
+        if(!Array.isArray(fixed)){
+          fixed = normalizeSubjects(fixRes.text.split("\n"));
+        }else{
+          fixed = normalizeSubjects(fixed);
+        }
+        badIdx.forEach((idx, j)=>{ if(fixed[j]) arr[idx] = fixed[j]; });
+      }
+    }
     renderSubjects(arr);
     showToast("Subjects generated. Click one to select.");
     return;
   }
-  showToast("Failed to generate valid subjects. Check Raw Output.", true);
+  $("rawText").value = lastRaw || "(empty)";
+  showToast("Failed to generate valid subjects. Open Raw Output.", true);
 }
-
+function buildFixSubjectsPrompt(badSubjects){
+  return `
+Return ONLY valid JSON array of the same length as input.
+Rewrite each subject line to obey ALL rules.
+Rules (MUST follow):
+- 36 to 80 characters
+- 7+ words
+- No emojis except ⭐
+- Avoid spam words: free, guarantee, winner, urgent, act now
+- Keep the original meaning as much as possible
+Input JSON:
+${JSON.stringify(badSubjects)}
+Output JSON only.
+`.trim();
+}
 function renderSubjects(arr){
   const container = $("subjectResults");
   container.innerHTML = "";
@@ -547,48 +631,47 @@ function renderSubjects(arr){
       <div style="font-weight:900">${escapeHtml(s)}</div>
       <div class="metaLine ${v.ok ? 'metaOk' : 'metaBad'}">${v.chars} chars, ${v.words} words ${v.ok ? '✓' : '⚠️'}</div>
     `;
-    div.onclick = ()=>{
+    div.addEventListener("click", ()=>{
       document.querySelectorAll(".subjectItem").forEach(x=>x.classList.remove("selected"));
       div.classList.add("selected");
       $("subject").value = s;
       updatePreview();
       showToast("Subject selected");
-    };
+    });
     container.appendChild(div);
   });
 }
-
 function escapeHtml(s){
   const d = document.createElement("div");
   d.textContent = s;
   return d.innerHTML;
 }
-
-// ==================== BODY GENERATION (FIXED) ====================
+/* ---------------------------
+   Body Generation (UPDATED: 1–2 short paragraphs)
+----------------------------*/
 function buildBodyPrompt(){
   const offerName = $("offerName").value.trim() || "this offer";
   const link = $("offerLink").value.trim();
   const benefits = $("benefits").value.trim().split("\n").map(x=>x.trim()).filter(Boolean).slice(0,6);
   const benefitBlock = benefits.length ? benefits.map(b=>`- ${b}`).join("\n") : "- (no benefits provided)";
   const cta = $("ctaText").value.trim() || "Click here to see it now";
-  const linkLine = link ? `Use this link exactly once, on its own line: ${link}` : "Do not include a link.";
-
+  const linkLine = link ? `Use this link exactly once, on its own line: ${link}` : "Do not include a link (user will add later).";
   return `
-Write a promotional email in plain text (no HTML).
-CRITICAL FORMATTING RULES:
-- Use 2–3 sentence paragraphs ONLY.
-- Separate paragraphs with ONE blank line.
-- Total 10–16 sentences.
+Write a SHORT promotional email in plain text (no HTML).
+CRITICAL FORMATTING RULES (MUST follow):
+- Exactly 1 to 2 paragraphs ONLY.
+- Separate each paragraph with ONE blank line.
+- Total length: 5–10 sentences max.
 - Start the first line exactly with: ⭐{!name_fix}
-Content:
-- Offer: ${offerName}
-- Benefits: ${benefitBlock}
-- CTA: "${cta}"
+CONTENT:
+- Offer name: ${offerName}
+- Benefits:
+${benefitBlock}
+- Call to action text: "${cta}"
 - ${linkLine}
-Output only the email body. No signature. No extra text.
+No signature. No extra commentary. Output only the email body.
 `.trim();
 }
-
 async function generateBodyHard(){
   pushUndo();
   const sys = { role:"system", content:"You are an email copywriter. Follow formatting rules exactly." };
@@ -596,14 +679,14 @@ async function generateBodyHard(){
   const r = await callGroq([sys, user]);
   if(!r.ok){
     $("rawText").value = r.raw || r.error || "";
-    showToast("Body generation failed. Open Raw Output.", true);
+    showToast("Body generation API error. Open Raw Output.", true);
     return;
   }
   let text = (r.text || "").trim();
   if(text && !text.includes("\n\n")){
-    const sentences = text.split(/(?<=[\.\!\?])\s+/);
+    const sentences = text.split(/(?<=[\.\!\?])\s+/).filter(Boolean);
     const paras = [];
-    for(let i=0; i<sentences.length; i+=2){
+    for(let i=0;i<sentences.length;i+=2){
       paras.push(sentences.slice(i,i+2).join(" "));
     }
     text = paras.join("\n\n");
@@ -613,14 +696,121 @@ async function generateBodyHard(){
   updatePreview();
   showToast("Body generated");
 }
-
-// ==================== COPY FUNCTIONS ====================
+/* ---------------------------
+   Prompt Library Helpers (new – generic auto + edit/save/delete/use)
+----------------------------*/
+function renderPromptList(){
+  const wrap = $("promptList");
+  wrap.innerHTML = "";
+  window.__PROMPTS__.forEach(p=>{
+    const outer = document.createElement("div");
+    outer.className = "card";
+    outer.style.background = "var(--panel2)";
+    outer.style.marginBottom = "12px";
+    outer.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+        <input value="${escapeHtml(p.name)}" style="flex:1;font-weight:900;color:var(--gold);font-size:16px;border:2px solid var(--border);padding:8px;border-radius:8px" onchange="updatePromptName(${p.id},this.value)">
+        <button class="btn btnRed btnSmall" onclick="deletePrompt(${p.id})">Delete</button>
+      </div>
+      <label style="margin-top:8px">Subject Prompt</label>
+      <textarea style="min-height:80px" onchange="updatePromptField(${p.id},'subjectPrompt',this.value)">${escapeHtml(p.subjectPrompt)}</textarea>
+      <label>Body Prompt</label>
+      <textarea style="min-height:80px" onchange="updatePromptField(${p.id},'bodyPrompt',this.value)">${escapeHtml(p.bodyPrompt)}</textarea>
+      <div class="row" style="margin-top:8px">
+        <button class="btn btnGreen btnSmall" onclick="usePromptForSubjects(${p.id})">Generate Subjects</button>
+        <button class="btn btnGreen btnSmall" onclick="usePromptForBody(${p.id})">Generate Body</button>
+      </div>
+    `;
+    wrap.appendChild(outer);
+  });
+}
+window.updatePromptName = (id,val)=>{ 
+  const p = window.__PROMPTS__.find(x=>x.id===id); 
+  if(p) p.name = val; 
+  savePrompts(); 
+};
+window.updatePromptField = (id,field,val)=>{ 
+  const p = window.__PROMPTS__.find(x=>x.id===id); 
+  if(p) p[field] = val; 
+  savePrompts(); 
+};
+window.deletePrompt = (id)=>{ 
+  if(!confirm("Delete this prompt?")) return; 
+  window.__PROMPTS__ = window.__PROMPTS__.filter(x=>x.id!==id); 
+  savePrompts(); 
+  renderPromptList(); 
+};
+function addPrompt(){
+  const name = prompt("New prompt name (e.g. Crypto Offer):") || "New Prompt";
+  window.__PROMPTS__.push({
+    id: Date.now(),
+    name,
+    subjectPrompt: `Return ONLY valid JSON array ["sub1","sub2","sub3"]\n3 curiosity subject lines for your offer. 36-80 chars, 7+ words. Natural tone. Optional ⭐ only.`,
+    bodyPrompt: `Write SHORT plain-text email (1-2 paragraphs). Start first line EXACTLY with: ⭐{!name_fix}. 5-9 sentences total. Output body only.`
+  });
+  savePrompts();
+  renderPromptList();
+  showToast("New prompt added – edit and use");
+}
+async function usePromptForSubjects(id){
+  const p = window.__PROMPTS__.find(x=>x.id===id);
+  if(!p) return;
+  $("subjectResults").innerHTML = "";
+  const sys = { role:"system", content:"You are a strict subject-line generator. Output must be valid JSON only." };
+  const user = { role:"user", content: p.subjectPrompt };
+  const r = await callGroq([sys, user]);
+  if(!r.ok){
+    $("rawText").value = r.raw || r.error || "";
+    showToast("Prompt API error. Open Raw Output.", true);
+    return;
+  }
+  $("rawText").value = r.text;
+  let arr = safeJsonParse(r.text);
+  if(!Array.isArray(arr)) arr = normalizeSubjects(r.text.split("\n"));
+  else arr = normalizeSubjects(arr);
+  renderSubjects(arr.slice(0,3));
+  showToast(`Subjects generated from ${p.name}`);
+}
+async function usePromptForBody(id){
+  const p = window.__PROMPTS__.find(x=>x.id===id);
+  if(!p) return;
+  pushUndo();
+  const sys = { role:"system", content:"You are an email copywriter. Follow formatting rules exactly." };
+  const user = { role:"user", content: p.bodyPrompt };
+  const r = await callGroq([sys, user]);
+  if(!r.ok){
+    $("rawText").value = r.raw || r.error || "";
+    showToast("Body prompt API error. Open Raw Output.", true);
+    return;
+  }
+  let text = (r.text || "").trim();
+  if(text && !text.includes("\n\n")){
+    const sentences = text.split(/(?<=[\.\!\?])\s+/).filter(Boolean);
+    const paras = [];
+    for(let i=0;i<sentences.length;i+=2){
+      paras.push(sentences.slice(i,i+2).join(" "));
+    }
+    text = paras.join("\n\n");
+  }
+  $("body").value = text;
+  pushUndo();
+  updatePreview();
+  showToast(`Body generated from ${p.name}`);
+}
+/* ---------------------------
+   Copy
+----------------------------*/
 async function copyText(txt){
-  try{ await navigator.clipboard.writeText(txt); return true; }
-  catch{
+  try{
+    await navigator.clipboard.writeText(txt);
+    return true;
+  }catch{
     const ta = document.createElement("textarea");
-    ta.value = txt; document.body.appendChild(ta); ta.select();
-    document.execCommand("copy"); document.body.removeChild(ta);
+    ta.value = txt;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
     return true;
   }
 }
@@ -628,20 +818,36 @@ async function copyFull(){
   const subject = $("subject").value.trim();
   const body = $("body").value.trim();
   const html = toEmailHtmlFromPlain(body);
-  await copyText(`SUBJECT: ${subject}\n\n${html}`);
-  showToast("Copied full email");
+  const full = `SUBJECT: ${subject}\n\n${html}`;
+  await copyText(full);
+  showToast("Copied full email (subject + body HTML)");
 }
-async function copySubject(){ await copyText($("subject").value.trim()); showToast("Copied subject"); }
-async function copyBodyHtml(){ await copyText(toEmailHtmlFromPlain($("body").value.trim())); showToast("Copied body HTML"); }
-
-// ==================== SIGNATURES ====================
+async function copySubject(){
+  const subject = $("subject").value.trim();
+  await copyText(subject);
+  showToast("Copied subject");
+}
+async function copyBodyHtml(){
+  const body = $("body").value.trim();
+  const html = toEmailHtmlFromPlain(body);
+  await copyText(html);
+  showToast("Copied body HTML");
+}
+/* ---------------------------
+   Signatures (unchanged)
+----------------------------*/
 function renderSigStatus(){
   const sig = window.__SIGS__.find(s=>s.id===window.__SIGSEL__);
   $("sigStatus").textContent = sig ? `Selected: ${sig.name}` : "No signature selected";
 }
-function openSigModal(){ renderSigList(); $("sigModal").classList.add("show"); }
-function closeSigModal(){ $("sigModal").classList.remove("show"); renderSigStatus(); }
-
+function openSigModal(){
+  renderSigList();
+  $("sigModal").classList.add("show");
+}
+function closeSigModal(){
+  $("sigModal").classList.remove("show");
+  renderSigStatus();
+}
 function renderSigList(){
   const wrap = $("sigList");
   wrap.innerHTML = "";
@@ -663,94 +869,157 @@ function renderSigList(){
       <label style="margin-top:10px">Content</label>
       <textarea data-act="content" style="min-height:120px">${sig.content || ""}</textarea>
     `;
-    outer.querySelector('[data-act="select"]').onclick = ()=>{
+    outer.querySelector('[data-act="select"]').addEventListener("click", ()=>{
       window.__SIGSEL__ = sig.id;
       localStorage.setItem("esm_sigSel", String(sig.id));
-      renderSigList(); renderSigStatus();
-    };
-    outer.querySelector('[data-act="delete"]').onclick = ()=>{
-      if(window.__SIGS__.length <= 1) return showToast("Must keep at least one", true);
-      if(!confirm("Delete?")) return;
+      renderSigList();
+      renderSigStatus();
+      showToast("Signature selected");
+    });
+    outer.querySelector('[data-act="delete"]').addEventListener("click", ()=>{
+      if(window.__SIGS__.length <= 1){
+        showToast("Must keep at least one signature", true);
+        return;
+      }
+      if(!confirm("Delete this signature?")) return;
       window.__SIGS__ = window.__SIGS__.filter(s=>s.id!==sig.id);
       if(window.__SIGSEL__===sig.id) window.__SIGSEL__ = window.__SIGS__[0].id;
       localStorage.setItem("esm_sigs", JSON.stringify(window.__SIGS__));
       localStorage.setItem("esm_sigSel", String(window.__SIGSEL__));
-      renderSigList(); renderSigStatus();
-    };
+      renderSigList();
+      renderSigStatus();
+      showToast("Signature deleted");
+    });
     const ta = outer.querySelector('textarea[data-act="content"]');
-    ta.oninput = ()=>{ sig.content = ta.value; localStorage.setItem("esm_sigs", JSON.stringify(window.__SIGS__)); };
+    ta.addEventListener("input", ()=>{
+      sig.content = ta.value;
+      localStorage.setItem("esm_sigs", JSON.stringify(window.__SIGS__));
+    });
     wrap.appendChild(outer);
   });
 }
-
 function addSignature(){
   const name = $("sigNewName").value.trim();
   const content = $("sigNewContent").value;
-  if(!name) return showToast("Name required", true);
+  if(!name){
+    showToast("Signature name required", true);
+    return;
+  }
   const id = Date.now();
   window.__SIGS__.push({id,name,content});
   window.__SIGSEL__ = id;
   localStorage.setItem("esm_sigs", JSON.stringify(window.__SIGS__));
-  localStorage.setItem("esm_sigSel", String(id));
-  $("sigNewName").value = ""; $("sigNewContent").value = "";
-  renderSigList(); renderSigStatus();
+  localStorage.setItem("esm_sigSel", String(window.__SIGSEL__));
+  $("sigNewName").value = "";
+  $("sigNewContent").value = "";
+  renderSigList();
+  renderSigStatus();
+  showToast("Signature added");
 }
-
 function insertSelectedSignature(){
   const sig = window.__SIGS__.find(s=>s.id===window.__SIGSEL__);
-  if(!sig?.content) return showToast("Signature empty", true);
+  if(!sig || !sig.content){
+    showToast("Selected signature has no content", true);
+    return;
+  }
   pushUndo();
   const body = $("body").value.trim();
-  $("body").value = body ? body + "\n\n" + sig.content : sig.content;
+  $("body").value = body ? (body + "\n\n" + sig.content) : sig.content;
   pushUndo();
   updatePreview();
   showToast("Signature inserted");
 }
-
-// ==================== EVENTS ====================
-$("toggleTheme").onclick = ()=>{ 
-  document.body.classList.toggle("theme-slate"); 
-  localStorage.setItem("esm_theme", document.body.classList.contains("theme-slate") ? "slate" : ""); 
-};
-$("saveKey").onclick = ()=>{ localStorage.setItem("esm_apiKey", $("apiKey").value.trim()); localStorage.setItem("esm_model", $("model").value); showToast("Saved"); };
-$("model").onchange = ()=>{ localStorage.setItem("esm_model", $("model").value); };
-
+/* ---------------------------
+   NEW: Body tag insert (cursor-aware)
+----------------------------*/
+function insertBodyTag(tag){
+  const ta = $("body");
+  const start = ta.selectionStart ?? ta.value.length;
+  const end = ta.selectionEnd ?? ta.value.length;
+  ta.value = ta.value.substring(0, start) + tag + ta.value.substring(end);
+  ta.selectionStart = ta.selectionEnd = start + tag.length;
+  ta.focus();
+  pushUndo();
+  updatePreview();
+  showToast("Tag inserted");
+}
+/* ---------------------------
+   Events
+----------------------------*/
+$("toggleTheme").addEventListener("click", ()=>{
+  document.body.classList.toggle("theme-slate");
+  localStorage.setItem("esm_theme", document.body.classList.contains("theme-slate") ? "slate" : "");
+});
+$("saveKey").addEventListener("click", ()=>{
+  localStorage.setItem("esm_apiKey", $("apiKey").value.trim());
+  localStorage.setItem("esm_model", $("model").value);
+  showToast("API key saved");
+});
+$("model").addEventListener("change", ()=>{
+  localStorage.setItem("esm_model", $("model").value);
+});
 ["offerName","offerLink","benefits","ctaText"].forEach(id=>{
-  $(id).oninput = ()=>{ localStorage.setItem("esm_"+id, $(id).value); };
+  $(id).addEventListener("input", ()=>{
+    localStorage.setItem("esm_"+id, $(id).value);
+  });
 });
-
-document.querySelectorAll(".pill").forEach(p=>{
-  p.onclick = ()=>{ 
+// Subject prefix pills (now in middle)
+document.querySelectorAll(".pill[data-prefix]").forEach(p=>{
+  p.addEventListener("click", ()=>{
     const prefix = p.getAttribute("data-prefix");
-    $("subject").value = prefix + $("subject").value;
+    const current = $("subject").value;
+    $("subject").value = prefix + current;
     updatePreview();
-  };
+    showToast("Prefix inserted");
+  });
 });
-
-$("subject").oninput = updatePreview;
-$("body").oninput = ()=>{ pushUndo(); updatePreview(); };
-
-$("genSubjects").onclick = generateSubjectsHard;
-$("genBody").onclick = generateBodyHard;
-$("undoBody").onclick = undoBody;
-$("clearBody").onclick = ()=>{ pushUndo(); $("body").value = ""; pushUndo(); updatePreview(); };
-$("clearSubjects").onclick = ()=>{ $("subjectResults").innerHTML=""; showToast("Cleared"); };
-
-$("copyFull").onclick = copyFull;
-$("copySubject").onclick = copySubject;
-$("copyBodyHtml").onclick = copyBodyHtml;
-
-$("manageSigs").onclick = openSigModal;
-$("insertSig").onclick = insertSelectedSignature;
-$("closeSig").onclick = closeSigModal;
-$("addSig").onclick = addSignature;
-$("openRaw").onclick = ()=>{ $("rawModal").classList.add("show"); };
-$("closeRaw").onclick = ()=>{ $("rawModal").classList.remove("show"); };
-$("copyRaw").onclick = async ()=>{ await copyText($("rawText").value); showToast("Raw copied"); };
-
+// NEW: Body insert pills
+document.querySelectorAll(".pill[data-bodytag]").forEach(p=>{
+  p.addEventListener("click", ()=>{
+    insertBodyTag(p.getAttribute("data-bodytag"));
+  });
+});
+$("subject").addEventListener("input", updatePreview);
+$("body").addEventListener("input", ()=>{
+  pushUndo();
+  updatePreview();
+});
+$("genSubjects").addEventListener("click", generateSubjectsHard);
+$("clearSubjects").addEventListener("click", ()=>{ $("subjectResults").innerHTML=""; showToast("Cleared subjects"); });
+$("genBody").addEventListener("click", generateBodyHard);
+$("undoBody").addEventListener("click", undoBody);
+$("clearBody").addEventListener("click", ()=>{
+  pushUndo();
+  $("body").value = "";
+  pushUndo();
+  updatePreview();
+  showToast("Body cleared");
+});
+$("copyFull").addEventListener("click", copyFull);
+$("copySubject").addEventListener("click", copySubject);
+$("copyBodyHtml").addEventListener("click", copyBodyHtml);
+$("manageSigs").addEventListener("click", openSigModal);
+$("insertSig").addEventListener("click", insertSelectedSignature);
+$("closeSig").addEventListener("click", closeSigModal);
+$("addSig").addEventListener("click", addSignature);
+$("openRaw").addEventListener("click", ()=> $("rawModal").classList.add("show"));
+$("closeRaw").addEventListener("click", ()=> $("rawModal").classList.remove("show"));
+$("copyRaw").addEventListener("click", async ()=>{
+  await copyText($("rawText").value);
+  showToast("Raw output copied");
+});
+// NEW: Prompt Library
+$("openPromptLibrary").addEventListener("click", ()=>{
+  renderPromptList();
+  $("promptModal").classList.add("show");
+});
+$("closePrompt").addEventListener("click", ()=> $("promptModal").classList.remove("show"));
+$("addPromptBtn").addEventListener("click", addPrompt);
+// autosave draft
 setInterval(saveDraft, 4000);
-
-// Init
+/* ---------------------------
+   Init
+----------------------------*/
 loadState();
 </script>
 </body>
