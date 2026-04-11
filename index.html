@@ -6,70 +6,42 @@
   <title>Email Swipe Machine</title>
   <style>
     :root{
-      --bg:#d4c4a8;
-      --panel:#f5f0e6;
-      --panel2:#efe6d8;
-      --border:#c9b896;
-      --muted:#5c4d3a;
-      --gold:#b8860b;
-      --green:#2e7d32;
-      --blue:#1976d2;
-      --red:#d32f2f;
-      --editorBg:#ffffff;
-      --editorText:#000000;
+      --bg:#d4c4a8; --panel:#f5f0e6; --panel2:#efe6d8; --border:#c9b896;
+      --muted:#5c4d3a; --gold:#b8860b; --green:#2e7d32; --blue:#1976d2; --red:#d32f2f;
     }
     body.theme-slate{
       --bg:#111827; --panel:#1f2937; --panel2:#243244; --border:#374151;
       --muted:#cbd5e1; --gold:#fbbf24; --green:#22c55e; --red:#ef4444;
     }
     *{box-sizing:border-box}
-    body{
-      margin:0; font-family: Arial, system-ui, sans-serif;
-      background:var(--bg); color:#111; line-height:1.6; font-size:16px;
-    }
+    body{margin:0; font-family:Arial,system-ui,sans-serif; background:var(--bg); color:#111; font-size:16px;}
     .wrap{max-width:1700px;margin:0 auto;padding:18px;}
-    .topbar{
-      background:var(--panel); border:2px solid var(--gold); border-radius:10px;
-      padding:14px 16px; display:flex; align-items:center; justify-content:space-between;
-    }
+    .topbar{background:var(--panel); border:2px solid var(--gold); border-radius:10px; padding:14px 16px; display:flex; justify-content:space-between; align-items:center;}
     .title{font-weight:800; font-size:22px; color:var(--gold);}
-    .btn{
-      border:1px solid var(--border); background:var(--panel2); color:#111;
-      padding:10px 12px; border-radius:8px; cursor:pointer; font-weight:700;
-    }
+    .btn{border:1px solid var(--border); background:var(--panel2); color:#111; padding:10px 12px; border-radius:8px; cursor:pointer; font-weight:700;}
     .btn:hover{filter:brightness(0.98)}
     .btnGreen{background:var(--green); color:#fff; border:none}
     .btnBlue{background:var(--blue); color:#fff; border:none}
     .btnRed{background:var(--red); color:#fff; border:none}
-    .btnSmall{padding:8px 10px; font-size:13px}
     .grid{margin-top:16px; display:grid; grid-template-columns:420px 1fr 1fr; gap:16px;}
     .card{background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:16px;}
-    .card h2{margin:0 0 10px 0; font-size:18px; color:var(--gold);}
+    .card h2{margin:0 0 10px 0; color:var(--gold);}
     label{display:block; font-weight:800; color:var(--muted); font-size:13px; text-transform:uppercase; margin:12px 0 6px;}
-    input, textarea{
-      width:100%; padding:12px; border-radius:8px; border:2px solid var(--border);
-      background:var(--editorBg); color:var(--editorText); font-size:16px;
-    }
+    input,textarea{width:100%; padding:12px; border:2px solid var(--border); border-radius:8px; background:#fff;}
     textarea{min-height:160px; resize:vertical;}
     .bigBox{min-height:210px !important;}
     .pillRow{display:flex; gap:10px; flex-wrap:wrap; margin:8px 0;}
-    .pill{
-      border:2px solid var(--border); background:var(--panel2); border-radius:999px;
-      padding:8px 12px; cursor:pointer; font-weight:800; font-size:14px;
-    }
-    .subjects{margin-top:10px}
-    .subjectItem{background:#fff; border:2px solid #aaa; border-radius:10px; padding:12px; margin-bottom:10px; cursor:pointer;}
-    .subjectItem.selected{border-color:var(--green); box-shadow:0 0 0 3px rgba(46,125,50,.15);}
+    .pill{border:2px solid var(--border); background:var(--panel2); padding:8px 12px; border-radius:999px; cursor:pointer; font-weight:800;}
+    .subjectItem{background:#fff; border:2px solid #aaa; padding:12px; border-radius:10px; margin-bottom:10px; cursor:pointer;}
+    .subjectItem.selected{border-color:var(--green);}
     .previewSubject{background:#fff; border:2px solid var(--border); border-bottom:0; padding:12px; border-radius:10px 10px 0 0;}
-    .previewFrame{background:#fff; border:2px solid var(--border); border-radius:0 0 10px 10px; padding:14px; min-height:420px; font-family:Arial,sans-serif;}
-    .toast{position:fixed; right:18px; bottom:18px; background:rgba(0,0,0,.88); color:#fff; padding:12px 14px; border-radius:10px; font-weight:800; display:none; z-index:9999;}
+    .previewFrame{background:#fff; border:2px solid var(--border); border-radius:0 0 10px 10px; padding:14px; min-height:420px;}
+    .toast{position:fixed; right:20px; bottom:20px; background:rgba(0,0,0,.9); color:#fff; padding:12px 16px; border-radius:10px; display:none; z-index:9999;}
     .toast.show{display:block}
     .divider{height:1px; background:var(--border); margin:14px 0}
-    .smallNote{font-size:13px; color:var(--muted); margin-top:6px;}
     .modal{position:fixed; inset:0; background:rgba(0,0,0,.75); display:none; z-index:10000; padding:20px; overflow:auto;}
     .modal.show{display:block}
-    .modalInner{max-width:900px; margin:30px auto; background:var(--panel); border:2px solid var(--border); border-radius:12px; padding:18px;}
-    @media (max-width:1200px){.grid{grid-template-columns:1fr}}
+    .modalInner{max-width:900px; margin:40px auto; background:var(--panel); border:2px solid var(--border); border-radius:12px; padding:20px;}
   </style>
 </head>
 <body>
@@ -78,29 +50,29 @@
   <!-- Raw Modal -->
   <div class="modal" id="rawModal">
     <div class="modalInner">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-        <h2 style="margin:0;color:var(--gold)">Raw AI Output</h2>
+      <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+        <h2 style="margin:0;color:var(--gold)">Raw AI Output (Debug)</h2>
         <button class="btn btnRed" id="closeRaw">Close</button>
       </div>
-      <textarea id="rawText" style="width:100%;min-height:340px;font-family:monospace"></textarea>
-      <button class="btn btnBlue" id="copyRaw" style="margin-top:8px">Copy Raw</button>
+      <textarea id="rawText" style="width:100%; min-height:380px; font-family:monospace; font-size:14px"></textarea>
+      <button class="btn btnBlue" id="copyRaw" style="margin-top:8px">Copy Raw Output</button>
     </div>
   </div>
 
   <!-- Signature Modal -->
   <div class="modal" id="sigModal">
     <div class="modalInner">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-        <h2 style="margin:0;color:var(--gold)">Signatures</h2>
+      <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+        <h2 style="margin:0;color:var(--gold)">Manage Signatures</h2>
         <button class="btn btnRed" id="closeSig">Close</button>
       </div>
       <div id="sigList"></div>
       <div class="divider"></div>
-      <h2 style="margin:0 0 8px 0;color:var(--gold)">Add New Signature</h2>
+      <h2 style="margin:0 0 8px;color:var(--gold)">Add New Signature</h2>
       <label>Name</label>
-      <input id="sigNewName" type="text" placeholder="e.g. MLGS">
-      <label>Content</label>
-      <textarea id="sigNewContent"></textarea>
+      <input id="sigNewName" type="text" placeholder="e.g. MLGS Classic">
+      <label>Signature Content</label>
+      <textarea id="sigNewContent" placeholder="Paste your signature here..."></textarea>
       <button class="btn btnGreen" id="addSig" style="margin-top:10px">Add Signature</button>
     </div>
   </div>
@@ -119,7 +91,7 @@
       <div class="card">
         <h2>API + Offer Setup</h2>
         <label>Groq API Key</label>
-        <input id="apiKey" type="password" placeholder="Paste Groq API key">
+        <input id="apiKey" type="password" placeholder="Paste your Groq key">
         <div style="margin-top:8px">
           <button class="btn btnGreen" id="saveKey">Save Key</button>
           <a class="btn" href="https://console.groq.com" target="_blank">Get Key</a>
@@ -128,25 +100,23 @@
         <div class="divider"></div>
         <label>Model</label>
         <select id="model">
-          <option value="llama-3.1-70b-versatile">llama-3.1-70b-versatile (best)</option>
-          <option value="llama-3.1-8b-instant">llama-3.1-8b-instant (fast)</option>
+          <option value="llama-3.1-70b-versatile">llama-3.1-70b-versatile (Best)</option>
+          <option value="llama-3.1-8b-instant">llama-3.1-8b-instant (Fast)</option>
         </select>
 
         <div class="divider"></div>
         <label>Offer Name</label>
         <input id="offerName" type="text" placeholder="e.g. My Affiliate Offer">
         <label>Offer Link (optional)</label>
-        <input id="offerLink" type="text" placeholder="https://...">
-        <label>Key Benefits (1 per line)</label>
-        <textarea id="benefits" placeholder="Benefit 1&#10;Benefit 2"></textarea>
-        <label>Call-To-Action (optional)</label>
-        <input id="ctaText" type="text" value="Click here to see it now">
+        <input id="offerLink" type="text">
+        <label>Benefits (1 per line)</label>
+        <textarea id="benefits"></textarea>
+        <label>CTA Text (optional)</label>
+        <input id="ctaText" value="Click here to see it now">
 
-        <!-- Automated Prompt Idea Generator -->
         <div class="divider"></div>
         <h2>Prompt Idea Generator</h2>
         <button class="btn btnGreen" id="genPromptIdea" style="width:100%">Generate Fresh Prompt Ideas</button>
-        <p class="smallNote">Click to get new generic MLM / Affiliate prompt ideas (copy & paste if needed)</p>
       </div>
 
       <!-- MIDDLE -->
@@ -161,142 +131,168 @@
         </div>
 
         <label>Subject Line</label>
-        <input id="subject" type="text" placeholder="Subject line here...">
-        <div class="smallNote" id="subjectCounter"></div>
-        <div style="margin:10px 0">
-          <button class="btn btnGreen" id="genSubjects">Generate 3 Subjects</button>
-          <button class="btn" id="clearSubjects">Clear</button>
-        </div>
+        <input id="subject" type="text">
+        <div id="subjectCounter" class="smallNote"></div>
+        <button class="btn btnGreen" id="genSubjects" style="margin:8px 0">Generate 3 Subjects</button>
+
         <div class="subjects" id="subjectResults"></div>
 
         <div class="divider"></div>
         <label>Email Body (1–2 short paragraphs)</label>
-        <textarea id="body" class="bigBox" placeholder="Body text..."></textarea>
+        <textarea id="body" class="bigBox"></textarea>
 
         <div class="pillRow">
           <div class="pill" data-bodytag="{!firstname_fix}⭐ ">{!firstname_fix}⭐</div>
           <div class="pill" data-bodytag="{!lastname_fix}⭐ ">{!lastname_fix}⭐</div>
         </div>
 
-        <div style="margin-top:12px">
+        <div style="margin-top:10px">
           <button class="btn btnGreen" id="genBody">Generate Body</button>
           <button class="btn btnBlue" id="undoBody">Undo</button>
-          <button class="btn btnRed" id="clearBody">Clear</button>
+          <button class="btn btnRed" id="clearBody">Clear Body</button>
         </div>
 
-        <!-- NEW IMAGE SECTION -->
+        <!-- Image Prompt -->
         <div class="divider"></div>
-        <h2>Email Image / Visual</h2>
-        <button class="btn btnGreen" id="genImagePrompt" style="width:100%">Generate Image Prompt for AI</button>
-        <p class="smallNote">Creates ready-to-use prompt for Grok Imagine, Flux, Midjourney, etc.</p>
-        <textarea id="imagePrompt" style="margin-top:8px; min-height:110px; font-size:14px;" readonly></textarea>
-        <button class="btn btnBlue" id="copyImagePrompt" style="margin-top:6px">Copy Image Prompt</button>
+        <h2>Image Prompt for Email</h2>
+        <button class="btn btnGreen" id="genImagePrompt" style="width:100%">Generate Image Prompt</button>
+        <textarea id="imagePrompt" style="min-height:100px; margin-top:8px;" readonly></textarea>
+        <button class="btn btnBlue" id="copyImagePrompt">Copy Image Prompt</button>
 
         <div class="divider"></div>
         <h2>Signatures</h2>
-        <div style="display:flex; gap:10px">
-          <button class="btn btnBlue" id="manageSigs">Manage Signatures</button>
-          <button class="btn btnGreen" id="insertSig">Insert Selected</button>
-        </div>
-        <p class="smallNote" id="sigStatus"></p>
+        <button class="btn btnBlue" id="manageSigs">Manage Signatures</button>
+        <button class="btn btnGreen" id="insertSig">Insert Selected Signature</button>
+        <p class="smallNote" id="sigStatus">No signature selected</p>
       </div>
 
       <!-- RIGHT -->
       <div class="card">
         <h2>Preview + Copy</h2>
         <div class="previewSubject"><strong>Subject:</strong> <span id="prevSub">...</span></div>
-        <div class="previewFrame" id="prevBody"><p style="color:#777">Preview appears here...</p></div>
-        <div class="divider"></div>
-        <button class="btn btnGreen" id="copyFull" style="width:100%;margin-bottom:8px">Copy Full Email (Clean)</button>
-        <div style="display:flex; gap:8px">
-          <button class="btn btnBlue" id="copySubject">Copy Subject</button>
-          <button class="btn btnBlue" id="copyBodyHtml">Copy Body HTML</button>
-        </div>
+        <div class="previewFrame" id="prevBody">Preview appears here...</div>
+        <button class="btn btnGreen" id="copyFull" style="width:100%; margin:12px 0">Copy Full Email (Clean)</button>
+        <button class="btn btnBlue" id="copySubject">Copy Subject</button>
+        <button class="btn btnBlue" id="copyBodyHtml">Copy Body HTML</button>
       </div>
     </div>
   </div>
 
 <script>
-// ==================== UTILITIES ====================
 const $ = id => document.getElementById(id);
-function showToast(msg, err=false){
+function showToast(msg, isErr=false){
   const t = $("toast");
   t.textContent = msg;
-  t.style.border = `2px solid ${err ? "var(--red)" : "var(--green)"}`;
+  t.style.border = isErr ? "2px solid var(--red)" : "2px solid var(--green)";
   t.classList.add("show");
-  setTimeout(()=>t.classList.remove("show"), 2800);
-}
-function updatePreview(){
-  $("prevSub").textContent = $("subject").value.trim() || "...";
-  const body = $("body").value;
-  const paras = body.split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean);
-  $("prevBody").innerHTML = paras.length ? paras.map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('') : '<p style="color:#777">Preview appears here...</p>';
-  
-  const len = $("subject").value.trim().length;
-  const words = $("subject").value.trim().split(/\s+/).length;
-  $("subjectCounter").innerHTML = `${len} chars, ${words} words`;
+  setTimeout(() => t.classList.remove("show"), 3000);
 }
 
-// Copy without "SUBJECT:"
-async function copyFull(){
-  const full = $("subject").value.trim() + "\n\n" + $("body").value.trim();
-  await navigator.clipboard.writeText(full);
-  showToast("Full email copied (clean format)");
+// Storage & Signatures
+let sigs = JSON.parse(localStorage.getItem("esm_sigs") || '[{"id":1,"name":"Default","content":"-- \nYour Name\nYour Position"}]');
+let currentSigId = Number(localStorage.getItem("esm_sigSel")) || 1;
+
+function renderSigStatus(){
+  const sig = sigs.find(s => s.id === currentSigId);
+  $("sigStatus").textContent = sig ? `Selected: ${sig.name}` : "No signature selected";
 }
 
-// Groq Call
-async function callGroq(prompt){
-  const key = $("apiKey").value.trim() || localStorage.getItem("esm_apiKey") || "";
-  if(!key) return showToast("Missing API Key", true);
-  try{
-    const res = await fetch("https://api.groq.com/openai/v1/chat/completions",{
-      method:"POST",
-      headers:{"Content-Type":"application/json","Authorization":`Bearer ${key}`},
-      body:JSON.stringify({
-        model: $("model").value,
-        messages:[{role:"user", content:prompt}],
-        temperature:0.7,
-        max_tokens:1200
-      })
-    });
-    const data = await res.json();
-    return data.choices?.[0]?.message?.content?.trim() || null;
-  }catch(e){
-    $("rawText").value = e.message;
-    showToast("API Error - check Raw", true);
-    return null;
-  }
-}
-
-// Generate Subjects & Body (no auto names/links)
-async function generateSubjectsHard(){
-  $("subjectResults").innerHTML = "";
-  const text = await callGroq(`Return ONLY a JSON array of 3 strings. Create natural, curiosity subject lines for: ${$("offerName").value || "this offer"}. 36-80 chars, 7+ words each.`);
-  if(!text) return;
-  $("rawText").value = text;
-  let arr = safeJsonParse(text) || text.split('\n').map(l=>l.trim()).filter(Boolean);
-  renderSubjects(arr);
-}
-function renderSubjects(arr){
-  const container = $("subjectResults");
+function renderSigList(){
+  const container = $("sigList");
   container.innerHTML = "";
-  arr.forEach(s=>{
+  sigs.forEach(sig => {
     const div = document.createElement("div");
-    div.className = "subjectItem";
-    div.textContent = s;
-    div.onclick = ()=>{ $("subject").value = s; updatePreview(); showToast("Subject selected"); };
+    div.style.marginBottom = "12px";
+    div.style.padding = "12px";
+    div.style.background = "var(--panel2)";
+    div.innerHTML = `
+      <div style="display:flex;justify-content:space-between">
+        <strong>${sig.name}</strong>
+        <div>
+          <button class="btn btnBlue btnSmall" data-id="${sig.id}" data-action="select">Select</button>
+          <button class="btn btnRed btnSmall" data-id="${sig.id}" data-action="delete">Delete</button>
+        </div>
+      </div>
+      <textarea style="margin-top:8px;min-height:100px;width:100%">${sig.content}</textarea>
+    `;
+    div.querySelectorAll("button").forEach(btn => {
+      btn.onclick = () => {
+        if(btn.dataset.action === "select"){
+          currentSigId = Number(btn.dataset.id);
+          localStorage.setItem("esm_sigSel", currentSigId);
+          renderSigList();
+          renderSigStatus();
+        } else if(btn.dataset.action === "delete"){
+          if(sigs.length === 1) return showToast("Cannot delete last signature", true);
+          sigs = sigs.filter(s => s.id !== Number(btn.dataset.id));
+          if(currentSigId === Number(btn.dataset.id)) currentSigId = sigs[0].id;
+          localStorage.setItem("esm_sigs", JSON.stringify(sigs));
+          renderSigList();
+          renderSigStatus();
+        }
+      };
+    });
+    div.querySelector("textarea").oninput = (e) => {
+      const s = sigs.find(x => x.id === sig.id);
+      if(s) s.content = e.target.value;
+      localStorage.setItem("esm_sigs", JSON.stringify(sigs));
+    };
     container.appendChild(div);
   });
 }
 
+function callGroq(messages){
+  const key = $("apiKey").value.trim() || localStorage.getItem("esm_apiKey") || "";
+  if(!key) {
+    showToast("Please enter Groq API Key", true);
+    return Promise.resolve(null);
+  }
+  return fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {"Content-Type": "application/json", "Authorization": `Bearer ${key}`},
+    body: JSON.stringify({model: $("model").value, messages, temperature: 0.7, max_tokens: 1400})
+  })
+  .then(r => r.json())
+  .then(data => {
+    if(!data.choices) {
+      $("rawText").value = JSON.stringify(data, null, 2);
+      showToast("API Error - check Raw Output", true);
+      return null;
+    }
+    return data.choices[0].message.content.trim();
+  })
+  .catch(err => {
+    $("rawText").value = err.message;
+    showToast("Connection Error - check Raw Output", true);
+    return null;
+  });
+}
+
+// Generate Functions (clean)
+async function generateSubjectsHard(){
+  $("subjectResults").innerHTML = "";
+  const text = await callGroq([{role:"user", content: `Return only JSON array of 3 strings. Create good email subjects for: ${$("offerName").value || "this offer"}. 36-80 chars each.`}]);
+  if(!text) return;
+  $("rawText").value = text;
+  try{
+    const arr = JSON.parse(text);
+    arr.forEach(s => {
+      const div = document.createElement("div");
+      div.className = "subjectItem";
+      div.textContent = s;
+      div.onclick = () => { $("subject").value = s; updatePreview(); };
+      $("subjectResults").appendChild(div);
+    });
+  } catch(e){ showToast("Failed to parse subjects", true); }
+}
+
 async function generateBodyHard(){
-  const prompt = `Write a short promotional email body (1-2 short paragraphs only).
-Start first line exactly with: ⭐{!name_fix}
-Do NOT add any names, links, or signatures.
-Offer: ${$("offerName").value || "this offer"}
-Benefits: ${$("benefits").value || ""}
-CTA: ${$("ctaText").value || ""}`;
-  const text = await callGroq(prompt);
+  const prompt = `Write short promotional email body (1 or 2 paragraphs only). 
+Start exactly with: ⭐{!name_fix}
+Do not add links or names.
+Offer: ${$("offerName").value || "the offer"}
+Benefits: ${$("benefits").value || "good benefits"}`;
+  const text = await callGroq([{role:"user", content: prompt}]);
   if(text){
     $("body").value = text;
     updatePreview();
@@ -304,68 +300,88 @@ CTA: ${$("ctaText").value || ""}`;
   }
 }
 
-// Image Prompt Generator
-$("genImagePrompt").onclick = async () => {
-  const prompt = `Create a highly detailed image generation prompt for an email visual about: ${$("offerName").value || "MLM / affiliate offer"}. 
-Make it professional, attractive, modern style suitable for marketing email. Include text overlay suggestions if any.`;
-  const result = await callGroq(prompt);
-  if(result){
-    $("imagePrompt").value = result;
-    showToast("Image prompt generated");
-  }
-};
+function updatePreview(){
+  $("prevSub").textContent = $("subject").value || "...";
+  const html = $("body").value.split(/\n\s*\n/).map(p => `<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
+  $("prevBody").innerHTML = html || "Preview appears here...";
+}
 
-// Prompt Idea Generator
-$("genPromptIdea").onclick = async () => {
-  const result = await callGroq("Give me 4 fresh generic prompt ideas for MLM / affiliate marketing email swipes. Number them 1-4.");
-  if(result){
-    $("rawText").value = result;
-    showToast("Prompt ideas in Raw Output");
-  }
-};
+// Copy functions
+async function copyFull(){
+  const text = $("subject").value.trim() + "\n\n" + $("body").value.trim();
+  await navigator.clipboard.writeText(text);
+  showToast("Full email copied (clean - no SUBJECT: prefix)");
+}
 
-// Simple copy functions
-async function copyText(txt){ await navigator.clipboard.writeText(txt); showToast("Copied"); }
-
-// Event Listeners
+// Event listeners
 $("genSubjects").onclick = generateSubjectsHard;
 $("genBody").onclick = generateBodyHard;
-$("undoBody").onclick = () => { showToast("Undo not implemented in this clean version"); };
-$("copyFull").onclick = copyFull;
-$("copySubject").onclick = () => copyText($("subject").value.trim());
-$("copyBodyHtml").onclick = () => {
-  const html = $("body").value.split(/\n\s*\n/).map(p => `<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
-  copyText(html);
+$("genImagePrompt").onclick = async () => {
+  const p = await callGroq([{role:"user", content:`Create detailed image prompt for marketing email about ${$("offerName").value || "affiliate offer"}`}] );
+  if(p) $("imagePrompt").value = p;
 };
-$("copyImagePrompt").onclick = () => copyText($("imagePrompt").value);
-$("copyRaw").onclick = () => copyText($("rawText").value);
+$("copyFull").onclick = copyFull;
+$("copySubject").onclick = () => navigator.clipboard.writeText($("subject").value).then(() => showToast("Subject copied"));
+$("copyBodyHtml").onclick = () => {
+  const html = $("body").value.split(/\n\s*\n/).map(p=>`<p>${p}</p>`).join("");
+  navigator.clipboard.writeText(html).then(() => showToast("Body HTML copied"));
+};
+$("copyImagePrompt").onclick = () => navigator.clipboard.writeText($("imagePrompt").value).then(() => showToast("Image prompt copied"));
 
-document.querySelectorAll(".pill[data-prefix]").forEach(p => {
-  p.onclick = () => { $("subject").value = p.dataset.prefix + $("subject").value; updatePreview(); };
-});
-document.querySelectorAll(".pill[data-bodytag]").forEach(p => {
+$("manageSigs").onclick = () => { renderSigList(); $("sigModal").classList.add("show"); };
+$("insertSig").onclick = () => {
+  const sig = sigs.find(s => s.id === currentSigId);
+  if(sig && sig.content){
+    const body = $("body");
+    body.value = body.value.trim() ? body.value + "\n\n" + sig.content : sig.content;
+    updatePreview();
+    showToast("Signature inserted");
+  } else showToast("No signature selected", true);
+};
+$("addSig").onclick = () => {
+  const name = $("sigNewName").value.trim();
+  if(!name) return showToast("Name required", true);
+  const newSig = {id: Date.now(), name, content: $("sigNewContent").value};
+  sigs.push(newSig);
+  currentSigId = newSig.id;
+  localStorage.setItem("esm_sigs", JSON.stringify(sigs));
+  localStorage.setItem("esm_sigSel", currentSigId);
+  renderSigStatus();
+  showToast("Signature added");
+};
+$("closeSig").onclick = () => $("sigModal").classList.remove("show");
+$("closeRaw").onclick = () => $("rawModal").classList.remove("show");
+$("openRaw").onclick = () => $("rawModal").classList.add("show");
+$("copyRaw").onclick = () => navigator.clipboard.writeText($("rawText").value).then(() => showToast("Raw copied"));
+
+document.querySelectorAll(".pill").forEach(p => {
   p.onclick = () => {
-    const ta = $("body");
-    const pos = ta.selectionStart;
-    ta.value = ta.value.slice(0,pos) + p.dataset.bodytag + ta.value.slice(pos);
+    if(p.dataset.prefix){
+      $("subject").value = p.dataset.prefix + $("subject").value;
+    } else if(p.dataset.bodytag){
+      const ta = $("body");
+      ta.value += (ta.value ? "\n" : "") + p.dataset.bodytag;
+    }
     updatePreview();
   };
 });
 
-$("subject").oninput = updatePreview;
-$("body").oninput = updatePreview;
+$("genPromptIdea").onclick = async () => {
+  const res = await callGroq([{role:"user", content:"Give 4 fresh generic prompt ideas for MLM or affiliate email campaigns."}]);
+  if(res) {
+    $("rawText").value = res;
+    $("rawModal").classList.add("show");
+  }
+};
 
+$("saveKey").onclick = () => {
+  localStorage.setItem("esm_apiKey", $("apiKey").value.trim());
+  showToast("API Key saved");
+};
 $("toggleTheme").onclick = () => document.body.classList.toggle("theme-slate");
-$("saveKey").onclick = () => { localStorage.setItem("esm_apiKey", $("apiKey").value.trim()); showToast("Key saved"); };
-$("openRaw").onclick = () => $("rawModal").classList.add("show");
-$("closeRaw").onclick = () => $("rawModal").classList.remove("show");
-
-// Signature system (kept minimal)
-let sigs = [{id:1,name:"Default",content:""}];
-$("manageSigs").onclick = () => { /* simple alert for now */ showToast("Signature management - use Insert button"); };
-$("insertSig").onclick = () => showToast("Add signature content in Signatures section");
 
 updatePreview();
+renderSigStatus();
 </script>
 </body>
 </html>
