@@ -13,233 +13,247 @@
             --bg: #111827; --panel: #1f2937; --panel2: #243244; --border: #374151;
             --muted: #cbd5e1; --gold: #fbbf24; --green: #22c55e; --red: #ef4444;
         }
-        * { box-sizing: border-box; }
-        body { margin: 0; font-family: Arial, sans-serif; background: var(--bg); color: #111; font-size: 16px; line-height: 1.6; }
-        .wrap { max-width: 1700px; margin: 0 auto; padding: 18px; }
-        .topbar { background: var(--panel); border: 2px solid var(--gold); border-radius: 10px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; }
-        .title { font-weight: 800; font-size: 22px; color: var(--gold); }
-        .btn { border: 1px solid var(--border); background: var(--panel2); color: #111; padding: 10px 12px; border-radius: 8px; cursor: pointer; font-weight: 700; }
-        .btn:hover { filter: brightness(0.95); }
+        * { box-sizing: border-box; font-size: 16px; }
+        body { margin: 0; font-family: Arial, sans-serif; background: var(--bg); color: #111; line-height: 1.6; }
+        
+        /* Layout */
+        .grid { display: grid; grid-template-columns: 320px 1fr 1fr; gap: 16px; padding: 18px; transition: all 0.3s; }
+        .grid.sidebar-closed { grid-template-columns: 50px 1fr 1fr; }
+        .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px; overflow: hidden; }
+        
+        /* Sidebar Toggle */
+        .sidebar-content { transition: opacity 0.2s; }
+        .sidebar-closed .sidebar-content { opacity: 0; pointer-events: none; }
+        .toggle-btn { cursor: pointer; background: var(--gold); color: #fff; border: none; padding: 5px; border-radius: 4px; width: 100%; margin-bottom: 10px; }
+
+        .topbar { background: var(--panel); border-bottom: 2px solid var(--gold); padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .btn { border: 1px solid var(--border); background: var(--panel2); color: #111; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: 700; }
         .btnGreen { background: var(--green); color: #fff; border: none; }
         .btnBlue { background: var(--blue); color: #fff; border: none; }
         .btnRed { background: var(--red); color: #fff; border: none; }
-        .btnSmall { padding: 6px 10px; font-size: 13px; }
-        .grid { margin-top: 16px; display: grid; grid-template-columns: 420px 1fr 420px; gap: 16px; }
-        .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
-        .card h2 { margin: 0 0 10px 0; color: var(--gold); font-size: 18px; }
-        label { display: block; font-weight: 800; color: var(--muted); font-size: 12px; text-transform: uppercase; margin: 12px 0 4px; }
-        input, textarea, select { width: 100%; padding: 10px; border: 2px solid var(--border); border-radius: 8px; background: #fff; font-size: 15px; }
-        textarea { min-height: 100px; resize: vertical; }
-        .pillRow { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
-        .pill { border: 2px solid var(--border); background: var(--panel2); padding: 6px 12px; border-radius: 999px; cursor: pointer; font-weight: 800; font-size: 13px; }
-        .subjectItem { background: #fff; border: 2px solid #aaa; padding: 12px; border-radius: 10px; margin-bottom: 10px; cursor: pointer; }
-        .previewSubject { background: #fff; border: 2px solid var(--border); border-bottom: 0; padding: 12px; border-radius: 10px 10px 0 0; }
-        .previewFrame { background: #fff; border: 2px solid var(--border); border-radius: 0 0 10px 10px; padding: 20px; min-height: 400px; }
-        .toolbar { display: flex; gap: 5px; background: var(--panel2); padding: 8px; border: 2px solid var(--border); border-bottom: 0; border-radius: 8px 8px 0 0; }
-        #bodyEditor { border: 2px solid var(--border); border-radius: 0 0 8px 8px; min-height: 250px; padding: 15px; background: #fff; outline: none; }
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,.75); display: none; z-index: 10000; padding: 20px; }
-        .modal.show { display: block; }
-        .modalInner { max-width: 700px; margin: 40px auto; background: var(--panel); border: 2px solid var(--border); border-radius: 12px; padding: 20px; }
-        .toast { position: fixed; right: 20px; bottom: 20px; background: #333; color: #fff; padding: 12px 20px; border-radius: 10px; display: none; z-index: 9999; }
-        .divider { height: 1px; background: var(--border); margin: 15px 0; }
+
+        /* Editors */
+        .toolbar { display: flex; gap: 4px; background: var(--panel2); padding: 8px; border: 2px solid var(--border); border-bottom: 0; border-radius: 8px 8px 0 0; align-items: center; }
+        #bodyEditor, #sourceEditor { 
+            width: 100%; max-width: 600px; min-height: 400px; 
+            background: #fff; border: 2px solid var(--border); padding: 15px; outline: none; 
+        }
+        #sourceEditor { display: none; font-family: monospace; }
+        .previewFrame { 
+            background: #fff; border: 2px solid var(--border); padding: 15px; 
+            min-height: 400px; max-width: 600px; margin: 0 auto;
+        }
+
+        /* Modals */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,.8); display: none; z-index: 10000; padding: 20px; }
+        .modal.show { display: flex; align-items: center; justify-content: center; }
+        .modalInner { background: var(--panel); border: 2px solid var(--border); border-radius: 12px; padding: 20px; width: 100%; max-width: 500px; }
+        
+        textarea { width: 100%; min-height: 120px; margin-top: 10px; padding: 10px; border-radius: 8px; border: 2px solid var(--border); }
+        input, select { width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" style="position:fixed; bottom:20px; right:20px; background:#333; color:#fff; padding:10px 20px; display:none; border-radius:8px; z-index:99999;"></div>
+
+<div class="modal" id="promptModal">
+    <div class="modalInner">
+        <h2 id="promptTitle" style="color:var(--gold); margin:0;">Edit Prompt</h2>
+        <textarea id="promptArea"></textarea>
+        <div style="margin-top:10px; display:flex; gap:10px;">
+            <button class="btn btnGreen" onclick="closePrompt(true)">Save</button>
+            <button class="btn btnRed" onclick="closePrompt(false)">Cancel</button>
+        </div>
+    </div>
+</div>
 
 <div class="modal" id="sigModal">
     <div class="modalInner">
-        <div style="display:flex;justify-content:space-between;margin-bottom:10px">
-            <h2 style="margin:0;color:var(--gold)">Signatures</h2>
-            <button class="btn btnRed btnSmall" onclick="$('sigModal').classList.remove('show')">Close</button>
-        </div>
-        <div id="sigList"></div>
-        <div class="divider"></div>
-        <input id="sigNewName" type="text" placeholder="Sig Name">
-        <textarea id="sigNewContent" placeholder="Signature Content..."></textarea>
-        <button class="btn btnGreen" id="addSig" style="margin-top:10px;width:100%">Add Signature</button>
+        <h2 style="color:var(--gold)">Manage Signatures</h2>
+        <div id="sigList" style="max-height:200px; overflow:auto; margin:10px 0;"></div>
+        <input id="sigNewName" placeholder="Name">
+        <textarea id="sigNewContent" placeholder="HTML/Text Content"></textarea>
+        <button class="btn btnGreen" onclick="addSig()" style="width:100%; margin-top:10px;">Add Signature</button>
+        <button class="btn btnSmall" onclick="$('sigModal').classList.remove('show')" style="width:100%; margin-top:5px;">Close</button>
     </div>
 </div>
 
-<div class="wrap">
-    <div class="topbar">
-        <div class="title">Email Swipe Machine</div>
-        <div>
-            <button class="btn btnSmall" id="toggleTheme">Toggle Slate</button>
-            <button class="btn btnSmall" onclick="$('rawModal').classList.add('show')">Raw Data</button>
-        </div>
-    </div>
-
-    <div class="grid">
-        <div class="card">
-            <h2>1. Offer Config</h2>
-            <label>Groq API Key</label>
-            <input id="apiKey" type="password" placeholder="Paste key">
-            <button class="btn btnGreen btnSmall" id="saveKey" style="margin-top:5px">Save Key</button>
-            
-            <div class="divider"></div>
-            <label>Offer Name</label>
-            <input id="offerName" type="text" placeholder="e.g. AI Lead Gen">
-            <label>Benefits (1 per line)</label>
-            <textarea id="benefits"></textarea>
-            <label>CTA Text</label>
-            <input id="ctaText" value="Click here to see it now">
-            
-            <div class="divider"></div>
-            <label>Image Prompt (Custom)</label>
-            <textarea id="imagePrompt" placeholder="Describe the image you want for this offer..."></textarea>
-            <button class="btn btnBlue btnSmall" style="width:100%;margin-top:5px" onclick="alert('Prompt Saved to Data')">Save Image Prompt</button>
-        </div>
-
-        <div class="card">
-            <h2>2. Email Composer</h2>
-            <div class="pillRow">
-                <div class="pill" onclick="insertTag('{!firstname_fix}⭐ ')">{!firstname_fix}⭐</div>
-                <div class="pill" onclick="insertTag('{!lastname_fix}⭐ ')">{!lastname_fix}⭐</div>
-                <div class="pill" onclick="insertTag('⭐ ')">⭐</div>
-            </div>
-            
-            <label>Subject Line</label>
-            <input id="subject" type="text">
-            
-            <label>Custom Title Prompt</label>
-            <textarea id="customTitlePrompt" style="min-height:60px">Return ONLY one string. Must be 36-80 characters long. Natural curiosity tone.</textarea>
-            <button class="btn btnGreen" id="genSubjects" style="margin:10px 0;width:100%">Generate Title</button>
-            <div id="subjectResults"></div>
-
-            <div class="divider"></div>
-            
-            <label>Body Editor (Formatting Toolbar)</label>
-            <div class="toolbar">
-                <button class="btn btnSmall" onclick="execCmd('bold')"><b>B</b></button>
-                <button class="btn btnSmall" onclick="execCmd('italic')"><i>I</i></button>
-                <button class="btn btnSmall" onclick="execLink()">Link</button>
-                <button class="btn btnSmall" onclick="execImg()">Img</button>
-            </div>
-            <div id="bodyEditor" contenteditable="true"></div>
-            
-            <label>Custom Body Prompt</label>
-            <textarea id="customBodyPrompt" style="min-height:60px">Write exactly one short email body. 2 paragraphs max. Start with ⭐{!name_fix}.</textarea>
-            
-            <div style="margin-top:10px; display:flex; gap:8px">
-                <button class="btn btnGreen" id="genBody">Generate Body</button>
-                <button class="btn btnBlue" id="undoBody">Undo</button>
-                <button class="btn btnRed btnSmall" id="clearBody">Clear</button>
-            </div>
-
-            <div class="divider"></div>
-            <div style="display:flex; gap:10px">
-                <button class="btn btnBlue btnSmall" onclick="$('sigModal').classList.add('show')">Manage Signatures</button>
-                <select id="sigSelect"><option value="">Select Sig</option></select>
-                <button class="btn btnGreen btnSmall" id="insertSig">Insert</button>
-            </div>
-        </div>
-
-        <div class="card">
-            <h2>3. Preview & Copy</h2>
-            <div class="previewSubject"><strong>Subject:</strong> <span id="prevSub">...</span></div>
-            <div class="previewFrame" id="prevBody">Preview...</div>
-            
-            <button class="btn btnGreen" id="copyFull" style="width:100%; margin:15px 0">Copy Full HTML Email</button>
-            <button class="btn btnBlue btnSmall" id="copySubject" style="width:100%; margin-bottom:5px">Copy Subject</button>
-            <button class="btn btnBlue btnSmall" id="copyBodyHtml" style="width:100%">Copy Body HTML</button>
-        </div>
+<div class="topbar">
+    <div style="font-weight:900; color:var(--gold); font-size:20px;">Email Swipe Machine</div>
+    <div>
+        <button class="btn btnSmall" onclick="document.body.classList.toggle('theme-slate')">Toggle Theme</button>
+        <button class="btn btnSmall" onclick="toggleSource()">View HTML Source</button>
     </div>
 </div>
 
-<div class="modal" id="rawModal">
-    <div class="modalInner">
-        <h2 style="color:var(--gold)">Raw AI Output</h2>
-        <textarea id="rawText" style="min-height:350px"></textarea>
-        <button class="btn btnRed" onclick="$('rawModal').classList.remove('show')">Close</button>
+<div class="grid" id="mainGrid">
+    <div class="card">
+        <button class="toggle-btn" onclick="toggleSidebar()" id="tglIco">&lt;&lt;&lt;</button>
+        <div class="sidebar-content">
+            <label style="font-weight:800; font-size:12px;">GROQ API KEY</label>
+            <input id="apiKey" type="password">
+            
+            <label style="font-weight:800; font-size:12px;">OFFER NAME</label>
+            <input id="offerName" type="text" placeholder="e.g. Lead Bot">
+            
+            <label style="font-weight:800; font-size:12px;">BENEFITS</label>
+            <textarea id="benefits" style="min-height:80px;"></textarea>
+            
+            <label style="font-weight:800; font-size:12px;">CTA TEXT</label>
+            <input id="ctaText" value="Click here to start">
+
+            <div style="margin-top:20px; display:flex; flex-direction:column; gap:8px;">
+                <button class="btn btnBlue btnSmall" onclick="openPrompt('title')">Edit Title Prompt</button>
+                <button class="btn btnBlue btnSmall" onclick="openPrompt('body')">Edit Body Prompt</button>
+                <button class="btn btnBlue btnSmall" onclick="openPrompt('image')">Edit Image Prompt</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div style="display:flex; gap:8px; margin-bottom:10px;">
+            <button class="btn btnSmall" onclick="addTag('{!firstname_fix}⭐ ')">{!name}⭐</button>
+            <button class="btn btnSmall" onclick="addTag('⭐ ')">⭐</button>
+            <input id="subject" type="text" placeholder="Subject Line" style="margin:0;">
+            <button class="btn btnGreen" id="genTitleBtn" onclick="generateTitle()">Gen Title</button>
+        </div>
+
+        <div class="toolbar">
+            <button class="btn btnSmall" onclick="exec('bold')"><b>B</b></button>
+            <button class="btn btnSmall" onclick="exec('italic')"><i>I</i></button>
+            <button class="btn btnSmall" onclick="exec('foreColor','#d32f2f')" style="color:#d32f2f">Red</button>
+            <button class="btn btnSmall" onclick="exec('createLink', prompt('URL:'))">Link</button>
+            <button class="btn btnSmall" onclick="insertImg()">Img</button>
+        </div>
+        <div id="bodyEditor" contenteditable="true"></div>
+        <textarea id="sourceEditor"></textarea>
+
+        <div style="margin-top:10px; display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+            <button class="btn btnGreen" onclick="generateBody()">Gen Body</button>
+            <button class="btn btnBlue" onclick="$('sigModal').classList.add('show')">Manage</button>
+            <button class="btn btnGreen" onclick="insertSig()">Insert</button>
+            <select id="sigSelect" style="width:140px; margin:0;"><option value="">Select Sig</option></select>
+            <button class="btn btnBlue" onclick="undo()">Undo</button>
+            <button class="btn btnRed" onclick="clearBody()">Clear</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div style="background:#fff; border:2px solid var(--border); border-bottom:0; padding:10px; border-radius:8px 8px 0 0;">
+            <strong>Subject:</strong> <span id="prevSub"></span>
+        </div>
+        <div class="previewFrame" id="prevBody"></div>
+        
+        <button class="btn btnGreen" onclick="copyAll()" style="width:100%; margin-top:15px; padding:15px;">Copy Email</button>
+        <div style="display:flex; gap:10px; margin-top:10px;">
+            <button class="btn btnBlue btnSmall" style="flex:1" onclick="copyText($('subject').value)">Copy Subj</button>
+            <button class="btn btnBlue btnSmall" style="flex:1" onclick="copyText($('bodyEditor').innerHTML)">Copy HTML</button>
+        </div>
     </div>
 </div>
 
 <script>
     const $ = id => document.getElementById(id);
     let lastBody = "";
-
-    function showToast(msg) {
-        const t = $("toast"); t.textContent = msg; t.style.display = "block";
-        setTimeout(() => t.style.display = "none", 2500);
-    }
-
-    // WYSIWYG Editor Commands
-    function execCmd(cmd) { document.execCommand(cmd, false, null); updatePreview(); }
-    function execLink() { const url = prompt("Enter URL:"); if(url) document.execCommand("createLink", false, url); updatePreview(); }
-    function execImg() { const url = prompt("Enter Image URL:"); if(url) document.execCommand("insertImage", false, url); updatePreview(); }
-    function insertTag(tag) { $("subject").value = tag + $("subject").value; updatePreview(); }
-
-    async function callGroq(prompt) {
-        const key = $("apiKey").value.trim() || localStorage.getItem("esm_apiKey");
-        if(!key) return showToast("API Key Required");
-        try {
-            const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                method: "POST",
-                headers: {"Content-Type":"application/json", "Authorization":`Bearer ${key}`},
-                body: JSON.stringify({model:"llama-3.1-8b-instant", messages:[{role:"user",content:prompt}]})
-            });
-            const data = await res.json();
-            return data.choices[0].message.content.trim();
-        } catch(e) { return null; }
-    }
-
-    $("genSubjects").onclick = async () => {
-        const p = $("customTitlePrompt").value + `\nOffer: ${$("offerName").value}\nBenefits: ${$("benefits").value}`;
-        const res = await callGroq(p);
-        if(res) {
-            $("rawText").value = res;
-            $("subjectResults").innerHTML = `<div class="subjectItem" onclick="$('subject').value='${res.replace(/'/g,"\\'")}';updatePreview();">${res}</div>`;
-        }
+    let activePrompt = "";
+    const prompts = {
+        title: "Return ONLY one string. 36-80 characters. Curiosity tone.",
+        body: "Write 2 short paragraphs. Start with ⭐{!name_fix}. Natural and punchy.",
+        image: "Business professional style image placeholder."
     };
 
-    $("genBody").onclick = async () => {
+    function showToast(m) { const t=$("toast"); t.textContent=m; t.style.display="block"; setTimeout(()=>t.style.display="none",2000); }
+    function toggleSidebar() { 
+        $("mainGrid").classList.toggle("sidebar-closed"); 
+        $("tglIco").textContent = $("mainGrid").classList.contains("sidebar-closed") ? ">>>" : "<<<";
+    }
+
+    // Prompts
+    function openPrompt(type) {
+        activePrompt = type;
+        $("promptTitle").textContent = `Edit ${type.toUpperCase()} Prompt`;
+        $("promptArea").value = prompts[type];
+        $("promptModal").classList.add("show");
+    }
+    function closePrompt(save) {
+        if(save) prompts[activePrompt] = $("promptArea").value;
+        $("promptModal").classList.remove("show");
+    }
+
+    // Editor
+    function exec(c, v=null) { document.execCommand(c, false, v); update(); }
+    function insertTag(t) { $("subject").value = t + $("subject").value; update(); }
+    function insertImg() { const u=prompt("Image URL:"); if(u) exec('insertImage', u); }
+    
+    function toggleSource() {
+        const isSrc = $("sourceEditor").style.display === "block";
+        if(isSrc) {
+            $("bodyEditor").innerHTML = $("sourceEditor").value;
+            $("sourceEditor").style.display = "none";
+            $("bodyEditor").style.display = "block";
+        } else {
+            $("sourceEditor").value = $("bodyEditor").innerHTML;
+            $("bodyEditor").style.display = "none";
+            $("sourceEditor").style.display = "block";
+        }
+    }
+
+    async function callAI(p) {
+        const key = $("apiKey").value || localStorage.getItem("esm_key");
+        const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method:"POST", headers:{"Authorization":`Bearer ${key}`,"Content-Type":"application/json"},
+            body: JSON.stringify({model:"llama-3.1-8b-instant", messages:[{role:"user",content:p}]})
+        });
+        const d = await res.json();
+        return d.choices[0].message.content.trim();
+    }
+
+    async function generateTitle() {
+        const p = prompts.title + `\nOffer: ${$("offerName").value}\nBenefits: ${$("benefits").value}`;
+        const res = await callAI(p);
+        if(res) { $("subject").value = res.replace(/"/g,''); update(); }
+    }
+
+    async function generateBody() {
         lastBody = $("bodyEditor").innerHTML;
-        const p = $("customBodyPrompt").value + `\nOffer: ${$("offerName").value}\nBenefits: ${$("benefits").value}\nCTA: ${$("ctaText").value}`;
-        const res = await callGroq(p);
-        if(res) {
-            $("bodyEditor").innerHTML = res.replace(/\n/g, "<br>");
-            updatePreview();
-        }
-    };
-
-    function updatePreview() {
-        $("prevSub").textContent = $("subject").value || "...";
-        $("prevBody").innerHTML = $("bodyEditor").innerHTML || "Preview...";
+        const p = prompts.body + `\nOffer: ${$("offerName").value}\nBenefits: ${$("benefits").value}\nCTA: ${$("ctaText").value}`;
+        const res = await callAI(p);
+        if(res) { $("bodyEditor").innerHTML = res.replace(/\n/g,"<br>"); update(); }
     }
 
-    // Signatures
+    function update() {
+        $("prevSub").textContent = $("subject").value;
+        $("prevBody").innerHTML = $("bodyEditor").innerHTML;
+    }
+
+    // Sigs
     let sigs = JSON.parse(localStorage.getItem("esm_sigs") || "[]");
     function renderSigs() {
-        $("sigList").innerHTML = sigs.map((s,i) => `<div style="display:flex;justify-content:space-between;background:#fff;padding:5px;margin-bottom:5px"><span>${s.name}</span> <button onclick="delSig(${i})">X</button></div>`).join('');
-        $("sigSelect").innerHTML = '<option value="">Select Sig</option>' + sigs.map((s,i) => `<option value="${i}">${s.name}</option>`).join('');
+        $("sigList").innerHTML = sigs.map((s,i)=>`<div style="display:flex;justify-content:space-between;margin-bottom:5px;">${s.name} <button onclick="delSig(${i})">X</button></div>`).join('');
+        $("sigSelect").innerHTML = '<option value="">Select Sig</option>' + sigs.map((s,i)=>`<option value="${i}">${s.name}</option>`).join('');
     }
-    $("addSig").onclick = () => {
-        sigs.push({name:$("sigNewName").value, content:$("sigNewContent").value});
-        localStorage.setItem("esm_sigs", JSON.stringify(sigs));
-        renderSigs();
-    };
+    function addSig() { 
+        sigs.push({name:$("sigNewName").value, content:$("sigNewContent").value}); 
+        localStorage.setItem("esm_sigs", JSON.stringify(sigs)); renderSigs(); 
+    }
     window.delSig = i => { sigs.splice(i,1); localStorage.setItem("esm_sigs", JSON.stringify(sigs)); renderSigs(); };
-    $("insertSig").onclick = () => {
+    function insertSig() {
         const s = sigs[$("sigSelect").value];
-        if(s) $("bodyEditor").innerHTML += `<br><br>${s.content.replace(/\n/g,"<br>")}`;
-        updatePreview();
-    };
+        if(s) { $("bodyEditor").innerHTML += `<br><br>${s.content.replace(/\n/g,"<br>")}`; update(); }
+    }
 
-    $("saveKey").onclick = () => { localStorage.setItem("esm_apiKey", $("apiKey").value); showToast("Key Saved"); };
-    $("toggleTheme").onclick = () => document.body.classList.toggle("theme-slate");
-    $("clearBody").onclick = () => { lastBody=$("bodyEditor").innerHTML; $("bodyEditor").innerHTML=""; updatePreview(); };
-    $("undoBody").onclick = () => { if(lastBody) $("bodyEditor").innerHTML=lastBody; updatePreview(); };
-    
-    $("copyFull").onclick = () => {
-        const full = `Subject: ${$("subject").value}\n\n${$("bodyEditor").innerHTML}`;
-        navigator.clipboard.writeText(full); showToast("Full HTML Copied");
-    };
+    function copyText(t) { navigator.clipboard.writeText(t); showToast("Copied!"); }
+    function copyAll() {
+        const full = `${$("subject").value}\n\n${$("bodyEditor").innerHTML}`;
+        copyText(full);
+    }
 
-    $("subject").oninput = updatePreview;
-    $("bodyEditor").oninput = updatePreview;
-    $("apiKey").value = localStorage.getItem("esm_apiKey") || "";
+    function undo() { if(lastBody) { $("bodyEditor").innerHTML = lastBody; update(); } }
+    function clearBody() { lastBody = $("bodyEditor").innerHTML; $("bodyEditor").innerHTML = ""; update(); }
+
+    $("subject").oninput = update;
+    $("bodyEditor").oninput = update;
     renderSigs();
 </script>
 </body>
