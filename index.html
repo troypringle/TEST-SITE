@@ -4,1249 +4,466 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Email Swipe Machine</title>
-    
     <style>
-        :root {
-            --bg-main: #d4c4a8;
-            --bg-panel: #f5f0e6;
-            --bg-input: #ffffff;
-            --border: #c9b896;
-            --text: #2c2416;
-            --text-muted: #5c4d3a;
-            --accent: #b8860b;
-            --green: #2e7d32;
-            --blue: #5b8db8;
-            --red: #c74444;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background: var(--bg-main);
-            color: var(--text);
-            line-height: 1.7;
-            font-size: 16px;
-        }
-
-        .container {
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .header {
-            background: var(--bg-panel);
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 2px solid var(--accent);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .header h1 {
-            color: var(--accent);
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 380px 1fr 1fr;
-            gap: 20px;
-        }
-
-        .card {
-            background: var(--bg-panel);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 20px;
-        }
-
-        .card-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: var(--accent);
-        }
-
-        .section-title {
-            font-size: 13px;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            margin-bottom: 10px;
-            letter-spacing: 1px;
-            font-weight: 600;
-        }
-
-        .btn {
-            background: var(--bg-input);
-            color: var(--text);
-            border: 1px solid var(--border);
-            padding: 10px 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            width: 100%;
-            margin-bottom: 8px;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn:hover {
-            background: var(--border);
-            transform: translateY(-1px);
-        }
-
-        .btn-green {
-            background: var(--green);
-            color: white;
-            font-weight: 600;
-        }
-
-        .btn-green:hover {
-            background: var(--green-hover);
-            color: white;
-        }
-
-        .btn-blue {
-            background: var(--blue);
-            color: white;
-            font-weight: 600;
-        }
-
-        .btn-blue:hover {
-            background: var(--blue-hover);
-            color: white;
-        }
-
-        .btn-red {
-            background: var(--red);
-            color: white;
-        }
-
-        .btn-red:hover {
-            background: #a83838;
-            color: white;
-        }
-
-        .btn-small {
-            padding: 8px 10px;
-            font-size: 12px;
-            width: auto;
-            margin: 0;
-        }
-
-        .btn-icon {
-            width: 36px;
-            height: 36px;
-            padding: 0;
-            margin: 0;
-            font-size: 16px;
-        }
-
-        input[type="text"],
-        input[type="password"],
-        textarea,
-        select {
-            width: 100%;
-            background: var(--bg-input);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 15px;
-            font-family: Arial, sans-serif;
-        }
-
-        textarea {
-            min-height: 300px;
-            resize: vertical;
-            font-size: 15px;
-            line-height: 1.7;
-        }
-
-        input:focus,
-        textarea:focus,
-        select:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.15);
-        }
-
-        .subject-item {
-            background: #ffffff;
-            color: #000;
-            border: 1px solid #aaa;
-            border-radius: 8px;
-            padding: 12px 14px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            font-size: 15px;
-            transition: all 0.2s;
-        }
-
-        .subject-item:hover {
-            border-color: var(--accent);
-            background: #fffdf8;
-        }
-
-        .subject-item.selected {
-            border-color: var(--green);
-            background: #f0fff0;
-            font-weight: 600;
-        }
-
-        .preview-frame {
-            background: #ffffff;
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            padding: 20px;
-            min-height: 400px;
-            color: #000;
-            font-size: 16px;
-            line-height: 1.6;
-            overflow: auto;
-        }
-
-        .preview-frame img {
-            max-width: 100%;
-            height: auto;
-        }
-
-        .preview-frame a {
-            color: #0000cc;
-        }
-
-        .preview-subject {
-            background: var(--bg-input);
-            padding: 12px 15px;
-            border-radius: 8px 8px 0 0;
-            border: 2px solid var(--border);
-            border-bottom: none;
-            color: #000;
-            font-size: 15px;
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--bg-panel);
-            border: 2px solid var(--accent);
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            display: none;
-            z-index: 1000;
-            max-width: 400px;
-        }
-
-        .toast.show {
-            display: block;
-            animation: slideIn 0.3s;
-        }
-
-        .toast.error {
-            border-color: var(--red);
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(400px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        .loading {
-            text-align: center;
-            padding: 20px;
-            display: none;
-        }
-
-        .loading.show {
-            display: block;
-        }
-
-        .spinner {
-            border: 3px solid var(--border);
-            border-top: 3px solid var(--accent);
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .help-text {
-            font-size: 13px;
-            color: var(--text-muted);
-            font-weight: 500;
-            margin-top: 8px;
-            line-height: 1.5;
-        }
-
-        .divider {
-            height: 1px;
-            background: var(--border);
-            margin: 15px 0;
-        }
-
-        .button-row {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-
-        .button-row .btn {
-            flex: 1;
-            min-width: 100px;
-            margin: 0;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 2000;
-            padding: 20px;
-            overflow: auto;
-        }
-
-        .modal.show {
-            display: block;
-        }
-
-        .modal-content {
-            background: var(--bg-panel);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 20px;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .modal-close {
-            background: var(--red);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .prompt-item {
-            background: var(--bg-input);
-            border-radius: 6px;
-            margin-bottom: 10px;
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: stretch;
-            overflow: hidden;
-        }
-
-        .prompt-generate {
-            flex: 1;
-            padding: 12px;
-            cursor: pointer;
-            transition: all: 0.2s;
-            font-weight: 600;
-            font-size: 15px;
-            color: var(--text);
-        }
-
-        .prompt-generate:hover {
-            background: var(--green);
-            color: white;
-        }
-
-        .prompt-edit {
-            padding: 12px 16px;
-            cursor: pointer;
-            background: var(--border);
-            color: var(--text);
-            transition: all 0.2s;
-            border-left: 2px solid var(--border);
-            font-size: 14px;
-        }
-
-        .prompt-edit:hover {
-            background: var(--blue);
-            color: white;
-        }
-
-        .template-item {
-            background: var(--bg-input);
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 8px;
-            border: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            transition: all  0.2s;
-        }
-
-        .template-item:hover {
-            background: var(--bg-panel);
-            border-color: var(--accent);
-        }
-
-        .template-name {
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            flex: 1;
-        }
-
-        .template-name:hover {
-            color: var(--gold);
-        }
-
-        .sig-item {
-            background: var(--bg-input);
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 8px;
-            border: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .sig-name {
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            flex: 1;
-        }
-
-        .sig-name:hover {
-            color: var(--gold);
-        }
-
-        .sig-active {
-            border-color: var(--green);
-            background: #f0fff0;
-        }
-
-        .prefix-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 14px;
-            background: var(--bg-input);
-            border: 2px solid var(--border);
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-
-        .prefix-btn:hover {
-            background: var(--gold);
-            color: white;
-            border-color: var(--gold);
-        }
-
-        .sig-tabs {
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-            margin-bottom: 10px;
-        }
-
-        @media (max-width: 1200px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .sidebar {
-                position: static;
-            }
-        }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{
+            font-family:Arial,sans-serif;
+            background:#d4c4a8;
+            color:#000;
+            line-height:1.6;
+            font-size:16px;
+        }
+        .container{max-width:1650px;margin:0 auto;padding:20px}
+        .header{
+            background:#f5f0e6;
+            padding:20px;
+            border-radius:8px;
+            margin-bottom:20px;
+            border:2px solid #b8860b;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            flex-wrap:wrap;
+            gap:15px;
+        }
+        .header h1{color:#b8860b;font-size:28px;font-weight:700}
+        .grid{display:grid;grid-template-columns:380px 1fr 1fr;gap:20px}
+        .card{
+            background:#ffffff;
+            border:1px solid #c9b896;
+            border-radius:8px;
+            padding:20px;
+        }
+        .card-title{font-size:18px;font-weight:700;color:#b8860b;margin-bottom:15px}
+        .section-title{font-size:13px;text-transform:uppercase;color:#5c4d3a;margin-bottom:12px;font-weight:700}
+        .btn{
+            background:#f5f0e6;
+            color:#000;
+            border:1px solid #c9b896;
+            padding:12px;
+            border-radius:6px;
+            cursor:pointer;
+            font-weight:600;
+            margin-bottom:8px;
+            width:100%;
+            transition:all .2s;
+        }
+        .btn:hover{background:#e8dcc8}
+        .btn-green{background:#2e7d32;color:#fff;border:none}
+        .btn-green:hover{background:#1b5e20}
+        .btn-blue{background:#5b8db8;color:#fff;border:none}
+        .btn-blue:hover{background:#4a7ca6}
+        .btn-red{background:#c74444;color:#fff;border:none}
+        .btn-red:hover{background:#a83838}
+        input,textarea,select{
+            width:100%;
+            padding:12px;
+            border-radius:6px;
+            border:1px solid #c9b896;
+            background:#fff;
+            color:#000;
+            font-size:16px;
+        }
+        textarea{min-height:300px;resize:vertical;line-height:1.7}
+        .prefix-btn{
+            display:inline-block;
+            background:#f5f0e6;
+            border:1px solid #c9b896;
+            padding:8px 12px;
+            border-radius:6px;
+            cursor:pointer;
+            margin-right:8px;
+            margin-bottom:8px;
+            font-weight:600;
+        }
+        .prefix-btn:hover{background:#e8dcc8}
+        .subject-item{
+            background:#fff;
+            padding:12px;
+            border:1px solid #c9b896;
+            border-radius:6px;
+            margin-bottom:8px;
+            cursor:pointer;
+        }
+        .subject-item:hover{background:#fffdf8}
+        .subject-item.selected{border:2px solid #2e7d32;background:#f0fff0}
+        .preview-frame{
+            background:#fff;
+            padding:20px;
+            min-height:400px;
+            border:1px solid #c9b896;
+            border-radius:6px;
+            color:#000;
+            font-size:16px;
+            line-height:1.7;
+        }
+        .preview-subject{
+            background:#f5f0e6;
+            padding:12px;
+            border:1px solid #c9b896;
+            border-bottom:none;
+            border-radius:6px 6px 0 0;
+            font-size:15px;
+        }
+        .toast{
+            position:fixed;bottom:20px;right:20px;
+            background:#000;color:#fff;padding:15px 20px;
+            border-radius:8px;display:none;z-index:1000;
+        }
+        .toast.show{display:block}
+        .loading{display:none;text-align:center;padding:20px}
+        .loading.show{display:block}
+        .spinner{
+            border:4px solid #f3f3f3;
+            border-top:4px solid #b8860b;
+            border-radius:50%;
+            width:36px;height:36px;
+            animation:spin 1s linear infinite;
+            margin:0 auto;
+        }
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        .divider{height:1px;background:#c9b896;margin:20px 0}
+        .button-row{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+        .button-row .btn{flex:1;min-width:100px}
+        .prompt-item{
+            background:#f5f0e6;
+            padding:12px;
+            border-radius:6px;
+            margin-bottom:8px;
+            border:1px solid #c9b896;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            cursor:pointer;
+        }
+        .prompt-item:hover{background:#e8dcc8}
+        .template-item{
+            background:#f5f0e6;
+            padding:10px;
+            border-radius:6px;
+            margin-bottom:8px;
+            border:1px solid #c9b896;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+        .template-name{cursor:pointer;font-weight:600}
+        .template-name:hover{color:#b8860b}
+        .sig-item{
+            background:#f5f0e6;
+            padding:12px;
+            border-radius:6px;
+            margin-bottom:8px;
+            border:1px solid #c9b896;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+        .sig-active{border-color:#2e7d32;background:#f0fff0}
+        @media (max-width:1200px){.grid{grid-template-columns:1fr}}
     </style>
 </head>
 <body>
 
-    <div class="toast" id="toast"></div>
+<div class="toast" id="toast"></div>
 
-    <div class="modal" id="promptModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 style="color: var(--gold);">✏️ Edit Prompt</h2>
-                <button class="modal-close" id="closePromptModal">✕</button>
-            </div>
-            <div style="margin-bottom: 20px;">
-                <label style="font-size: 15px; font-weight: 600; display: block; margin-bottom: 10px;">Prompt Name</label>
-                <input type="text" id="promptName" placeholder="e.g., 💰 Money Angle">
-            </div>
-            <div style="margin-bottom: 20px;">
-                <label style="font-size: 15px; font-weight: 600; display: block; margin-bottom: 10px;">Subject Line Prompt</label>
-                <textarea id="promptSubject" rows="5" style="min-height: 160px;"></textarea>
-            </div>
-            <div style="margin-bottom: 20px;">
-                <label style="font-size: 15px; font-weight: 600; display: block; margin-bottom: 10px;">Email Body Prompt</label>
-                <textarea id="promptBody" rows="8" style="min-height: 220px;"></textarea>
-            </div>
-            <div class="button-row">
-                <button class="btn btn-green" id="savePromptBtn">💾 Save Prompt</button>
-                <button class="btn btn-red" id="deletePromptBtn">🗑️ Delete</button>
-            </div>
+<div class="container">
+    <div class="header">
+        <h1>🔥 Email Swipe Machine</h1>
+        <div>
+            <button class="btn" onclick="document.getElementById('apiCard').style.display='block'">⚙️ API Key</button>
+            <button class="btn" onclick="alert(helpText)">❓ Help</button>
         </div>
     </div>
 
-    <div class="modal" id="sigModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 style="color: var(--gold);">✍️ Manage Signatures</h2>
-                <button class="modal-close" id="closeSigModal">✕</button>
+    <div class="grid">
+        <!-- Sidebar -->
+        <div>
+            <div class="card" id="apiCard" style="display:none">
+                <div class="section-title">Groq API Key</div>
+                <input type="password" id="apiKey" placeholder="Paste your Groq API key">
+                <button class="btn btn-green" onclick="saveKey()">Save Key</button>
+                <p style="font-size:13px;margin-top:8px">Get free key: <a href="https://console.groq.com" target="_blank">console.groq.com</a></p>
             </div>
-            <div id="sigList"></div>
-            <div class="divider"></div>
-            <h2 style="margin: 0 0 12px 0; color: var(--gold);">Add New Signature</h2>
-            <div style="margin-bottom: 12px;">
-                <input type="text" id="newSigName" placeholder="Signature name (e.g., MLGS, Herculist, Offer #2)">
-            </div>
-            <div style="margin-bottom: 12px;">
-                <textarea id="newSigContent" rows="5" style="min-height: 140px;" placeholder="Paste your signature content here..."></textarea>
-            </div>
-            <div class="button-row" style="margin-top: 10px;">
-                <button class="btn btn-green" id="addSigBtn">➕ Add Signature</button>
-            </div>
-        </div>
-    </div>
 
-    <div class="modal" id="htmlModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 style="color: var(--gold);">📄 HTML Source</h2>
-                <button class="modal-close" id="closeHtmlModal">✕</button>
-            </div>
-            <textarea id="htmlEditor" style="min-height: 400px; font-family: 'Courier New', monospace; font-size: 13px;"></textarea>
-            <div class="button-row" style="margin-top: 15px;">
-                <button class="btn btn-green" id="applyHtmlBtn">✓ Apply Changes</button>
-                <button class="btn btn-blue" id="copyHtmlBtn">📋 Copy HTML</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="header">
-            <h1>🔥 Email Swipe Machine</h1>
-            <div class="header-actions">
-                <button class="btn btn-small" id="apiBtn">⚙️ API Key</button>
-                <button class="btn btn-small" id="helpBtn">❓ Help</button>
-            </div>
-        </div>
-
-        <div class="grid">
-            <!-- Sidebar -->
-            <div class="sidebar">
-                <div id="apiCard" style="display: none;">
-                    <div class="section-title">⚙️ Groq API Key</div>
-                    <p class="help-text">Get free key: <a href="https://console.groq.com" target="_blank" style="color: var(--accent);">console.groq.com</a></p>
-                    
-                    <label style="font-size: 13px; font-weight: 600; display: block; margin-bottom: 5px;">Model</label>
-                    <select id="modelSelect" style="margin-bottom: 10px;">
-                        <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Best)</option>
-                        <option value="llama-3.1-8b-instant">Llama 3.1 8B (Fast)</option>
-                        <option value="mixtral-8x7b-32768">Mixtral 8x7B</option>
-                    </select>
-                    
-                    <input type="password" id="apiKeyInput" placeholder="Paste API key...">
-                    <button class="btn btn-green" id="saveApiBtn" style="margin-top: 8px;">Save Key</button>
-                    <div class="divider"></div>
-                </div>
-
-                <div class="section-title">⚡ Prompt Library</div>
-                <p class="help-text">Click to generate • ✏️ to edit</p>
+            <div class="card">
+                <div class="section-title">Prompt Library</div>
+                <p style="font-size:14px;margin-bottom:10px">Click to generate • ✏️ to edit</p>
                 <div id="promptList"></div>
-                <button class="btn btn-green" id="addPromptBtn" style="margin-top: 10px;">➕ Add New Prompt</button>
-                
-                <div class="divider"></div>
-                
-                <div class="section-title">💾 Email Templates</div>
+                <button class="btn btn-green" onclick="addPrompt()">+ Add New Prompt</button>
+            </div>
+
+            <div class="card">
+                <div class="section-title">Templates</div>
                 <div id="templateList"></div>
-                <button class="btn btn-green" id="saveTemplateBtn" style="margin-top: 10px;">💾 Save Current</button>
-
-                <div class="divider"></div>
-
-                <div class="section-title">✍️ Signatures</div>
-                <div id="sigPreview"></div>
-                <button class="btn btn-blue" id="manageSigBtn" style="margin-top: 10px;">⚙️ Manage Signatures</button>
-                <button class="btn btn-green" id="insertSigBtn">➕ Insert Selected</button>
+                <button class="btn btn-green" onclick="saveTemplate()">Save Current as Template</button>
             </div>
 
-            <!-- Editor Column -->
-            <div class="editor-col">
-                <div class="card">
-                    <div class="card-title">📧 Subject Line</div>
-                    
-                    <p class="help-text">Click to insert common prefixes:</p>
-                    <div class="prefix-btn" onclick="insertPrefix('{!firstname_fix}⭐ ')">⭐ {!firstname_fix}⭐</div>
-                    <div class="prefix-btn" onclick="insertPrefix('{!lastname_fix}⭐ ')">👤 {!lastname_fix}⭐</div>
-                    <div class="prefix-btn" onclick="insertPrefix('⭐ ')">⭐</div>
-                    
-                    <input type="text" id="subjectInput" placeholder="Your subject line..." oninput="updatePreview()">
-                    <p id="subjectCount" style="font-size: 13px; margin-top: 8px; color: var(--text-muted);"></p>
-                    
-                    <button class="btn btn-green" id="generateSubjectsBtn" style="margin-top: 10px;">⚡ Generate 3 Subjects</button>
-                    <div id="subjectList" class="subject-list"></div>
-                </div>
+            <div class="card">
+                <div class="section-title">Signatures</div>
+                <div id="sigList"></div>
+                <button class="btn btn-green" onclick="insertSignature()">Insert Selected Signature</button>
+                <button class="btn" onclick="manageSignatures()">Manage Signatures</button>
+            </div>
+        </div>
 
-                <div class="card">
-                    <div class="card-title">✉️ Email Body</div>
-                    <p class="help-text">Type naturally - HTML formatting applied automatically</p>
-                    <textarea id="bodyEditor" placeholder="Start typing your email here..." oninput="updatePreview()"></textarea>
-                    <div class="button-row">
-                        <button class="btn btn-green" id="generateBodyBtn">⚡ Generate Body</button>
-                        <button class="btn btn-blue" id="editHtmlBtn">📝 Edit HTML</button>
-                        <button class="btn btn-red" id="clearBodyBtn">🗑️ Clear</button>
-                    </div>
+        <!-- Editor -->
+        <div>
+            <div class="card">
+                <div class="card-title">Subject Line</div>
+                <div style="margin-bottom:12px">
+                    <button class="btn" onclick="insertPrefix('{!firstname_fix}⭐ ')">{!firstname_fix}⭐</button>
+                    <button class="btn" onclick="insertPrefix('{!lastname_fix}⭐ ')">{!lastname_fix}⭐</button>
+                    <button class="btn" onclick="insertPrefix('⭐ ')">⭐</button>
                 </div>
+                <input type="text" id="subject" placeholder="Your subject line..." oninput="updatePreview()">
+                <div id="subjectInfo" style="font-size:13px;margin:8px 0"></div>
+                <button class="btn btn-green" onclick="generateSubjects()">Generate 3 Subjects</button>
+                <div id="subjectResults" style="margin-top:10px"></div>
             </div>
 
-            <!-- Preview Column -->
-            <div class="preview-col">
-                <div class="card">
-                    <div class="card-title">👁️ Live Preview</div>
-                    <div class="preview-header">How your email will appear to recipients</div>
-                    <div class="preview-subject">
-                        <strong>Subject:</strong> <span id="previewSubject">Your subject line...</span>
-                    </div>
-                    <div class="preview-frame" id="previewFrame">
-                        <p style="color: #999;">Start typing to see your email preview...</p>
-                    </div>
+            <div class="card">
+                <div class="card-title">Email Body</div>
+                <textarea id="body" placeholder="Start typing your email..." oninput="updatePreview();saveUndo()"></textarea>
+                <div class="button-row">
+                    <button class="btn btn-green" onclick="generateBody()">Generate Body</button>
+                    <button class="btn btn-blue" onclick="undo()">Undo</button>
+                    <button class="btn btn-red" onclick="clearBody()">Clear</button>
                 </div>
+            </div>
+        </div>
 
-                <div class="card">
-                    <div class="card-title">📤 Copy to MLGS</div>
-                    <p class="help-text">Copy and paste into your MLGS email editor</p>
-                    <button class="btn btn-green" id="copyFullBtn" style="font-size: 16px; padding: 16px;">
-                        📋 Copy Full Email
-                    </button>
-                    <div class="button-row">
-                        <button class="btn btn-blue" id="copySubjectBtn">Copy Subject</button>
-                        <button class="btn btn-blue" id="copyBodyBtn">Copy Body HTML</button>
-                    </div>
+        <!-- Preview -->
+        <div>
+            <div class="card">
+                <div class="card-title">Live Preview</div>
+                <div class="preview-subject"><strong>Subject:</strong> <span id="previewSub">...</span></div>
+                <div class="preview-frame" id="previewFrame"><p style="color:#999">Start typing...</p></div>
+                <div class="button-row" style="margin-top:15px">
+                    <button class="btn btn-green" onclick="copyFull()">Copy Full Email</button>
+                    <button class="btn btn-blue" onclick="copySubject()">Copy Subject</button>
+                    <button class="btn btn-blue" onclick="copyBody()">Copy Body HTML</button>
                 </div>
             </div>
         </div>
     </div>
-
-    <script>
-        // ===== STATE =====
-        let state = {
-            apiKey: localStorage.getItem('mlgs_api_key') || '',
-            model: localStorage.getItem('mlgs_model') || 'llama-3.3-70b-versatile',
-            templates: JSON.parse(localStorage.getItem('mlgs_templates') || '[]'),
-            signatures: JSON.parse(localStorage.getItem('mlgs_signatures') || '[]'),
-            currentSig: parseInt(localStorage.getItem('mlgs_current_sig') || '0'),
-            prompts: JSON.parse(localStorage.getItem('mlgs_prompts') || 'null') || getDefaultPrompts(),
-            lastUsedPrompt: null
-        };
-
-        if (state.signatures.length === 0) {
-            state.signatures = [{
-                id: 1,
-                name: "Default",
-                content: ""
-            }];
-            state.currentSig = 1;
-            localStorage.setItem('mlgs_signatures', JSON.stringify(state.signatures));
-        }
-
-        function getDefaultPrompts() {
-            return [
-                {
-                    id: 1,
-                    name: "💰 Money Angle",
-                    subject: `Generate exactly 3 email subject lines.
-
-STRICT REQUIREMENTS:
-1. Each subject line MUST be between 40 and 80 characters.
-2. Each subject line MUST contain at least 7 words.
-3. Focus on money, income, or earnings.
-4. Create curiosity and urgency.
-5. Avoid spam trigger words: free, guarantee, winner, urgent, act now.
-6. Output ONLY the 3 numbered subject lines, nothing else.`,
-
-                    body: `Write a promotional email about an income or business opportunity.
-
-REQUIREMENTS:
-- Start with: ⭐{!name_fix}
-- Write 12-15 sentences in conversational tone
-- Focus on benefits and income potential
-- Include a clear call-to-action
-- NO signature, NO links, NO HTML formatting
-- Output plain text paragraphs only
-
-Write the email now:`
-                },
-                {
-                    id: 2,
-                    name: "😴 Autopilot/Passive",
-                    subject: `Generate exactly 3 email subject lines about automation or passive income.
-
-STRICT REQUIREMENTS:
-1. Each subject line MUST be 40-80 characters.
-2. Each subject line MUST have at least 7 words.
-3. Focus on "set it and forget it" or "while you sleep" angles.
-4. Create curiosity about effortless earnings.
-5. Avoid spam trigger words.
-
-Output ONLY 3 numbered subject lines.`,
-                    body: `Write an email emphasizing automation and passive benefits.
-
-REQUIREMENTS:
-- Start with: ⭐{!name_fix}
-- Write 12-15 sentences in conversational tone
-- Emphasize automation, ease, and passive nature
-- Include call-to-action
-- NO signature, NO links, NO HTML
-- Output plain text paragraphs only.`
-                },
-                {
-                    id: 3,
-                    name: "⏰ Urgency/Scarcity",
-                    subject: `Generate exactly 3 email subject lines with urgency or scarcity.
-
-STRICT REQUIREMENTS:
-1. Each subject line MUST be 40-80 characters.
-2. Each subject line MUST have at least 7 words.
-3. Focus on limited time or scarcity angles.
-4. Create FOMO (fear of missing out).
-5. Avoid spam words: free, guarantee, winner, act now.
-
-Output ONLY 3 numbered subject lines.`,
-                    body: `Write an urgent email with limited-time messaging.
-
-REQUIREMENTS:
-- Start with: ⭐{!name_fix}
-- Write 12-15 sentences
-- Create urgency without being pushy
-- Clear call-to-action
-- NO signature, NO links, NO HTML
-- Output plain text paragraphs only.`
-                },
-                {
-                    id: 4,
-                    name: "📊 Results/Proof",
-                    subject: `Generate exactly 3 email subject lines about results or proof.
-
-STRICT REQUIREMENTS:
-1. Each subject line MUST be 40-80 characters.
-2. Each subject line MUST have at least 7 words.
-3. Focus on real results, testimonials, or social proof.
-4. Sound believable and authentic.
-5. Avoid spam trigger words.
-
-Output ONLY 3 numbered subject lines.`,
-                    body: `Write an email focusing on results and proof.
-
-REQUIREMENTS:
-- Start with: ⭐{!name_fix}
-- Write 12-15 sentences
-- Share believable results or experience
-- Authentic tone, not exaggerated
-- Include call-to-action
-- NO signature, NO links, NO HTML
-
-Output plain text paragraphs only.`
-                },
-                {
-                    id: 5,
-                    name: "🧠 Curiosity/Mystery",
-                    subject: `Generate exactly 3 email subject lines using curiosity.
-
-STRICT REQUIREMENTS:
-1. Each subject line MUST be 40-80 characters.
-2. Each subject line MUST have at least 7 words.
-3. Create mystery and intrigue.
-4. Use open loops - make them need to know more.
-5. Avoid spam words: free, guarantee, secret, revealed.
-
-Output ONLY 3 numbered subject lines.`,
-                    body: `Write an email using curiosity and intrigue.
-
-REQUIREMENTS:
-- Start with: ⭐{!name_fix}
-- Write 12-15 sentences
-- Build curiosity throughout
-- Create open loops - tease without fully revealing
-- Lead naturally to call-to-action
-- NO signature, NO links, NO HTML
-
-Output plain text paragraphs only.`
-                }
-            ];
-        }
-
-        // ===== TOAST =====
-        function toast(msg, isError = false) {
-            const el = document.getElementById('toast');
-            el.textContent = msg;
-            el.className = 'toast show' + (isError ? ' error' : '');
-            setTimeout(() => el.classList.remove('show'), 3500);
-        }
-
-        // ===== LOADING =====
-        function loading(id, show) {
-            document.getElementById(id).classList.toggle('show', show);
-        }
-
-        // ===== API CALL =====
-        async function callAI(prompt) {
-            if (!state.apiKey) {
-                toast('❌ Set API key first', true);
-                return null;
-            }
-
-            try {
-                const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${state.apiKey}`
-                    },
-                    body: JSON.stringify({
-                        model: state.model,
-                        messages: [{role: 'user', content: prompt}],
-                        temperature: 0.7,
-                        max_tokens: 2000
-                    })
-                });
-
-                if (!res.ok) {
-                    const err = await res.json();
-                    throw new Error(err.error?.message || `HTTP ${res.status}`);
-                }
-
-                const data = await res.json();
-                return data.choices[0].message.content;
-            } catch (err) {
-                toast('❌ ' + err.message, true);
-                return null;
-            }
-        }
-
-        // ===== SUBJECT GENERATION =====
-        async function generateSubjects() {
-            const prompt = state.prompts.find(p => p.id === state.lastUsedPrompt) || state.prompts[0];
-            if (!prompt) return;
-
-            loading('subjectLoading', true);
-            const result = await callAI(prompt.subject);
-            loading('subjectLoading', false);
-
-            if (!result) return;
-
-            // Parse subjects - allow up to 3 lines
-            const lines = result.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-            const subjects = lines.slice(0, 3).map(s => {
-                // Remove any leading numbers/bullets
-                return s.replace(/^\d+\.\s*/, '').trim();
-            });
-
-            if (subjects.length === 0) {
-                toast('❌ No subjects generated', true);
-                return;
-            }
-
-            const list = document.getElementById('subjectList');
-            list.innerHTML = subjects.map(s => {
-                const v = validateSubject(s);
-                return `
-                <div class="subject-item ${v.ok ? '' : 'error'}" data-subject="${escapeHtml(s)}">
-                    <div>${escapeHtml(s)}</div>
-                    <div class="metaLine">${v.chars} chars, ${v.words} words ${v.ok ? '✓' : '⚠️'}</div>
-                </div>`;
-            }).join('');
-
-            list.querySelectorAll('.subject-item').forEach(el => {
-                el.addEventListener('click', () => {
-                    list.querySelectorAll('.subject-item').forEach(e => e.classList.remove('selected'));
-                    el.classList.add('selected');
-                    document.getElementById('subjectInput').value = el.dataset.subject;
-                    updatePreview();
-                    toast('✅ Subject selected');
-                });
-            });
-
-            toast(`✅ Generated ${subjects.length} subjects`);
-        }
-
-        function validateSubject(s) {
-            const cleaned = s.trim();
-            return {
-                chars: cleaned.length,
-                words: cleaned.split(/\s+/).filter(Boolean).length,
-                ok: cleaned.length >= 36 && cleaned.split(/\s+/).length >= 7
-            };
-        }
-
-        // ===== BODY GENERATION =====
-        async function generateBody() {
-            const prompt = state.prompts.find(p => state.lastUsedPrompt) || state.prompts[0];
-            if (!prompt) return;
-
-            loading('bodyLoading', true);
-            const result = await callAI(prompt.body);
-            loading('bodyLoading', false);
-
-            if (!result) return;
-
-            // Ensure paragraphs
-            const paras = result.split('\n\n').map(p => p.trim()).filter(Boolean);
-            const formatted = paras.map(p => {
-                const lines = p.split('\n');
-                const sentences = [];
-                let current = '';
-                for (const line of lines) {
-                    if (line.trim() && current && current.split('.').length >= 3) {
-                        sentences.push(current.trim());
-                        current = line.trim();
-                    } else if (line.trim()) {
-                        current += (current ? ' ' : '') + line.trim();
-                    }
-                }
-                if (current) sentences.push(current);
-                return sentences.map(s => `<p>${s.trim()}</p>`).join('\n');
-            }).join('\n\n');
-
-            document.getElementById('bodyEditor').value = formatted;
-            updatePreview();
-            toast('✅ Body generated');
-        }
-
-        // ===== PREVIEW UPDATE =====
-        function updatePreview() {
-            const subject = document.getElementById('subjectInput').value.trim();
-            const body = document.getElementById('bodyEditor').value;
-            
-            document.getElementById('previewSubject').textContent = subject || 'Subject...';
-            document.getElementById('previewFrame').innerHTML = body || '<p style="color:#999">Start typing...</p>';
-            
-            // Update subject counter
-            const v = validateSubject(subject);
-            const counter = document.getElementById('subjectCount');
-            counter.innerHTML = `<span style="font-weight:900;color:${v.ok?'var(--green)':'var(--red)'}">
-                ${v.chars} chars, ${v.words} words ${v.ok ? '✓' : '(need 36+ chars, 7+ words)'}
-            </span>`;
-        }
-
-        // ===== UNDO =====
-        let undoStack = [];
-        const UNDO_MAX = 25;
-
-        function pushUndo() {
-            const current = document.getElementById('bodyEditor').value;
-            if (undoStack.length === 0 || undoStack[undoStack.length - 1] !== current) {
-                undoStack.push(current);
-                if (undoStack.length > UNDO_MAX) undoStack.shift();
-            }
-        }
-
-        function undo() {
-            if (undoStack.length <= 1) {
-                toast('Nothing to undo', true);
-                return;
-            }
-            undoStack.pop();
-            document.getElementById('bodyEditor').value = undoStack[undoStack.length - 1];
-            updatePreview();
-            toast('Undone');
-        }
-
-        // ===== SIGNATURES =====
-        function renderSigPreview() {
-            const container = document.getElementById('sigPreview');
-            if (state.signatures.length === 0) {
-                container.innerHTML = '<p class="help-text">No signatures created yet</p>';
-                return;
-            }
-
-            const current = state.signatures.find(s => s.id === state.currentSig);
-            container.innerHTML = state.signatures.map(s => `
-                <div class="sig-item ${s.id === state.currentSig ? 'sig-active' : ''}" data-id="${s.id}">
-                    <span class="sig-name">${s.name}</span>
-                    ${s.id === state.currentSig ? `<span style="color:var(--green); font-weight:700;">✓ Selected</span>` : ''}
-                </div>
-            `).join('');
-        }
-
-        function renderSigList() {
-            const list = document.getElementById('sigList');
-            if (state.signatures.length === 0) {
-                list.innerHTML = '<p class="help-text">No signatures yet</p>';
-                return;
-            }
-
-            list.innerHTML = state.signatures.map(s => `
-                <div class="sig-item">
-                    <div style="flex:1">
-                        <strong>${s.name}</strong>
-                        <div class="metaLine">${s.content.length} chars</div>
-                    </div>
-                    <button class="btn btn-small btn-red" onclick="deleteSig(${s.id})">🗑️</button>
-                </div>
-            `).join('');
-        }
-
-        function deleteSig(id) {
-            if (state.signatures.length <= 1) {
-                toast('❌ Must keep at least one signature', true);
-                return;
-            }
-            if (!confirm('Delete this signature?')) return;
-
-            state.signatures = state.signatures.filter(s => s.id !== id);
-            if (state.currentSig === id) {
-                state.currentSig = state.signatures[0].id;
-            }
-            localStorage.setItem('mlgs_signatures', JSON.stringify(state.signatures));
-            localStorage.setItem('mlgs_current_sig', state.currentSig);
-            renderSigList();
-            renderSigPreview();
-            toast('✅ Signature deleted');
-        }
-
-        function addSignature() {
-            const name = document.getElementById('newSigName').value.trim();
-            const content = document.getElementById('newSigContent').value.trim();
-
-            if (!name) {
-                toast('❌ Please enter a signature name', true);
-                return;
-            }
-
-            state.signatures.push({
-                id: Date.now(),
-                name,
-                content
-            });
-
-            localStorage.setItem('mlgs_signatures', JSON.stringify(state.signatures));
-            document.getElementById('newSigName').value = '';
-            document.getElementById('newSigContent').value = '';
-            renderSigList();
-            renderSigPreview();
-            toast('✅ Signature added');
-        }
-
-        function insertSelectedSignature() {
-            const sig = state.signatures.find(s => s.id === state.currentSig);
-            if (!sig || !sig.content) {
-                toast('❌ No content in selected signature', true);
-                return;
-            }
-
-            const body = document.getElementById('bodyEditor').value;
-            document.getElementById('bodyEditor').value = body + '\n\n' + sig.content;
-            updatePreview();
-            toast('✅ Signature inserted');
-        }
-
-        // ===== INITIALIZATION =====
-        function init() {
-            // Load saved data
-            document.getElementById('apiKeyInput').value = state.apiKey;
-            renderPrompts();
-            renderTemplates();
-            renderSigList();
-            renderSigPreview();
-            updatePreview();
-
-            // Auto-save draft
-            setInterval(() => {
-                localStorage.setItem('mlgs_draft_body', document.getElementById('bodyEditor').value);
-                localStorage.setItem('mlgs_draft_subject', document.getElementById('subjectInput').value);
-            }, 5000);
-        }
-
-        // ===== EVENT LISTENERS =====
-        document.getElementById('apiKeyInput').addEventListener('input', (e) => {
-            localStorage.setItem('mlgs_api_key', e.target.value);
-        });
-
-        document.getElementById('modelSelect').addEventListener('change', (e) => {
-            localStorage.setItem('mlgs_model', e.target.value);
-        });
-
-        document.getElementById('subjectInput').addEventListener('input', updatePreview);
-
-        document.getElementById('bodyEditor').addEventListener('input', () => {
-            pushUndo();
-            updatePreview();
-        });
-
-        document.getElementById('generateSubjectsBtn').addEventListener('click', generateSubjects);
-        document.getElementById('generateBodyBtn').addEventListener('click', generateBody);
-        document.getElementById('clearBtn').addEventListener('click', () => {
-            if (confirm('Clear body?')) {
-                document.getElementById('bodyEditor').value = '';
-                pushUndo();
-                updatePreview();
-            }
-        });
-
-        document.getElementById('copyFullBtn').addEventListener('click', () => {
-            const subject = document.getElementById('subjectInput').value.trim();
-            const body = document.getElementById('bodyEditor').value.trim();
-            const htmlBody = formatToHTML(body);
-            copy(`${subject}\n\n${htmlBody}`);
-            toast('✅ Full email copied!');
-        });
-
-        document.getElementById('copySubjectBtn').addEventListener('click', () => {
-            const s = document.getElementById('subjectInput').value.trim();
-            if (!s) return toast('❌ No subject', true);
-            copy(s);
-            toast('✅ Subject copied');
-        });
-
-        document.getElementById('copyBodyBtn').addEventListener('click', () => {
-            const b = formatToHTML(document.getElementById('bodyEditor').value.trim());
-            if (!b) return toast('❌ No body', true);
-            copy(b);
-            toast('✅ Body HTML copied');
-        });
-
-        document.getElementById('undoBodyBtn').addEventListener('click', undoBody);
-
-        document.getElementById('saveApiBtn').addEventListener('click', () => {
-            const key = document.getElementById('apiKeyInput').value.trim();
-            if (!key) return toast('❌ Enter API key', true);
-            state.apiKey = key;
-            localStorage.setItem('mlgs_api_key', key);
-            toast('✅ API key saved');
-        });
-
-        document.getElementById('addPromptBtn').addEventListener('click', () => {
-            state.currentPrompt = null;
-            document.getElementById('promptName').value = '';
-            document.getElementById('promptSubject').value = `Generate exactly 3 email subject lines.
-
-STRICT REQUIREMENTS:
-1. Each subject MUST be 36-80 characters.
-2. Each subject MUST have 7+ words.
-3. Avoid spam words: free, guarantee, winner, urgent.
-4. Output ONLY 3 numbered subject lines.`;
-
-            document.getElementById('promptBody').value = `Write a promotional email.
-
-REQUIREMENTS:
-- Start with: ⭐{!name_fix}
-- Write 12-15 sentences
-- [YOUR ANGLE HERE]
-- NO signature, NO links, NO HTML
-
-Output plain text paragraphs only.`;
-            document.getElementById('promptModal').classList.add('show');
-        });
-
-        document.getElementById('savePromptBtn').addEventListener('click', () => {
-            const name = document.getElementById('promptName').value.trim();
-            const subject = document.getElementById('promptSubject').value.trim();
-            const body = document.getElementById('promptBody').value.trim();
-
-            if (!name || !subject || !body) {
-                toast('❌ Fill all fields', true);
-                return;
-            }
-
-            if (state.currentPrompt) {
-                const p = state.prompts.find(p => p.id === state.currentPrompt);
-                p.name = name;
-                p.subject = subject;
-                p.body = body;
-            } else {
-                state.prompts.push({
-                    id: Date.now(),
-                    name,
-                    subject,
-                    body
-                });
-            }
-
-            localStorage.setItem('mlgs_prompts', JSON.stringify(state.prompts));
-            renderPrompts();
-            document.getElementById('promptModal').classList.remove('show');
-            toast('✅ Prompt saved');
-        });
-
-        document.getElementById('deletePromptBtn').addEventListener('click', () => {
-            if (!state.currentPrompt) {
-                toast('❌ Cannot delete - this is a new prompt', true);
-                return;
-            }
-            if (state.prompts.length <= 1) {
-                toast('❌ Must keep at least one prompt', true);
-                return;
-            }
-            if (!confirm('Delete this prompt?')) return;
-
-            state.prompts = state.prompts.filter(p => p.id !== state.currentPrompt);
-            localStorage.setItem('mlgs_prompts', JSON.stringify(state.prompts));
-            renderPrompts();
-            document.getElementById('promptModal').classList.remove('show');
-            toast('✅ Prompt deleted');
-        });
-
-        document.getElementById('closePromptModal').addEventListener('click', () => {
-            document.getElementById('promptModal').classList.remove('show');
-        });
-
-        document.getElementById('manageSigBtn').addEventListener('click', () => {
-            renderSigList();
-            document.getElementById('sigModal').classList.add('show');
-        });
-
-        document.getElementById('closeSigModal').addEventListener('click', () => {
-            document.getElementById('sigModal').classList.remove('show');
-            renderSigPreview();
-        });
-
-        document.getElementById('addSigBtn').addEventListener('click', addSignature);
-        document.getElementById('insertSigBtn').addEventListener('click', insertSelectedSignature);
-
-        // Initialize
-        init();
-    </script>
-
+</div>
+
+<script>
+let state = {
+    apiKey: localStorage.getItem('esm_key') || '',
+    prompts: JSON.parse(localStorage.getItem('esm_prompts') || 'null') || getDefaultPrompts(),
+    templates: JSON.parse(localStorage.getItem('esm_templates') || '[]'),
+    signatures: JSON.parse(localStorage.getItem('esm_sigs') || '[{"id":1,"name":"Main","content":""}]'),
+    currentSig: Number(localStorage.getItem('esm_sig') || 1),
+    lastPrompt: null,
+    undoStack: [],
+    undoIndex: -1
+};
+
+function getDefaultPrompts() {
+    return [
+        {id:1,name:"💰 Income Focus",subject:"Generate 3 subject lines about earning income online. 36-80 chars, 7+ words, curiosity angle. Output ONLY numbered list.",body:"Write an email about making money online. Start with ⭐{!name_fix}. 12-15 sentences. 2-3 sentence paragraphs. Conversational tone. Call-to-action at end. NO signature, NO HTML."},
+        {id:2,name:"😴 Autopilot",subject:"Generate 3 subject lines about passive/automated income. 36-80 chars, 7+ words. Output ONLY numbered list.",body:"Write an email about autopilot income. Start with ⭐{!name_fix}. 12-15 sentences. 2-3 sentence paragraphs. Emphasize ease. NO signature, NO HTML."},
+        {id:3,name:"⏰ Urgency",subject:"Generate 3 urgency subject lines. 36-80 chars, 7+ words. FOMO style. Output ONLY numbered list.",body:"Write an urgent email. Start with ⭐{!name_fix}. 12-15 sentences. 2-3 sentence paragraphs. Limited time angle. NO signature, NO HTML."},
+        {id:4,name:"📊 Proof",subject:"Generate 3 proof-based subject lines. 36-80 chars, 7+ words. Results focus. Output ONLY numbered list.",body:"Write a results-focused email. Start with ⭐{!name_fix}. 12-15 sentences. 2-3 sentence paragraphs. Share believable results. NO signature, NO HTML."},
+        {id:5,name:"🧠 Curiosity",subject:"Generate 3 curiosity subject lines. 36-80 chars, 7+ words. Mystery angle. Output ONLY numbered list.",body:"Write a curiosity email. Start with ⭐{!name_fix}. 12-15 sentences. 2-3 sentence paragraphs. Build intrigue. NO signature, NO HTML."}
+    ];
+}
+
+function toast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), 3000);
+}
+
+function saveKey(){
+    localStorage.setItem('esm_key', document.getElementById('apiKey').value);
+    toast('API key saved');
+}
+
+async function callAI(prompt){
+    const key = localStorage.getItem('esm_key');
+    if(!key) return toast('Set API key first');
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method:'POST',
+        headers:{'Authorization':`Bearer ${key}`,'Content-Type':'application/json'},
+        body:JSON.stringify({model:'llama-3.1-70b-versatile',messages:[{role:'user',content:prompt}],temperature:0.7})
+    });
+    const data = await res.json();
+    return data.choices[0].message.content;
+}
+
+function renderPrompts(){
+    const list = document.getElementById('promptList');
+    list.innerHTML = state.prompts.map(p=>`
+        <div class="prompt-item">
+            <div onclick="state.lastPrompt=${p.id};generateSubjects();generateBody()" style="flex:1">${p.name}</div>
+            <div onclick="editPrompt(${p.id})" style="padding:0 12px;cursor:pointer">✏️</div>
+        </div>
+    `).join('');
+}
+
+function addPrompt(){
+    const name = prompt('Prompt name:');
+    if(!name) return;
+    const subject = prompt('Subject prompt:');
+    const body = prompt('Body prompt:');
+    state.prompts.push({id:Date.now(),name,subject,body});
+    localStorage.setItem('esm_prompts',JSON.stringify(state.prompts));
+    renderPrompts();
+    toast('Prompt added');
+}
+
+function editPrompt(id){
+    const p = state.prompts.find(x=>x.id===id);
+    const name = prompt('Name:',p.name);
+    const subject = prompt('Subject prompt:',p.subject);
+    const body = prompt('Body prompt:',p.body);
+    if(name && subject && body){
+        p.name = name; p.subject = subject; p.body = body;
+        localStorage.setItem('esm_prompts',JSON.stringify(state.prompts));
+        renderPrompts();
+        toast('Prompt updated');
+    }
+}
+
+async function generateSubjects(){
+    const p = state.prompts.find(x=>x.id===state.lastPrompt) || state.prompts[0];
+    const res = await callAI(p.subject);
+    const lines = res.split('\n').map(l=>l.replace(/^\d+[\.\)]\s*/,'').trim()).filter(Boolean);
+    const valid = lines.filter(s=>s.length>=36 && s.split(' ').length>=7).slice(0,3);
+    const list = document.getElementById('subjectResults');
+    list.innerHTML = valid.map(s=>`<div class="subject-item" onclick="document.getElementById('subject').value='${s}';updatePreview()">${s}</div>`).join('');
+    toast('Generated subjects');
+}
+
+async function generateBody(){
+    const p = state.prompts.find(x=>x.id===state.lastPrompt) || state.prompts[0];
+    const res = await callAI(p.body);
+    document.getElementById('body').value = res;
+    updatePreview();
+    toast('Body generated');
+}
+
+function insertPrefix(prefix){
+    const input = document.getElementById('subject');
+    input.value = prefix + input.value;
+    updatePreview();
+}
+
+function updatePreview(){
+    const sub = document.getElementById('subject').value;
+    const body = document.getElementById('body').value;
+    document.getElementById('previewSub').textContent = sub || '...';
+    document.getElementById('previewFrame').innerHTML = body.split('\n\n').map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
+    document.getElementById('subjectInfo').textContent = `${sub.length} chars, ${sub.split(' ').length} words`;
+}
+
+function saveTemplate(){
+    const name = prompt('Template name:');
+    if(!name) return;
+    state.templates.push({id:Date.now(),name,subject:document.getElementById('subject').value,body:document.getElementById('body').value});
+    localStorage.setItem('esm_templates',JSON.stringify(state.templates));
+    renderTemplates();
+}
+
+function renderTemplates(){
+    const list = document.getElementById('templateList');
+    list.innerHTML = state.templates.map(t=>`
+        <div class="template-item">
+            <span onclick="loadTemplate(${t.id})" class="template-name">${t.name}</span>
+            <button class="btn btn-red btn-small" onclick="deleteTemplate(${t.id})">Delete</button>
+        </div>
+    `).join('');
+}
+
+function loadTemplate(id){
+    const t = state.templates.find(x=>x.id===id);
+    document.getElementById('subject').value = t.subject;
+    document.getElementById('body').value = t.body;
+    updatePreview();
+}
+
+function deleteTemplate(id){
+    state.templates = state.templates.filter(x=>x.id!==id);
+    localStorage.setItem('esm_templates',JSON.stringify(state.templates));
+    renderTemplates();
+}
+
+function renderSignatures(){
+    const list = document.getElementById('sigList');
+    list.innerHTML = state.signatures.map(s=>`
+        <div class="sig-item ${s.id===state.currentSig?'sig-active':''}" onclick="state.currentSig=${s.id};localStorage.setItem('esm_sig',${s.id});renderSignatures()">
+            <span class="sig-name">${s.name}</span>
+        </div>
+    `).join('');
+}
+
+function manageSignatures(){
+    alert("Coming soon - signature management");
+}
+
+function insertSignature(){
+    const sig = state.signatures.find(s=>s.id===state.currentSig);
+    if(sig && sig.content){
+        document.getElementById('body').value += '\n\n' + sig.content;
+        updatePreview();
+    }
+}
+
+function copyFull(){
+    const full = `SUBJECT: ${document.getElementById('subject').value}\n\n${document.getElementById('body').value}`;
+    navigator.clipboard.writeText(full);
+    toast('Full email copied');
+}
+
+function copySubject(){
+    navigator.clipboard.writeText(document.getElementById('subject').value);
+    toast('Subject copied');
+}
+
+function copyBody(){
+    const html = document.getElementById('body').value.split('\n\n').map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
+    navigator.clipboard.writeText(html);
+    toast('Body HTML copied');
+}
+
+function clearBody(){
+    document.getElementById('body').value = '';
+    updatePreview();
+}
+
+function saveUndo(){
+    // simple undo - just remember last value
+    state.lastBody = document.getElementById('body').value;
+}
+
+function undo(){
+    if(state.lastBody !== undefined){
+        document.getElementById('body').value = state.lastBody;
+        updatePreview();
+    }
+}
+
+const helpText = `Email Swipe Machine
+
+1. Get free Groq API key at console.groq.com
+2. Paste it in API Key section
+3. Click any prompt to generate
+4. Pick a subject line
+5. Edit body if needed
+6. Insert signature
+7. Click "Copy Full Email"
+8. Paste into your email platform
+
+All free forever!`;
+
+renderPrompts();
+renderTemplates();
+renderSignatures();
+updatePreview();
+</script>
 </body>
 </html>
