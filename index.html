@@ -23,7 +23,6 @@
     .btnGreen{background:var(--green); color:#fff; border:none}
     .btnBlue{background:var(--blue); color:#fff; border:none}
     .btnRed{background:var(--red); color:#fff; border:none}
-    .btnSmall{padding:8px 10px; font-size:13px}
     .grid{margin-top:16px; display:grid; grid-template-columns:420px 1fr 1fr; gap:16px;}
     .card{background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:16px;}
     .card h2{margin:0 0 10px 0; color:var(--gold); font-size:18px;}
@@ -45,7 +44,6 @@
     .modal{position:fixed; inset:0; background:rgba(0,0,0,.75); display:none; z-index:10000; padding:20px; overflow:auto;}
     .modal.show{display:block}
     .modalInner{max-width:900px; margin:40px auto; background:var(--panel); border:2px solid var(--border); border-radius:12px; padding:20px;}
-    .ideaItem{margin:12px 0; padding:12px; background:var(--panel2); border-radius:8px;}
   </style>
 </head>
 <body>
@@ -76,18 +74,6 @@
       <input id="sigNewName" type="text" placeholder="e.g. Default">
       <textarea id="sigNewContent" placeholder="Paste signature here..."></textarea>
       <button class="btn btnGreen" id="addSig" style="margin-top:10px">Add Signature</button>
-    </div>
-  </div>
-
-  <!-- PROMPT IDEA POPUP -->
-  <div class="modal" id="promptIdeaModal">
-    <div class="modalInner">
-      <div style="display:flex;justify-content:space-between;margin-bottom:10px">
-        <h2 style="margin:0;color:var(--gold)">Prompt Ideas – Internet Marketing / MLM / AI Tools</h2>
-        <button class="btn btnRed" id="closePromptIdea">Close</button>
-      </div>
-      <div id="promptIdeaContent"></div>
-      <button class="btn btnGreen" id="newPromptIdeaBtn" style="margin-top:15px;width:100%">Generate Another Set of 3 Ideas</button>
     </div>
   </div>
 
@@ -157,18 +143,18 @@
           <button class="btn btnRed" id="clearBody">Clear Body</button>
         </div>
 
-        <!-- Editable Prompt Areas (visible now) -->
+        <!-- Visible Custom Prompt Areas -->
         <div class="divider"></div>
-        <h2>Custom Title Prompt</h2>
-        <textarea id="customTitlePrompt" class="bigBox" style="min-height:120px">Return ONLY a valid JSON array of exactly 3 strings. Rules: 36-80 characters, at least 7 words, natural curiosity tone, optional ⭐ only.</textarea>
+        <h2>Custom Title Prompt (editable)</h2>
+        <textarea id="customTitlePrompt" style="min-height:120px">Return ONLY a valid JSON array of exactly 3 strings. Each must be 36-80 characters and at least 7 words. Natural curiosity tone. Optional ⭐ only.</textarea>
 
-        <h2 style="margin-top:16px">Custom Body Prompt</h2>
-        <textarea id="customBodyPrompt" class="bigBox" style="min-height:120px">Write a promotional email body. Rules: Exactly 1 or 2 short paragraphs, total 5-9 sentences max, start first line with ⭐{!name_fix}, no links, no names.</textarea>
+        <h2 style="margin-top:16px">Custom Body Prompt (editable)</h2>
+        <textarea id="customBodyPrompt" style="min-height:120px">Write exactly 3 short email bodies. Each body must be 1 or 2 paragraphs (2-3 sentences max). Start first line with ⭐{!name_fix}. No links, no names.</textarea>
 
         <div class="divider"></div>
         <h2>Image Generator</h2>
         <button class="btn btnGreen" id="genImage" style="width:100%">Generate Actual Image Prompt</button>
-        <p class="smallNote">Copy & paste into Grok Imagine for the real image</p>
+        <p class="smallNote">Copy & paste into Grok Imagine</p>
         <textarea id="imageResult" style="min-height:130px;margin-top:8px" readonly></textarea>
         <button class="btn btnBlue" id="copyImageDesc">Copy Image Prompt</button>
 
@@ -201,40 +187,6 @@ function showToast(msg, err=false){
   setTimeout(()=>t.classList.remove("show"), 2800);
 }
 
-let selectedPromptIdea = "";
-
-// SIGNATURES (unchanged)
-let sigs = JSON.parse(localStorage.getItem("esm_sigs") || '[{"id":1,"name":"Default","content":"-- \\nBest Regards\\nYour Name"}]');
-let currentSigId = Number(localStorage.getItem("esm_sigSel")) || 1;
-
-function renderSigStatus(){
-  const sig = sigs.find(s => s.id === currentSigId);
-  $("sigStatus").innerHTML = sig ? `Selected: <strong>${sig.name}</strong>` : "No signature selected";
-}
-
-function renderSigList(){
-  const container = $("sigList");
-  container.innerHTML = "";
-  sigs.forEach(sig => {
-    const div = document.createElement("div");
-    div.style.marginBottom = "12px";
-    div.style.padding = "12px";
-    div.style.background = "var(--panel2)";
-    div.innerHTML = `
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <strong>${sig.name}</strong>
-        <div>
-          <button class="btn btnBlue btnSmall" data-id="${sig.id}" data-act="select">Select</button>
-          <button class="btn btnRed btnSmall" data-id="${sig.id}" data-act="delete">Delete</button>
-        </div>
-      </div>
-      <textarea style="margin-top:8px;width:100%;min-height:100px">${sig.content}</textarea>
-    `;
-    // ... (same signature logic as before - kept intact)
-    container.appendChild(div);
-  });
-}
-
 // GROQ CALL
 async function callGroq(prompt){
   const key = $("apiKey").value.trim() || localStorage.getItem("esm_apiKey") || "";
@@ -254,18 +206,10 @@ async function callGroq(prompt){
   }
 }
 
-// SUBJECTS - fixed to always use offer name + benefits + selected idea
+// SUBJECTS - strict 3 titles
 async function generateSubjectsHard(){
   $("subjectResults").innerHTML = "";
-  const prompt = `Return ONLY a valid JSON array of exactly 3 strings.
-Rules (MUST follow):
-- Exactly 36 to 80 characters long
-- At least 7 words
-- Natural curiosity tone, no spam words
-- Optional ⭐ only
-Offer: ${$("offerName").value || "this offer"}
-Benefits: ${$("benefits").value || ""}
-Idea: ${selectedPromptIdea || "none"}`;
+  const prompt = $("customTitlePrompt").value + `\nOffer: ${$("offerName").value || "this offer"}\nBenefits: ${$("benefits").value || ""}`;
   const text = await callGroq(prompt);
   if(!text) return;
   $("rawText").value = text;
@@ -276,45 +220,60 @@ Idea: ${selectedPromptIdea || "none"}`;
   arr.forEach(s => {
     const div = document.createElement("div");
     div.className = "subjectItem";
-    div.innerHTML = `<div style="font-weight:900">${s}</div><div class="smallNote">${s.length} chars, ${s.split(/\s+/).length} words</div>`;
-    div.addEventListener("click", () => {
+    div.innerHTML = `<div style="font-weight:900">${s}</div>`;
+    div.onclick = () => {
       document.querySelectorAll(".subjectItem").forEach(x => x.classList.remove("selected"));
       div.classList.add("selected");
       $("subject").value = s;
       updatePreview();
       showToast("Subject selected");
-    });
+    };
     container.appendChild(div);
   });
 }
 
-// BODY - now generates 3 short bodies (2-3 sentences each)
+// BODY - 3 short bodies
 async function generateBodyHard(){
-  const prompt = `Generate exactly 3 short email bodies.
-Rules for each:
-- 1 or 2 paragraphs only
-- Total 2-3 sentences max per body
-- Start first line with: ⭐{!name_fix}
-- No links, no names, no signatures
-Offer: ${$("offerName").value || "this offer"}
-Benefits: ${$("benefits").value || ""}
-Idea: ${selectedPromptIdea || "none"}`;
+  const prompt = $("customBodyPrompt").value + `\nOffer: ${$("offerName").value || "this offer"}\nBenefits: ${$("benefits").value || ""}`;
   const text = await callGroq(prompt);
   if(text){
-    $("rawText").value = text;
-    // For simplicity we show the 3 bodies in raw for now - you can click to load one later if needed
     $("body").value = text;
     updatePreview();
     showToast("3 short bodies generated");
   }
 }
 
-// IMAGE, PROMPT IDEA, etc. kept exactly as you had them
+// Prefix fixes
+document.querySelectorAll(".pill").forEach(p => {
+  p.onclick = () => {
+    if(p.dataset.prefix){
+      $("subject").value = p.dataset.prefix + $("subject").value;
+    } else if(p.dataset.bodytag){
+      $("body").value += ($("body").value ? "\n" : "") + p.dataset.bodytag;
+    }
+    updatePreview();
+  };
+});
 
-// ... (rest of the script is the same as the version you posted, only the above parts changed)
+function updatePreview(){
+  $("prevSub").textContent = $("subject").value.trim() || "...";
+  const paras = $("body").value.split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean);
+  $("prevBody").innerHTML = paras.length ? paras.map(p => `<p>${p.replace(/\n/g,"<br>")}</p>`).join("") : "Preview appears here...";
+}
+
+$("genSubjects").onclick = generateSubjectsHard;
+$("genBody").onclick = generateBodyHard;
+$("copyFull").onclick = () => {
+  const full = $("subject").value.trim() + "\n\n" + $("body").value.trim();
+  navigator.clipboard.writeText(full).then(() => showToast("Full email copied clean"));
+};
+
+$("saveKey").onclick = () => { localStorage.setItem("esm_apiKey", $("apiKey").value.trim()); showToast("Key saved"); };
+$("toggleTheme").onclick = () => document.body.classList.toggle("theme-slate");
+$("openRaw").onclick = () => $("rawModal").classList.add("show");
+$("closeRaw").onclick = () => $("rawModal").classList.remove("show");
 
 updatePreview();
-renderSigStatus();
 </script>
 </body>
 </html>
