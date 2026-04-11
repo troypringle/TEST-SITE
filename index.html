@@ -1,40 +1,3 @@
-Your HTML/CSS is mostly fine. What’s “broken” is your JavaScript: it throws errors immediately, so none of the buttons/preview/editor logic runs.
-
-### 1) You defined `$` as `getElementById`, but you use it like jQuery (`$("#id")`)
-You have:
-
-```js
-const $ = id => document.getElementById(id);
-```
-
-So this:
-
-```js
-$("#genSubjects").onclick = ...
-```
-
-looks for an element whose id is literally `#genSubjects` (doesn’t exist) → returns `null` → then `.onclick` crashes your script.
-
-**Fix:** remove the `#` everywhere you used it.
-
-### 2) You reference elements that do not exist (`imageModal`, `closeImageModal`, `insertImageBtn`)
-These lines crash too:
-
-```js
-$("#openImageModal").onclick = () => $("#imageModal").classList.add("show");
-$("#closeImageModal").onclick = () => $("#imageModal").classList.remove("show");
-$("#insertImageBtn").onclick = () => { ... };
-```
-
-…but there is no `id="imageModal"`, no `id="closeImageModal"`, no `id="insertImageBtn"` in your HTML.
-
-**Fix:** either add that modal HTML or remove/guard those handlers.
-
----
-
-## Minimal working fix (replace your entire `<script>` with this)
-
-```html
 <script>
 const $ = (id) => document.getElementById(id);
 
@@ -160,11 +123,3 @@ if(closeBtn){
 
 updatePreview();
 </script>
-```
-
-### What this fixes
-- Removes all the invalid `$("#...")` usages that were crashing the script.
-- Stops the missing `imageModal` from crashing everything (shows a toast instead).
-- Ensures the editor (`contenteditable`) and preview update properly.
-
-If you want, paste the error you see in the browser Console (F12 → Console). I can tell you exactly which line is still failing (if any).
