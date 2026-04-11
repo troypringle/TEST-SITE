@@ -1,225 +1,183 @@
-<!doctype html>
-<html>
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Email Swipe Machine</title>
-
-<style>
-body{
-  margin:0;
-  font-family:Arial;
-  background:#f4f4f4;
-}
-.wrap{
-  max-width:1200px;
-  margin:30px auto;
-  display:grid;
-  grid-template-columns:350px 1fr 1fr;
-  gap:20px;
-}
-.card{
-  background:white;
-  padding:20px;
-  border-radius:10px;
-  box-shadow:0 4px 12px rgba(0,0,0,.1);
-}
-h2{margin-top:0}
-input,textarea,select{
-  width:100%;
-  padding:10px;
-  margin-bottom:10px;
-  font-size:15px;
-}
-textarea{min-height:100px}
-button{
-  padding:10px;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-  font-weight:bold;
-}
-.green{background:#2e7d32;color:white}
-.blue{background:#1976d2;color:white}
-#bodyEditor{
-  border:1px solid #ccc;
-  min-height:200px;
-  padding:10px;
-}
-.preview{
-  border:1px solid #ccc;
-  min-height:250px;
-  padding:10px;
-  background:white;
-}
-</style>
-</head>
-<body>
-
-<div class="wrap">
-
-<div class="card">
-<h2>Setup</h2>
-
-<label>Groq API Key</label>
-<input id="apiKey" type="password">
-
-<label>Offer Name</label>
-<input id="offerName" type="text">
-
-<label>Benefits (1 per line)</label>
-<textarea id="benefits"></textarea>
-
-<button class="green" id="saveKey">Save Key</button>
-</div>
-
-
-<div class="card">
-<h2>Editor</h2>
-
-<label>Subject</label>
-<input id="subject" type="text">
-
-<button class="green" id="genSubject">Generate Subject</button>
-
-<hr>
-
-<label>Email Body</label>
-<div id="bodyEditor" contenteditable="true"></div>
-
-<br>
-<button class="green" id="genBody">Generate Body</button>
-<button class="blue" id="clearBody">Clear</button>
-</div>
-
-
-<div class="card">
-<h2>Preview</h2>
-
-<strong>Subject:</strong>
-<div id="prevSubject"></div>
-
-<br>
-<strong>Body:</strong>
-<div class="preview" id="prevBody"></div>
-
-<br>
-<button class="green" id="copyFull">Copy Full Email</button>
-</div>
-
-</div>
-
 <script>
-document.addEventListener("DOMContentLoaded", function(){
+const $ = (id) => document.getElementById(id);
 
-const apiKeyInput = document.getElementById("apiKey");
-const offerName = document.getElementById("offerName");
-const benefits = document.getElementById("benefits");
-const subject = document.getElementById("subject");
-const bodyEditor = document.getElementById("bodyEditor");
-
-const prevSubject = document.getElementById("prevSubject");
-const prevBody = document.getElementById("prevBody");
-
-if(localStorage.getItem("groq_key")){
-  apiKeyInput.value = localStorage.getItem("groq_key");
+function showToast(msg, err=false){
+  const t = $("toast");
+  if (!t) { console.error("Toast element missing"); return; }
+  t.textContent = msg;
+  t.style.border = err ? "2px solid var(--red)" : "2px solid var(--green)";
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"), 2800);
 }
-
-document.getElementById("saveKey").onclick = function(){
-  localStorage.setItem("groq_key", apiKeyInput.value.trim());
-  alert("Key saved");
-};
-
-function updatePreview(){
-  prevSubject.textContent = subject.value;
-  prevBody.innerHTML = bodyEditor.innerHTML;
-}
-
-subject.addEventListener("input", updatePreview);
-bodyEditor.addEventListener("input", updatePreview);
 
 async function callGroq(prompt){
-
-  const key = apiKeyInput.value.trim();
-  if(!key){
-    alert("Enter API key");
-    return null;
-  }
+  const key = $("apiKey").value.trim() || localStorage.getItem("esm_apiKey") || "";
+  if(!key){ showToast("Groq API Key required", true); return null; }
 
   try{
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions",{
+    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method:"POST",
       headers:{
         "Content-Type":"application/json",
-        "Authorization":"Bearer " + key
+        "Authorization":`Bearer ${key}`
       },
       body:JSON.stringify({
-        model:"llama-3.1-8b-instant",
+        model: $("model").value,
         messages:[{role:"user",content:prompt}],
-        temperature:0.7
+        temperature:0.7,
+        max_tokens:1200
       })
     });
 
-    const data = await response.json();
-
-    if(!data.choices){
-      alert("API Error");
-      console.log(data);
-      return null;
+    if(!res.ok){
+      const errText = await res.text();
+      throw new Error(`HTTP ${res.status}: ${errText}`);
     }
 
-    return data.choices[0].message.content.trim();
+    const data = await res.json();
+    const out = data?.choices?.[0]?.message?.content;
+    if(!out) throw new Error("No output returned from API.");
+    return out.trim();
 
   }catch(e){
-    alert("Network error");
-    console.log(e);
+    const raw = $("rawText");
+    if (raw) raw.value = e.message;
+    showToast("API error – check Raw Output", true);
     return null;
   }
 }
 
-document.getElementById("genSubject").onclick = async function(){
-  const prompt = "Write one curiosity-driven email subject line for: "
-    + offerName.value +
-    ". Benefits: " + benefits.value +
-    ". Return only the subject line.";
+// Generate Title (1 only)
+async function generateSubjectsHard(){
+  const results = $("subjectResults");
+  if (!results) return;
+  results.innerHTML = "";
 
-  const result = await callGroq(prompt);
-  if(result){
-    subject.value = result;
+  const prompt =
+    ( $("customTitlePrompt")?.value || "" ) +
+    `\nOffer: ${$("offerName")?.value || "this offer"}` +
+    `\nBenefits:\n${$("benefits")?.value || ""}`;
+
+  const text = await callGroq(prompt);
+  if(!text) return;
+
+  if ($("rawText")) $("rawText").value = text;
+
+  const div = document.createElement("div");
+  div.className = "subjectItem";
+  div.innerHTML = `<div style="font-weight:900">${text}</div>`;
+  div.onclick = () => {
+    if ($("subject")) $("subject").value = text;
     updatePreview();
-  }
-};
+    showToast("Title selected");
+  };
+  results.appendChild(div);
+}
 
-document.getElementById("genBody").onclick = async function(){
-  const prompt = "Write a short marketing email (2 short paragraphs max). Offer: "
-    + offerName.value +
-    ". Benefits: " + benefits.value;
+// Generate Body (1 only)
+async function generateBodyHard(){
+  const prompt =
+    ( $("customBodyPrompt")?.value || "" ) +
+    `\nOffer: ${$("offerName")?.value || "this offer"}` +
+    `\nBenefits:\n${$("benefits")?.value || ""}`;
 
-  const result = await callGroq(prompt);
-  if(result){
-    bodyEditor.innerHTML = result.replace(/\n/g,"<br>");
-    updatePreview();
-  }
-};
+  const text = await callGroq(prompt);
+  if(!text) return;
 
-document.getElementById("clearBody").onclick = function(){
-  bodyEditor.innerHTML = "";
+  if ($("rawText")) $("rawText").value = text;
+  const editor = $("bodyEditor");
+  if (editor) editor.innerHTML = text.replace(/\n/g, "<br>");
   updatePreview();
+  showToast("Body generated");
+}
+
+function updatePreview(){
+  const prevSub = $("prevSub");
+  const subject = $("subject");
+  if (prevSub && subject) prevSub.textContent = subject.value.trim() || "...";
+
+  const editor = $("bodyEditor");
+  const prevBody = $("prevBody");
+  if (editor && prevBody) prevBody.innerHTML = editor.innerHTML || "Preview appears here...";
+}
+
+// --- wire up buttons (all guarded) ---
+const genSubjectsBtn = $("genSubjects");
+if (genSubjectsBtn) genSubjectsBtn.onclick = generateSubjectsHard;
+
+const genBodyBtn = $("genBody");
+if (genBodyBtn) genBodyBtn.onclick = generateBodyHard;
+
+const copyFullBtn = $("copyFull");
+if (copyFullBtn) copyFullBtn.onclick = () => {
+  const subject = $("subject")?.value.trim() || "";
+  const body = $("bodyEditor")?.innerHTML || "";
+  const full = subject + "\n\n" + body;
+  navigator.clipboard.writeText(full).then(() => showToast("Full email copied (HTML)"));
 };
 
-document.getElementById("copyFull").onclick = function(){
-  const full =
-    "Subject: " + subject.value + "\n\n" +
-    bodyEditor.innerText;
-
-  navigator.clipboard.writeText(full);
-  alert("Copied");
+const saveKeyBtn = $("saveKey");
+if (saveKeyBtn) saveKeyBtn.onclick = () => {
+  const key = $("apiKey")?.value.trim() || "";
+  localStorage.setItem("esm_apiKey", key);
+  showToast("Key saved");
 };
 
+const toggleThemeBtn = $("toggleTheme");
+if (toggleThemeBtn) toggleThemeBtn.onclick = () => document.body.classList.toggle("theme-slate");
+
+const openRawBtn = $("openRaw");
+if (openRawBtn) openRawBtn.onclick = () => {
+  const rawModal = $("rawModal");
+  if (rawModal) rawModal.classList.add("show");
+  else showToast("Raw modal missing", true);
+};
+
+const closeRawBtn = $("closeRaw");
+if (closeRawBtn) closeRawBtn.onclick = () => {
+  const rawModal = $("rawModal");
+  if (rawModal) rawModal.classList.remove("show");
+};
+
+const subjectInput = $("subject");
+if (subjectInput) subjectInput.oninput = updatePreview;
+
+const editor = $("bodyEditor");
+if (editor) editor.oninput = updatePreview;
+
+// Image modal (optional) — add HTML if you want it; for now just guard
+const openImageBtn = $("openImageModal");
+if (openImageBtn) openImageBtn.onclick = () => {
+  const m = $("imageModal");
+  if(!m) return showToast("Image modal not built yet (no #imageModal).", true);
+  m.classList.add("show");
+};
+
+// Signatures (optional) — guard so page still works if not implemented
+const manageSigsBtn = $("manageSigs");
+if (manageSigsBtn) manageSigsBtn.onclick = () => {
+  const m = $("sigModal");
+  if(!m) return showToast("Signature modal not built yet (no #sigModal).", true);
+  m.classList.add("show");
+};
+
+const closeSigBtn = $("closeSig");
+if (closeSigBtn) closeSigBtn.onclick = () => {
+  const m = $("sigModal");
+  if(m) m.classList.remove("show");
+};
+
+const insertSigBtn = $("insertSig");
+if (insertSigBtn) insertSigBtn.onclick = () => {
+  showToast("Signature insertion not implemented yet.", true);
+};
+
+// Optional: restore saved key
+const apiKeyInput = $("apiKey");
+if (apiKeyInput && localStorage.getItem("esm_apiKey")) {
+  apiKeyInput.value = localStorage.getItem("esm_apiKey");
+}
+
+// Initialize preview
 updatePreview();
-
-});
 </script>
-
-</body>
-</html>
