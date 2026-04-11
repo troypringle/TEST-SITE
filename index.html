@@ -1,180 +1,43 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Email Swipe Machine</title>
-  <style>
-    :root{
-      --bg:#d4c4a8; --panel:#f5f0e6; --panel2:#efe6d8; --border:#c9b896;
-      --muted:#5c4d3a; --gold:#b8860b; --green:#2e7d32; --blue:#1976d2; --red:#d32f2f;
-    }
-    body.theme-slate{
-      --bg:#111827; --panel:#1f2937; --panel2:#243244; --border:#374151;
-      --muted:#cbd5e1; --gold:#fbbf24; --green:#22c55e; --red:#ef4444;
-    }
-    *{box-sizing:border-box}
-    body{margin:0; font-family:Arial,sans-serif; background:var(--bg); color:#111; font-size:16px; line-height:1.6;}
-    .wrap{max-width:1700px;margin:0 auto;padding:18px;}
-    .topbar{background:var(--panel); border:2px solid var(--gold); border-radius:10px; padding:14px 16px; display:flex; justify-content:space-between; align-items:center;}
-    .title{font-weight:800; font-size:22px; color:var(--gold);}
-    .btn{border:1px solid var(--border); background:var(--panel2); color:#111; padding:10px 12px; border-radius:8px; cursor:pointer; font-weight:700;}
-    .btn:hover{filter:brightness(0.98)}
-    .btnGreen{background:var(--green); color:#fff; border:none}
-    .btnBlue{background:var(--blue); color:#fff; border:none}
-    .btnRed{background:var(--red); color:#fff; border:none}
-    .btnSmall{padding:6px 10px; font-size:13px}
-    .grid{margin-top:16px; display:grid; grid-template-columns:420px 1fr 1fr; gap:16px;}
-    .card{background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:16px;}
-    .card h2{margin:0 0 10px 0; color:var(--gold); font-size:18px;}
-    label{display:block; font-weight:800; color:var(--muted); font-size:13px; text-transform:uppercase; margin:12px 0 6px;}
-    input,textarea{width:100%; padding:12px; border:2px solid var(--border); border-radius:8px; background:#fff; font-size:16px;}
-    textarea{min-height:160px; resize:vertical;}
-    .bigBox{min-height:210px !important;}
-    .pillRow{display:flex; gap:10px; flex-wrap:wrap; margin:8px 0;}
-    .pill{border:2px solid var(--border); background:var(--panel2); padding:8px 12px; border-radius:999px; cursor:pointer; font-weight:800; font-size:14px;}
-    .subjects{margin-top:10px}
-    .subjectItem{background:#fff; border:2px solid #aaa; padding:12px; border-radius:10px; margin-bottom:10px; cursor:pointer;}
-    .subjectItem.selected{border-color:var(--green); box-shadow:0 0 0 3px rgba(46,125,50,.15);}
-    .previewSubject{background:#fff; border:2px solid var(--border); border-bottom:0; padding:12px; border-radius:10px 10px 0 0;}
-    .previewFrame{background:#fff; border:2px solid var(--border); border-radius:0 0 10px 10px; padding:14px; min-height:420px; font-family:Arial,sans-serif; max-width:600px; margin:0 auto;}
-    .toast{position:fixed; right:20px; bottom:20px; background:rgba(0,0,0,.88); color:#fff; padding:12px 16px; border-radius:10px; font-weight:800; display:none; z-index:9999;}
-    .toast.show{display:block}
-    .divider{height:1px; background:var(--border); margin:14px 0}
-    .smallNote{font-size:13px; color:var(--muted); margin-top:6px;}
-    .modal{position:fixed; inset:0; background:rgba(0,0,0,.75); display:none; z-index:10000; padding:20px; overflow:auto;}
-    .modal.show{display:block}
-    .modalInner{max-width:900px; margin:40px auto; background:var(--panel); border:2px solid var(--border); border-radius:12px; padding:20px;}
-    #bodyEditor{border:2px solid var(--border); min-height:210px; padding:12px; background:#fff; outline:none; max-width:600px;}
-  </style>
-</head>
-<body>
-  <div class="toast" id="toast"></div>
+Your HTML/CSS is mostly fine. What’s “broken” is your JavaScript: it throws errors immediately, so none of the buttons/preview/editor logic runs.
 
-  <!-- RAW MODAL -->
-  <div class="modal" id="rawModal">
-    <div class="modalInner">
-      <div style="display:flex;justify-content:space-between;margin-bottom:10px">
-        <h2 style="margin:0;color:var(--gold)">Raw AI Output (Debug)</h2>
-        <button class="btn btnRed" id="closeRaw">Close</button>
-      </div>
-      <textarea id="rawText" style="width:100%;min-height:380px;font-family:monospace;font-size:14px"></textarea>
-      <button class="btn btnBlue" id="copyRaw" style="margin-top:8px">Copy Raw</button>
-    </div>
-  </div>
+### 1) You defined `$` as `getElementById`, but you use it like jQuery (`$("#id")`)
+You have:
 
-  <!-- SIGNATURE MODAL -->
-  <div class="modal" id="sigModal">
-    <div class="modalInner">
-      <div style="display:flex;justify-content:space-between;margin-bottom:10px">
-        <h2 style="margin:0;color:var(--gold)">Signatures</h2>
-        <button class="btn btnRed" id="closeSig">Close</button>
-      </div>
-      <div id="sigList"></div>
-      <div class="divider"></div>
-      <h2 style="margin:0 0 8px;color:var(--gold)">Add New Signature</h2>
-      <input id="sigNewName" type="text" placeholder="e.g. Default">
-      <textarea id="sigNewContent" placeholder="Paste signature here..."></textarea>
-      <button class="btn btnGreen" id="addSig" style="margin-top:10px">Add Signature</button>
-    </div>
-  </div>
-
-  <div class="wrap">
-    <div class="topbar">
-      <div class="title">Email Swipe Machine</div>
-      <div>
-        <button class="btn btnSmall" id="toggleTheme">Toggle Slate</button>
-        <button class="btn btnSmall" id="openRaw">Raw Output</button>
-      </div>
-    </div>
-
-    <div class="grid">
-      <!-- LEFT -->
-      <div class="card">
-        <h2>API + Offer Setup</h2>
-        <label>Groq API Key</label>
-        <input id="apiKey" type="password" placeholder="Paste Groq key">
-        <button class="btn btnGreen" id="saveKey">Save Key</button>
-
-        <div class="divider"></div>
-        <label>Model</label>
-        <select id="model">
-          <option value="llama-3.1-8b-instant">llama-3.1-8b-instant (Fast - Only Working Model)</option>
-        </select>
-
-        <div class="divider"></div>
-        <label>Offer Name</label>
-        <input id="offerName" type="text" placeholder="e.g. My AI Lead Tool">
-        <label>Offer Link (optional)</label>
-        <input id="offerLink" type="text">
-        <label>Benefits (1 per line)</label>
-        <textarea id="benefits"></textarea>
-        <label>CTA Text</label>
-        <input id="ctaText" value="Click here to see it now">
-      </div>
-
-      <!-- MIDDLE -->
-      <div class="card">
-        <h2>Subject + Body</h2>
-        
-        <h2 style="font-size:15px;color:var(--gold);margin:10px 0 6px">Subject Prefix – Click to insert into Title or Body</h2>
-        <div class="pillRow">
-          <div class="pill" data-prefix="{!firstname_fix}⭐ ">{!firstname_fix}⭐</div>
-          <div class="pill" data-prefix="{!lastname_fix}⭐ ">{!lastname_fix}⭐</div>
-          <div class="pill" data-prefix="⭐ ">⭐</div>
-        </div>
-
-        <label>Subject Line</label>
-        <input id="subject" type="text">
-        <div id="subjectCounter" class="smallNote"></div>
-        <button class="btn btnGreen" id="genSubjects" style="margin:8px 0">Generate Title</button>
-        <div class="subjects" id="subjectResults"></div>
-
-        <div class="divider"></div>
-        <h2>Custom Title Prompt (editable)</h2>
-        <textarea id="customTitlePrompt" style="min-height:100px">Return ONLY one string. Must be 36-80 characters long and have at least 7 words. Natural curiosity tone. Optional ⭐ only.</textarea>
-
-        <div class="divider"></div>
-        <label>Email Body (WYSIWYG Editor)</label>
-        <div id="bodyEditor" contenteditable="true" class="bigBox" style="padding:12px; border:2px solid var(--border); background:#fff; min-height:210px; max-width:600px; margin:0 auto;"></div>
-
-        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn btnGreen" id="genBody">Generate Body</button>
-          <button class="btn btnBlue" id="undoBody">Undo</button>
-          <button class="btn btnRed btnSmall" id="clearBody" style="padding:6px 12px;font-size:13px">Clear</button>
-        </div>
-
-        <!-- Signatures moved up next to Generate Body -->
-        <div class="divider"></div>
-        <h2>Signatures</h2>
-        <div style="display:flex;gap:10px">
-          <button class="btn btnBlue" id="manageSigs">Manage Signatures</button>
-          <button class="btn btnGreen" id="insertSig">Insert Selected</button>
-        </div>
-        <p id="sigStatus" class="smallNote"></p>
-
-        <div class="divider"></div>
-        <h2>Custom Body Prompt (editable)</h2>
-        <textarea id="customBodyPrompt" style="min-height:100px">Write exactly one short email body. Use 1 or 2 paragraphs (2-3 sentences max). Start first line with ⭐{!name_fix}. No links, no names.</textarea>
-
-        <div class="divider"></div>
-        <button class="btn btnGreen" id="openImageModal" style="width:100%">Open Image Generator</button>
-      </div>
-
-      <!-- RIGHT -->
-      <div class="card">
-        <h2>Preview + Copy</h2>
-        <div class="previewSubject"><strong>Subject:</strong> <span id="prevSub">...</span></div>
-        <div class="previewFrame" id="prevBody" style="max-width:600px;margin:0 auto;">Preview appears here...</div>
-        <button class="btn btnGreen" id="copyFull" style="width:100%;margin:12px 0">Copy Full Email (HTML Version)</button>
-        <button class="btn btnBlue" id="copySubject">Copy Subject</button>
-        <button class="btn btnBlue" id="copyBodyHtml">Copy Body HTML</button>
-      </div>
-    </div>
-  </div>
-
-<script>
+```js
 const $ = id => document.getElementById(id);
+```
+
+So this:
+
+```js
+$("#genSubjects").onclick = ...
+```
+
+looks for an element whose id is literally `#genSubjects` (doesn’t exist) → returns `null` → then `.onclick` crashes your script.
+
+**Fix:** remove the `#` everywhere you used it.
+
+### 2) You reference elements that do not exist (`imageModal`, `closeImageModal`, `insertImageBtn`)
+These lines crash too:
+
+```js
+$("#openImageModal").onclick = () => $("#imageModal").classList.add("show");
+$("#closeImageModal").onclick = () => $("#imageModal").classList.remove("show");
+$("#insertImageBtn").onclick = () => { ... };
+```
+
+…but there is no `id="imageModal"`, no `id="closeImageModal"`, no `id="insertImageBtn"` in your HTML.
+
+**Fix:** either add that modal HTML or remove/guard those handlers.
+
+---
+
+## Minimal working fix (replace your entire `<script>` with this)
+
+```html
+<script>
+const $ = (id) => document.getElementById(id);
+
 function showToast(msg, err=false){
   const t = $("toast");
   t.textContent = msg;
@@ -185,15 +48,33 @@ function showToast(msg, err=false){
 
 async function callGroq(prompt){
   const key = $("apiKey").value.trim() || localStorage.getItem("esm_apiKey") || "";
-  if(!key) return showToast("Groq API Key required", true);
+  if(!key){ showToast("Groq API Key required", true); return null; }
+
   try{
     const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method:"POST",
-      headers:{"Content-Type":"application/json","Authorization":`Bearer ${key}`},
-      body:JSON.stringify({model:$("model").value, messages:[{role:"user",content:prompt}], temperature:0.7, max_tokens:1200})
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":`Bearer ${key}`
+      },
+      body:JSON.stringify({
+        model: $("model").value,
+        messages:[{role:"user",content:prompt}],
+        temperature:0.7,
+        max_tokens:1200
+      })
     });
+
+    if(!res.ok){
+      const errText = await res.text();
+      throw new Error(`HTTP ${res.status}: ${errText}`);
+    }
+
     const data = await res.json();
-    return data.choices[0].message.content.trim();
+    const out = data?.choices?.[0]?.message?.content;
+    if(!out) throw new Error("No output returned from API.");
+    return out.trim();
+
   }catch(e){
     $("rawText").value = e.message;
     showToast("API error – check Raw Output", true);
@@ -204,10 +85,16 @@ async function callGroq(prompt){
 // Generate Title (1 only)
 async function generateSubjectsHard(){
   $("subjectResults").innerHTML = "";
-  const prompt = $("customTitlePrompt").value + `\nOffer: ${$("offerName").value || "this offer"}\nBenefits: ${$("benefits").value || ""}`;
+  const prompt =
+    $("customTitlePrompt").value +
+    `\nOffer: ${$("offerName").value || "this offer"}` +
+    `\nBenefits:\n${$("benefits").value || ""}`;
+
   const text = await callGroq(prompt);
   if(!text) return;
+
   $("rawText").value = text;
+
   const div = document.createElement("div");
   div.className = "subjectItem";
   div.innerHTML = `<div style="font-weight:900">${text}</div>`;
@@ -217,45 +104,67 @@ async function generateSubjectsHard(){
 
 // Generate Body (1 only)
 async function generateBodyHard(){
-  const prompt = $("customBodyPrompt").value + `\nOffer: ${$("offerName").value || "this offer"}\nBenefits: ${$("benefits").value || ""}`;
+  const prompt =
+    $("customBodyPrompt").value +
+    `\nOffer: ${$("offerName").value || "this offer"}` +
+    `\nBenefits:\n${$("benefits").value || ""}`;
+
   const text = await callGroq(prompt);
-  if(text){
-    $("#bodyEditor").innerHTML = text.replace(/\n/g, "<br>");
-    updatePreview();
-    showToast("Body generated");
-  }
+  if(!text) return;
+
+  $("rawText").value = text;
+  $("bodyEditor").innerHTML = text.replace(/\n/g, "<br>");
+  updatePreview();
+  showToast("Body generated");
 }
 
 function updatePreview(){
   $("prevSub").textContent = $("subject").value.trim() || "...";
-  const html = $("#bodyEditor").innerHTML;
+  const html = $("bodyEditor").innerHTML;
   $("prevBody").innerHTML = html || "Preview appears here...";
 }
 
-$("#genSubjects").onclick = generateSubjectsHard;
-$("#genBody").onclick = generateBodyHard;
+// --- event wiring (NO #) ---
+$("genSubjects").onclick = generateSubjectsHard;
+$("genBody").onclick = generateBodyHard;
 
-$("#copyFull").onclick = () => {
-  const full = $("subject").value.trim() + "\n\n" + $("#bodyEditor").innerHTML;
+$("copyFull").onclick = () => {
+  const full = $("subject").value.trim() + "\n\n" + $("bodyEditor").innerHTML;
   navigator.clipboard.writeText(full).then(() => showToast("Full email copied (HTML)"));
 };
 
-$("#insertImageBtn").onclick = () => {
-  // (kept from previous – image modal handles it)
+$("saveKey").onclick = () => {
+  localStorage.setItem("esm_apiKey", $("apiKey").value.trim());
+  showToast("Key saved");
 };
 
-$("#openImageModal").onclick = () => $("#imageModal").classList.add("show");
-$("#closeImageModal").onclick = () => $("#imageModal").classList.remove("show");
+$("toggleTheme").onclick = () => document.body.classList.toggle("theme-slate");
+$("openRaw").onclick = () => $("rawModal").classList.add("show");
+$("closeRaw").onclick = () => $("rawModal").classList.remove("show");
 
-$("#saveKey").onclick = () => { localStorage.setItem("esm_apiKey", $("apiKey").value.trim()); showToast("Key saved"); };
-$("#toggleTheme").onclick = () => document.body.classList.toggle("theme-slate");
-$("#openRaw").onclick = () => $("#rawModal").classList.add("show");
-$("#closeRaw").onclick = () => $("#rawModal").classList.remove("show");
+$("subject").oninput = updatePreview;
+$("bodyEditor").oninput = updatePreview;
 
-$("#subject").oninput = updatePreview;
-$("#bodyEditor").oninput = updatePreview;
+// IMPORTANT: you don't have imageModal HTML, so guard these:
+$("openImageModal").onclick = () => {
+  const m = $("imageModal");
+  if(!m) return showToast("Image modal HTML is missing (no #imageModal).", true);
+  m.classList.add("show");
+};
+
+// If you later add <button id="closeImageModal">, this will work:
+const closeBtn = $("closeImageModal");
+if(closeBtn){
+  closeBtn.onclick = () => $("imageModal").classList.remove("show");
+}
 
 updatePreview();
 </script>
-</body>
-</html>
+```
+
+### What this fixes
+- Removes all the invalid `$("#...")` usages that were crashing the script.
+- Stops the missing `imageModal` from crashing everything (shows a toast instead).
+- Ensures the editor (`contenteditable`) and preview update properly.
+
+If you want, paste the error you see in the browser Console (F12 → Console). I can tell you exactly which line is still failing (if any).
