@@ -36,7 +36,7 @@
     .subjectItem{background:#fff; border:2px solid #aaa; padding:12px; border-radius:10px; margin-bottom:10px; cursor:pointer;}
     .subjectItem.selected{border-color:var(--green); box-shadow:0 0 0 3px rgba(46,125,50,.15);}
     .previewSubject{background:#fff; border:2px solid var(--border); border-bottom:0; padding:12px; border-radius:10px 10px 0 0;}
-    .previewFrame{background:#fff; border:2px solid var(--border); border-radius:0 0 10px 10px; padding:14px; min-height:420px; font-family:Arial,sans-serif;}
+    .previewFrame{background:#fff; border:2px solid var(--border); border-radius:0 0 10px 10px; padding:14px; min-height:420px; font-family:Arial,sans-serif; max-width:600px; margin:0 auto;}
     .toast{position:fixed; right:20px; bottom:20px; background:rgba(0,0,0,.88); color:#fff; padding:12px 16px; border-radius:10px; font-weight:800; display:none; z-index:9999;}
     .toast.show{display:block}
     .divider{height:1px; background:var(--border); margin:14px 0}
@@ -128,6 +128,11 @@
         <button class="btn btnGreen" id="genSubjects" style="margin:8px 0">Generate 1 Title</button>
         <div class="subjects" id="subjectResults"></div>
 
+        <!-- Title Prompt moved here (under generated title, above email body) -->
+        <div class="divider"></div>
+        <h2>Custom Title Prompt (editable)</h2>
+        <textarea id="customTitlePrompt" style="min-height:100px">Return ONLY one string. Must be 36-80 characters long and have at least 7 words. Natural curiosity tone. Optional ⭐ only.</textarea>
+
         <div class="divider"></div>
         <label>Email Body (exactly 1–2 short paragraphs)</label>
         <textarea id="body" class="bigBox"></textarea>
@@ -143,18 +148,23 @@
           <button class="btn btnRed" id="clearBody">Clear Body</button>
         </div>
 
-        <!-- Visible Custom Prompt Areas -->
+        <!-- Image Insert Section -->
         <div class="divider"></div>
-        <h2>Custom Title Prompt (editable)</h2>
-        <textarea id="customTitlePrompt" style="min-height:100px">Return ONLY one string. Must be 36-80 characters long and have at least 7 words. Natural curiosity tone. Optional ⭐ only.</textarea>
+        <h2>Insert Image into Email Body</h2>
+        <label>Image URL (direct link)</label>
+        <input id="imageUrl" type="text" placeholder="https://your-image-link.com/image.png">
+        <label>Image Link URL (optional)</label>
+        <input id="imageLink" type="text" placeholder="https://your-offer-link.com" value="">
+        <button class="btn btnGreen" id="insertImageBtn" style="margin-top:8px">Insert Image into Body</button>
 
-        <h2 style="margin-top:16px">Custom Body Prompt (editable)</h2>
+        <!-- Custom Body Prompt -->
+        <div class="divider"></div>
+        <h2>Custom Body Prompt (editable)</h2>
         <textarea id="customBodyPrompt" style="min-height:100px">Write exactly one short email body. Use 1 or 2 paragraphs (2-3 sentences max). Start first line with ⭐{!name_fix}. No links, no names.</textarea>
 
         <div class="divider"></div>
-        <h2>Image Generator</h2>
-        <button class="btn btnGreen" id="genImage" style="width:100%">Generate Image Prompt (max 2 paragraphs)</button>
-        <p class="smallNote">Copy & paste into Grok Imagine for the real image</p>
+        <h2>Image Generator Prompt (max 2 paragraphs)</h2>
+        <button class="btn btnGreen" id="genImage" style="width:100%">Generate Image Prompt</button>
         <textarea id="imageResult" style="min-height:130px;margin-top:8px" readonly></textarea>
         <button class="btn btnBlue" id="copyImageDesc">Copy Image Prompt</button>
 
@@ -169,8 +179,8 @@
       <div class="card">
         <h2>Preview + Copy</h2>
         <div class="previewSubject"><strong>Subject:</strong> <span id="prevSub">...</span></div>
-        <div class="previewFrame" id="prevBody">Preview appears here...</div>
-        <button class="btn btnGreen" id="copyFull" style="width:100%;margin:12px 0">Copy Full Email (Clean)</button>
+        <div class="previewFrame" id="prevBody" style="max-width:600px;margin:0 auto;">Preview appears here...</div>
+        <button class="btn btnGreen" id="copyFull" style="width:100%;margin:12px 0">Copy Full Email (HTML Version)</button>
         <button class="btn btnBlue" id="copySubject">Copy Subject</button>
         <button class="btn btnBlue" id="copyBodyHtml">Copy Body HTML</button>
       </div>
@@ -206,7 +216,7 @@ async function callGroq(prompt){
   }
 }
 
-// GENERATE 1 TITLE
+// Generate 1 Title
 async function generateSubjectsHard(){
   $("subjectResults").innerHTML = "";
   const prompt = $("customTitlePrompt").value + `\nOffer: ${$("offerName").value || "this offer"}\nBenefits: ${$("benefits").value || ""}`;
@@ -224,7 +234,7 @@ async function generateSubjectsHard(){
   $("subjectResults").appendChild(div);
 }
 
-// GENERATE 1 SHORT BODY
+// Generate 1 Short Body
 async function generateBodyHard(){
   const prompt = $("customBodyPrompt").value + `\nOffer: ${$("offerName").value || "this offer"}\nBenefits: ${$("benefits").value || ""}`;
   const text = await callGroq(prompt);
@@ -235,12 +245,9 @@ async function generateBodyHard(){
   }
 }
 
-// IMAGE PROMPT – max 2 paragraphs, follows same style as body/title
+// Image Prompt (max 2 paragraphs)
 async function generateImage(){
-  const prompt = `Create a maximum 2-paragraph image generation prompt for Grok Imagine.
-The image is for a marketing email.
-Offer: ${$("offerName").value || "this offer"}
-Benefits: ${$("benefits").value || ""}`;
+  const prompt = `Create a maximum 2-paragraph image generation prompt for Grok Imagine.\nOffer: ${$("offerName").value || "this offer"}\nBenefits: ${$("benefits").value || ""}`;
   const result = await callGroq(prompt);
   if(result){
     $("imageResult").value = result;
@@ -248,20 +255,46 @@ Benefits: ${$("benefits").value || ""}`;
   }
 }
 
-// UPDATE PREVIEW
-function updatePreview(){
-  $("prevSub").textContent = $("subject").value.trim() || "...";
-  const paras = $("body").value.split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean);
-  $("prevBody").innerHTML = paras.length ? paras.map(p => `<p>${p.replace(/\n/g,"<br>")}</p>`).join("") : "Preview appears here...";
-}
-
-// COPY CLEAN
-$("copyFull").onclick = () => {
-  const full = $("subject").value.trim() + "\n\n" + $("body").value.trim();
-  navigator.clipboard.writeText(full).then(() => showToast("Full email copied clean"));
+// Insert Image into Body (Herculist / My Lead Gen Secret style)
+$("insertImageBtn").onclick = () => {
+  const url = $("imageUrl").value.trim();
+  const link = $("imageLink").value.trim() || "#";
+  if(!url) return showToast("Enter an image URL first", true);
+  
+  const imgHTML = `<p><span style="font-size:16px"><a href="${link}" target="_blank"><img alt="Marketing Image" src="${url}" style="max-width:100%; height:auto; display:block; margin:10px auto;" /></a></span></p>`;
+  
+  const current = $("body").value;
+  $("body").value = current ? current + "\n\n" + imgHTML : imgHTML;
+  updatePreview();
+  showToast("Image inserted into body (HTML format)");
 };
 
-// PREFIX INSERTS
+// Copy Full Email as HTML Version (matches your example style)
+async function copyFull(){
+  const subject = $("subject").value.trim();
+  let bodyHTML = $("body").value.trim();
+  
+  // Wrap body in the exact style from your example
+  const fullHTML = `
+SUBJECT: ${subject}
+
+<p><span style="font-size:16px">⭐{!name_fix}</span></p>
+${bodyHTML}
+<p><span style="font-size:16px">Stay Blessed,<br>Troy Pringle</span></p>
+<p>&nbsp;</p>
+<p><span style="font-size:16px"><span style="color:#999999">Please Whitelist and add this email to your address book.</span></span></p>`;
+  
+  await navigator.clipboard.writeText(fullHTML);
+  showToast("Full email copied as HTML (ready for Herculist / My Lead Gen Secret)");
+}
+
+function updatePreview(){
+  $("prevSub").textContent = $("subject").value.trim() || "...";
+  let html = $("body").value || "";
+  $("prevBody").innerHTML = html ? html.replace(/\n/g, "<br>") : "Preview appears here...";
+}
+
+// Prefix inserts
 document.querySelectorAll(".pill").forEach(p => {
   p.onclick = () => {
     if(p.dataset.prefix) $("subject").value = p.dataset.prefix + $("subject").value;
@@ -270,10 +303,10 @@ document.querySelectorAll(".pill").forEach(p => {
   };
 });
 
-// BUTTONS
 $("genSubjects").onclick = generateSubjectsHard;
 $("genBody").onclick = generateBodyHard;
 $("genImage").onclick = generateImage;
+$("copyFull").onclick = copyFull;
 
 $("saveKey").onclick = () => { localStorage.setItem("esm_apiKey", $("apiKey").value.trim()); showToast("Key saved"); };
 $("toggleTheme").onclick = () => document.body.classList.toggle("theme-slate");
