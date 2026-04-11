@@ -78,6 +78,18 @@
     </div>
   </div>
 
+  <!-- NEW PROMPT IDEA POPUP MODAL -->
+  <div class="modal" id="promptIdeaModal">
+    <div class="modalInner">
+      <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+        <h2 style="margin:0;color:var(--gold)">Prompt Ideas (Internet Marketing / MLM / Home Business)</h2>
+        <button class="btn btnRed" id="closePromptIdea">Close</button>
+      </div>
+      <div id="promptIdeaContent" style="font-size:15px; line-height:1.7; white-space:pre-wrap;"></div>
+      <button class="btn btnGreen" id="newPromptIdeaBtn" style="margin-top:15px;width:100%">Generate Another Prompt Idea</button>
+    </div>
+  </div>
+
   <div class="wrap">
     <div class="topbar">
       <div class="title">Email Swipe Machine</div>
@@ -112,10 +124,10 @@
         <label>CTA Text</label>
         <input id="ctaText" value="Click here to see it now">
 
-        <!-- Prompt Idea (1 at a time) -->
+        <!-- Prompt Idea Button (opens popup) -->
         <div class="divider"></div>
         <h2>Prompt Idea Generator</h2>
-        <button class="btn btnGreen" id="genPromptIdea" style="width:100%">Generate 1 New Prompt Idea</button>
+        <button class="btn btnGreen" id="genPromptIdea" style="width:100%">Generate Prompt Idea (Internet Marketing / MLM)</button>
       </div>
 
       <!-- MIDDLE -->
@@ -150,11 +162,10 @@
           <button class="btn btnRed" id="clearBody">Clear Body</button>
         </div>
 
-        <!-- IMAGE GENERATOR (actual image prompt ready for Grok Imagine) -->
         <div class="divider"></div>
         <h2>Image Generator</h2>
         <button class="btn btnGreen" id="genImage" style="width:100%">Generate Actual Image Prompt</button>
-        <p class="smallNote">Copy &amp; paste the result into Grok Imagine to get the real image</p>
+        <p class="smallNote">Copy & paste into Grok Imagine for the real image</p>
         <textarea id="imageResult" style="min-height:130px;margin-top:8px" readonly></textarea>
         <button class="btn btnBlue" id="copyImageDesc">Copy Image Prompt</button>
 
@@ -232,9 +243,10 @@ function renderSigList(){
         }
       };
     });
-    div.querySelector("textarea").oninput = e => {
+    const ta = div.querySelector("textarea");
+    ta.oninput = () => {
       const s = sigs.find(x => x.id === sig.id);
-      if(s) s.content = e.target.value;
+      if(s) s.content = ta.value;
       localStorage.setItem("esm_sigs", JSON.stringify(sigs));
     };
     container.appendChild(div);
@@ -261,36 +273,39 @@ async function callGroq(prompt){
   }
 }
 
-// SUBJECTS – exactly 3 + strict rules
+// SUBJECTS – STRICT 3 subjects, 36+ chars, 7+ words
 async function generateSubjectsHard(){
   $("subjectResults").innerHTML = "";
   const prompt = `Return ONLY a valid JSON array of exactly 3 strings.
-Each subject line MUST be 36-80 characters long and have at least 7 words.
-Use natural curious tone. Optional ⭐ only. No spam words.
+Rules (MUST follow for EVERY subject):
+- Exactly 36 to 80 characters long
+- At least 7 words
+- Natural curiosity tone, no spam words
+- Optional ⭐ only
 Offer: ${$("offerName").value || "this offer"}`;
   const text = await callGroq(prompt);
   if(!text) return;
   $("rawText").value = text;
-  let arr;
-  try{ arr = JSON.parse(text); } catch{ arr = text.split("\n").map(l=>l.trim()).filter(Boolean); }
+  let arr = [];
+  try { arr = JSON.parse(text); } catch { arr = text.split("\n").map(l=>l.trim()).filter(Boolean); }
   arr = arr.slice(0,3);
   const container = $("subjectResults");
   arr.forEach(s => {
     const div = document.createElement("div");
     div.className = "subjectItem";
-    div.innerHTML = `<div style="font-weight:900">${s}</div>`;
-    div.onclick = () => {
-      document.querySelectorAll(".subjectItem").forEach(x=>x.classList.remove("selected"));
+    div.innerHTML = `<div style="font-weight:900">${s}</div><div class="smallNote">${s.length} chars, ${s.split(/\s+/).length} words</div>`;
+    div.addEventListener("click", () => {
+      document.querySelectorAll(".subjectItem").forEach(x => x.classList.remove("selected"));
       div.classList.add("selected");
       $("subject").value = s;
       updatePreview();
       showToast("Subject selected");
-    };
+    });
     container.appendChild(div);
   });
 }
 
-// BODY – strictly 1-2 short paragraphs
+// BODY – 1-2 short paragraphs
 async function generateBodyHard(){
   const prompt = `Write a promotional email body.
 Rules (must follow):
@@ -310,41 +325,38 @@ CTA: ${$("ctaText").value || ""}`;
   }
 }
 
-// IMAGE – actual ready-to-use prompt for Grok Imagine
+// IMAGE PROMPT
 async function generateImage(){
   const offer = $("offerName").value.trim() || "MLM affiliate offer";
-  const prompt = `Create ONE detailed, ready-to-paste image generation prompt for Grok Imagine.
-The image is for a marketing email about: ${offer}.
-Make it attractive, professional, modern, high quality.`;
-  const result = await callGroq(prompt);
+  const result = await callGroq(`Create ONE detailed ready-to-paste prompt for Grok Imagine. The image is for a marketing email about: ${offer}. Make it attractive, professional, modern.`);
   if(result){
     $("imageResult").value = result;
-    showToast("Image prompt generated – paste into Grok Imagine for the actual image");
+    showToast("Image prompt generated");
   }
 }
 
-// PROMPT IDEA – 1 at a time
+// PROMPT IDEA – 3 simple sentences, popup modal
 async function generatePromptIdea(){
-  const text = await callGroq("Generate ONE strong, ready-to-use promotional email prompt idea for MLM or affiliate marketing. Make it specific and useful.");
+  const text = await callGroq("Generate 3 simple sentence prompt ideas for email copy in internet marketing, MLM, or home business. Number them 1, 2, 3.");
   if(text){
-    $("rawText").value = text;
-    $("rawModal").classList.add("show");
-    showToast("1 new prompt idea in Raw Output");
+    $("promptIdeaContent").innerHTML = `<pre style="white-space:pre-wrap">${text}</pre>`;
+    $("promptIdeaModal").classList.add("show");
+    showToast("Prompt ideas shown in popup");
   }
 }
 
-// PREVIEW & COPY
+// PREVIEW
 function updatePreview(){
   $("prevSub").textContent = $("subject").value.trim() || "...";
   const paras = $("body").value.split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean);
-  $("prevBody").innerHTML = paras.length 
-    ? paras.map(p => `<p>${p.replace(/\n/g,"<br>")}</p>`).join("") 
-    : "Preview appears here...";
+  $("prevBody").innerHTML = paras.length ? paras.map(p => `<p>${p.replace(/\n/g,"<br>")}</p>`).join("") : "Preview appears here...";
 }
+
+// COPY
 async function copyFull(){
   const full = $("subject").value.trim() + "\n\n" + $("body").value.trim();
   await navigator.clipboard.writeText(full);
-  showToast("Full email copied (clean, no SUBJECT:)");
+  showToast("Full email copied (clean)");
 }
 
 // EVENT LISTENERS
@@ -388,13 +400,13 @@ $("addSig").onclick = () => {
 };
 $("closeSig").onclick = () => $("sigModal").classList.remove("show");
 
+$("closePromptIdea").onclick = () => $("promptIdeaModal").classList.remove("show");
+$("newPromptIdeaBtn").onclick = () => { $("promptIdeaModal").classList.remove("show"); generatePromptIdea(); };
+
 document.querySelectorAll(".pill").forEach(p => {
   p.onclick = () => {
-    if(p.dataset.prefix){
-      $("subject").value = p.dataset.prefix + $("subject").value;
-    } else if(p.dataset.bodytag){
-      $("body").value += ($("body").value ? "\n" : "") + p.dataset.bodytag;
-    }
+    if(p.dataset.prefix) $("subject").value = p.dataset.prefix + $("subject").value;
+    else if(p.dataset.bodytag) $("body").value += ($("body").value ? "\n" : "") + p.dataset.bodytag;
     updatePreview();
   };
 });
