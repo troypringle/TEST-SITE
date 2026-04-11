@@ -13,48 +13,21 @@
             line-height:1.6;
             font-size:16px;
         }
-        .container{max-width:1650px;margin:0 auto;padding:20px}
+        .container{max-width:1700px;margin:0 auto;padding:20px}
         .header{
             background:#f5f0e6;
             padding:20px;
             border-radius:8px;
             margin-bottom:20px;
             border:2px solid #b8860b;
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            flex-wrap:wrap;
-            gap:15px;
+            text-align:center;
         }
         .header h1{color:#b8860b;font-size:28px;font-weight:700}
-        .grid{display:grid;grid-template-columns:380px 1fr 1fr;gap:20px}
-        .card{
-            background:#ffffff;
-            border:1px solid #c9b896;
-            border-radius:8px;
-            padding:20px;
-        }
+        .grid{display:grid;grid-template-columns:380px 1fr;gap:20px}
+        .sidebar{background:#f5f0e6;padding:20px;border-radius:8px;border:1px solid #c9b896}
+        .main{background:#ffffff;padding:20px;border-radius:8px;border:1px solid #c9b896}
+        .card{margin-bottom:20px}
         .card-title{font-size:18px;font-weight:700;color:#b8860b;margin-bottom:15px}
-        .section-title{font-size:13px;text-transform:uppercase;color:#5c4d3a;margin-bottom:12px;font-weight:700}
-        .btn{
-            background:#f5f0e6;
-            color:#000;
-            border:1px solid #c9b896;
-            padding:12px;
-            border-radius:6px;
-            cursor:pointer;
-            font-weight:600;
-            margin-bottom:8px;
-            width:100%;
-            transition:all .2s;
-        }
-        .btn:hover{background:#e8dcc8}
-        .btn-green{background:#2e7d32;color:#fff;border:none}
-        .btn-green:hover{background:#1b5e20}
-        .btn-blue{background:#5b8db8;color:#fff;border:none}
-        .btn-blue:hover{background:#4a7ca6}
-        .btn-red{background:#c74444;color:#fff;border:none}
-        .btn-red:hover{background:#a83838}
         input,textarea,select{
             width:100%;
             padding:12px;
@@ -63,8 +36,58 @@
             background:#fff;
             color:#000;
             font-size:16px;
+            margin-bottom:10px;
         }
-        textarea{min-height:300px;resize:vertical;line-height:1.7}
+        textarea{min-height:180px;resize:vertical}
+        .btn{
+            background:#b8860b;
+            color:#fff;
+            border:none;
+            padding:12px;
+            border-radius:6px;
+            cursor:pointer;
+            font-weight:700;
+            margin-right:8px;
+            margin-bottom:8px;
+        }
+        .btn:hover{background:#a0780a}
+        .btn-small{padding:8px 12px;font-size:14px}
+        .btn-green{background:#2e7d32}
+        .btn-green:hover{background:#1b5e20}
+        .btn-red{background:#c74444}
+        .btn-red:hover{background:#a83838}
+        .subject-item{
+            background:#fff;
+            padding:12px;
+            border:1px solid #c9b896;
+            border-radius:6px;
+            margin-bottom:8px;
+            cursor:pointer;
+        }
+        .subject-item:hover{background:#fffdf8}
+        .preview-frame{
+            background:#fff;
+            padding:20px;
+            min-height:400px;
+            border:1px solid #c9b896;
+            border-radius:6px;
+            color:#000;
+            font-size:16px;
+            line-height:1.7;
+        }
+        .raw-output{
+            background:#000;
+            color:#0f0;
+            padding:15px;
+            border-radius:6px;
+            font-family:monospace;
+            font-size:13px;
+            max-height:300px;
+            overflow:auto;
+            margin-top:20px;
+            display:none;
+        }
+        .raw-output.show{display:block}
         .prefix-btn{
             display:inline-block;
             background:#f5f0e6;
@@ -77,179 +100,98 @@
             font-weight:600;
         }
         .prefix-btn:hover{background:#e8dcc8}
-        .subject-item{
-            background:#fff;
-            padding:12px;
-            border:1px solid #c9b896;
-            border-radius:6px;
-            margin-bottom:8px;
-            cursor:pointer;
-        }
-        .subject-item:hover{background:#fffdf8}
-        .subject-item.selected{border:2px solid #2e7d32;background:#f0fff0}
-        .preview-frame{
-            background:#fff;
-            padding:20px;
-            min-height:400px;
-            border:1px solid #c9b896;
-            border-radius:6px;
-            color:#000;
-            font-size:16px;
-            line-height:1.7;
-        }
-        .preview-subject{
-            background:#f5f0e6;
-            padding:12px;
-            border:1px solid #c9b896;
-            border-bottom:none;
-            border-radius:6px 6px 0 0;
-            font-size:15px;
-        }
-        .toast{
-            position:fixed;bottom:20px;right:20px;
-            background:#000;color:#fff;padding:15px 20px;
-            border-radius:8px;display:none;z-index:1000;
-        }
-        .toast.show{display:block}
-        .loading{display:none;text-align:center;padding:20px}
-        .loading.show{display:block}
-        .spinner{
-            border:4px solid #f3f3f3;
-            border-top:4px solid #b8860b;
-            border-radius:50%;
-            width:36px;height:36px;
-            animation:spin 1s linear infinite;
-            margin:0 auto;
-        }
-        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
         .divider{height:1px;background:#c9b896;margin:20px 0}
-        .button-row{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
-        .button-row .btn{flex:1;min-width:100px}
-        .prompt-item{
-            background:#f5f0e6;
-            padding:12px;
-            border-radius:6px;
-            margin-bottom:8px;
-            border:1px solid #c9b896;
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            cursor:pointer;
-        }
-        .prompt-item:hover{background:#e8dcc8}
-        .template-item{
-            background:#f5f0e6;
-            padding:10px;
-            border-radius:6px;
-            margin-bottom:8px;
-            border:1px solid #c9b896;
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-        }
-        .template-name{cursor:pointer;font-weight:600}
-        .template-name:hover{color:#b8860b}
-        .sig-item{
-            background:#f5f0e6;
-            padding:12px;
-            border-radius:6px;
-            margin-bottom:8px;
-            border:1px solid #c9b896;
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-        }
-        .sig-active{border-color:#2e7d32;background:#f0fff0}
         @media (max-width:1200px){.grid{grid-template-columns:1fr}}
     </style>
 </head>
 <body>
 
-<div class="toast" id="toast"></div>
-
 <div class="container">
     <div class="header">
         <h1>🔥 Email Swipe Machine</h1>
-        <div>
-            <button class="btn" onclick="document.getElementById('apiCard').style.display='block'">⚙️ API Key</button>
-            <button class="btn" onclick="alert(helpText)">❓ Help</button>
-        </div>
     </div>
 
     <div class="grid">
         <!-- Sidebar -->
-        <div>
-            <div class="card" id="apiCard" style="display:none">
-                <div class="section-title">Groq API Key</div>
-                <input type="password" id="apiKey" placeholder="Paste your Groq API key">
-                <button class="btn btn-green" onclick="saveKey()">Save Key</button>
+        <div class="sidebar">
+            <div class="card">
+                <div class="card-title">API Key (Groq)</div>
+                <input type="password" id="apiKey" placeholder="Paste Groq API key">
+                <button class="btn" onclick="saveApi()">Save Key</button>
                 <p style="font-size:13px;margin-top:8px">Get free key: <a href="https://console.groq.com" target="_blank">console.groq.com</a></p>
             </div>
 
             <div class="card">
-                <div class="section-title">Prompt Library</div>
-                <p style="font-size:14px;margin-bottom:10px">Click to generate • ✏️ to edit</p>
+                <div class="card-title">Prompt Library</div>
                 <div id="promptList"></div>
                 <button class="btn btn-green" onclick="addPrompt()">+ Add New Prompt</button>
             </div>
 
             <div class="card">
-                <div class="section-title">Templates</div>
+                <div class="card-title">Templates</div>
                 <div id="templateList"></div>
-                <button class="btn btn-green" onclick="saveTemplate()">Save Current as Template</button>
+                <button class="btn btn-green" onclick="saveTemplate()">Save Current</button>
             </div>
 
             <div class="card">
-                <div class="section-title">Signatures</div>
+                <div class="card-title">Signatures</div>
                 <div id="sigList"></div>
-                <button class="btn btn-green" onclick="insertSignature()">Insert Selected Signature</button>
-                <button class="btn" onclick="manageSignatures()">Manage Signatures</button>
+                <button class="btn btn-green" onclick="insertSig()">Insert Selected</button>
+                <button class="btn" onclick="manageSigs()">Manage</button>
             </div>
         </div>
 
-        <!-- Editor -->
-        <div>
+        <!-- Main -->
+        <div class="main">
             <div class="card">
                 <div class="card-title">Subject Line</div>
                 <div style="margin-bottom:12px">
-                    <button class="btn" onclick="insertPrefix('{!firstname_fix}⭐ ')">{!firstname_fix}⭐</button>
-                    <button class="btn" onclick="insertPrefix('{!lastname_fix}⭐ ')">{!lastname_fix}⭐</button>
-                    <button class="btn" onclick="insertPrefix('⭐ ')">⭐</button>
+                    <span class="prefix-btn" onclick="insertPrefix('{!firstname_fix}⭐ ')">{!firstname_fix}⭐</span>
+                    <span class="prefix-btn" onclick="insertPrefix('{!lastname_fix}⭐ ')">{!lastname_fix}⭐</span>
+                    <span class="prefix-btn" onclick="insertPrefix('⭐ ')">⭐</span>
                 </div>
-                <input type="text" id="subject" placeholder="Your subject line..." oninput="updatePreview()">
-                <div id="subjectInfo" style="font-size:13px;margin:8px 0"></div>
+                <input type="text" id="subject" placeholder="Subject line (36+ chars, 7+ words)">
+                <div id="subjectInfo" style="font-size:14px;margin:8px 0"></div>
                 <button class="btn btn-green" onclick="generateSubjects()">Generate 3 Subjects</button>
-                <div id="subjectResults" style="margin-top:10px"></div>
+                <div id="subjectResults" style="margin-top:12px"></div>
             </div>
 
             <div class="card">
                 <div class="card-title">Email Body</div>
-                <textarea id="body" placeholder="Start typing your email..." oninput="updatePreview();saveUndo()"></textarea>
-                <div class="button-row">
+                <textarea id="body" placeholder="Your email body..."></textarea>
+                <div style="margin-top:10px">
                     <button class="btn btn-green" onclick="generateBody()">Generate Body</button>
-                    <button class="btn btn-blue" onclick="undo()">Undo</button>
-                    <button class="btn btn-red" onclick="clearBody()">Clear</button>
+                    <button class="btn" onclick="undo()">Undo</button>
+                    <button class="btn btn-red" onclick="$('body').value='';updatePreview()">Clear</button>
                 </div>
             </div>
-        </div>
 
-        <!-- Preview -->
-        <div>
             <div class="card">
                 <div class="card-title">Live Preview</div>
-                <div class="preview-subject"><strong>Subject:</strong> <span id="previewSub">...</span></div>
-                <div class="preview-frame" id="previewFrame"><p style="color:#999">Start typing...</p></div>
-                <div class="button-row" style="margin-top:15px">
-                    <button class="btn btn-green" onclick="copyFull()">Copy Full Email</button>
-                    <button class="btn btn-blue" onclick="copySubject()">Copy Subject</button>
-                    <button class="btn btn-blue" onclick="copyBody()">Copy Body HTML</button>
+                <div style="background:#f5f0e6;padding:12px;border-radius:6px 6px 0 0;border:1px solid #c9b896;border-bottom:none">
+                    <strong>Subject:</strong> <span id="previewSubject">...</span>
                 </div>
+                <div class="preview-frame" id="previewFrame">
+                    <p style="color:#999">Start typing...</p>
+                </div>
+                <div style="margin-top:15px">
+                    <button class="btn btn-green" onclick="copyFull()">Copy Full Email</button>
+                    <button class="btn" onclick="copySubject()">Copy Subject</button>
+                    <button class="btn" onclick="copyBody()">Copy Body HTML</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Raw AI Output (Debug)</div>
+                <button class="btn btn-small" onclick="$('raw').classList.toggle('show')">Toggle Raw Output</button>
+                <pre id="raw" class="raw-output"></pre>
             </div>
         </div>
     </div>
 </div>
 
 <script>
+const $ = id => document.getElementById(id);
 let state = {
     apiKey: localStorage.getItem('esm_key') || '',
     prompts: JSON.parse(localStorage.getItem('esm_prompts') || 'null') || getDefaultPrompts(),
@@ -258,212 +200,179 @@ let state = {
     currentSig: Number(localStorage.getItem('esm_sig') || 1),
     lastPrompt: null,
     undoStack: [],
-    undoIndex: -1
+    rawOutput: ''
 };
 
-function getDefaultPrompts() {
+function getDefaultPrompts(){
     return [
-        {id:1,name:"💰 Income Focus",subject:"Generate 3 subject lines about earning income online. 36-80 chars, 7+ words, curiosity angle. Output ONLY numbered list.",body:"Write an email about making money online. Start with ⭐{!name_fix}. 12-15 sentences. 2-3 sentence paragraphs. Conversational tone. Call-to-action at end. NO signature, NO HTML."},
-        {id:2,name:"😴 Autopilot",subject:"Generate 3 subject lines about passive/automated income. 36-80 chars, 7+ words. Output ONLY numbered list.",body:"Write an email about autopilot income. Start with ⭐{!name_fix}. 12-15 sentences. 2-3 sentence paragraphs. Emphasize ease. NO signature, NO HTML."},
-        {id:3,name:"⏰ Urgency",subject:"Generate 3 urgency subject lines. 36-80 chars, 7+ words. FOMO style. Output ONLY numbered list.",body:"Write an urgent email. Start with ⭐{!name_fix}. 12-15 sentences. 2-3 sentence paragraphs. Limited time angle. NO signature, NO HTML."},
-        {id:4,name:"📊 Proof",subject:"Generate 3 proof-based subject lines. 36-80 chars, 7+ words. Results focus. Output ONLY numbered list.",body:"Write a results-focused email. Start with ⭐{!name_fix}. 12-15 sentences. 2-3 sentence paragraphs. Share believable results. NO signature, NO HTML."},
-        {id:5,name:"🧠 Curiosity",subject:"Generate 3 curiosity subject lines. 36-80 chars, 7+ words. Mystery angle. Output ONLY numbered list.",body:"Write a curiosity email. Start with ⭐{!name_fix}. 12-15 sentences. 2-3 sentence paragraphs. Build intrigue. NO signature, NO HTML."}
+        {id:1,name:"💰 Income",subject:"Generate 3 subject lines about earning income online. 36-80 chars, 7+ words. Curiosity angle. Output ONLY numbered list.",body:"Write an email about making money online. Start with ⭐{!name_fix}. 12-15 sentences. 2-3 sentence paragraphs. Conversational tone. Call-to-action at end. NO signature."},
+        {id:2,name:"😴 Passive",subject:"Generate 3 subject lines about passive income. 36-80 chars, 7+ words. Output ONLY numbered list.",body:"Write an email about passive income. Start with ⭐{!name_fix}. 12-15 sentences. 2-3 sentence paragraphs. Emphasize ease. NO signature."},
+        {id:3,name:"⏰ Urgency",subject:"Generate 3 urgency subject lines. 36-80 chars, 7+ words. FOMO style. Output ONLY numbered list.",body:"Write an urgent email. Start with ⭐{!name_fix}. 12-15 sentences. 2-3 sentence paragraphs. Limited time angle. NO signature."}
     ];
 }
 
 function toast(msg){
-    const t = document.getElementById('toast');
+    const t = $('toast');
     t.textContent = msg;
     t.classList.add('show');
     setTimeout(()=>t.classList.remove('show'), 3000);
 }
 
-function saveKey(){
-    localStorage.setItem('esm_key', document.getElementById('apiKey').value);
+function saveApi(){
+    localStorage.setItem('esm_key', $('apiKey').value);
     toast('API key saved');
 }
 
 async function callAI(prompt){
     const key = localStorage.getItem('esm_key');
-    if(!key) return toast('Set API key first');
-    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method:'POST',
-        headers:{'Authorization':`Bearer ${key}`,'Content-Type':'application/json'},
-        body:JSON.stringify({model:'llama-3.1-70b-versatile',messages:[{role:'user',content:prompt}],temperature:0.7})
-    });
-    const data = await res.json();
-    return data.choices[0].message.content;
+    if(!key){toast('Set API key');return null;}
+    try{
+        const res = await fetch('https://api.groq.com/openai/v1/chat/completions',{
+            method:'POST',
+            headers:{'Authorization':`Bearer ${key}`,'Content-Type':'application/json'},
+            body:JSON.stringify({model:'llama-3.1-70b-versatile',messages:[{role:'user',content:prompt}],temperature:0.7})
+        });
+        const data = await res.json();
+        const text = data.choices[0].message.content;
+        $('raw').textContent = text;
+        return text;
+    }catch(e){
+        $('raw').textContent = 'Error: ' + e.message;
+        toast('API error - check Raw Output');
+        return null;
+    }
 }
 
 function renderPrompts(){
-    const list = document.getElementById('promptList');
-    list.innerHTML = state.prompts.map(p=>`
-        <div class="prompt-item">
-            <div onclick="state.lastPrompt=${p.id};generateSubjects();generateBody()" style="flex:1">${p.name}</div>
-            <div onclick="editPrompt(${p.id})" style="padding:0 12px;cursor:pointer">✏️</div>
-        </div>
-    `).join('');
+    const list = $('promptList');
+    list.innerHTML = '';
+    state.prompts.forEach(p=>{
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.style.marginBottom = '15px';
+        div.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                <strong>${p.name}</strong>
+                <button class="btn btn-red btn-small" onclick="deletePrompt(${p.id})">Delete</button>
+            </div>
+            <input type="text" value="${p.name}" onchange="updatePrompt(${p.id},'name',this.value)">
+            <label>Subject Prompt</label>
+            <textarea onchange="updatePrompt(${p.id},'subject',this.value)">${p.subject}</textarea>
+            <label>Body Prompt</label>
+            <textarea onchange="updatePrompt(${p.id},'body',this.value)">${p.body}</textarea>
+            <button class="btn btn-green" onclick="state.lastPrompt=${p.id};generateSubjects();generateBody()" style="margin-top:10px">Generate with this prompt</button>
+        `;
+        list.appendChild(div);
+    });
+}
+
+function updatePrompt(id, field, value){
+    const p = state.prompts.find(x=>x.id===id);
+    p[field] = value;
+    localStorage.setItem('esm_prompts',JSON.stringify(state.prompts));
+}
+
+function deletePrompt(id){
+    if(!confirm('Delete prompt?')) return;
+    state.prompts = state.prompts.filter(x=>x.id!==id);
+    localStorage.setItem('esm_prompts',JSON.stringify(state.prompts));
+    renderPrompts();
 }
 
 function addPrompt(){
     const name = prompt('Prompt name:');
     if(!name) return;
-    const subject = prompt('Subject prompt:');
-    const body = prompt('Body prompt:');
-    state.prompts.push({id:Date.now(),name,subject,body});
+    state.prompts.push({
+        id:Date.now(),
+        name,
+        subject:"Generate 3 subject lines. 36-80 chars, 7+ words.",
+        body:"Write an email. Start with ⭐{!name_fix}. 12-15 sentences. 2-3 sentence paragraphs."
+    });
     localStorage.setItem('esm_prompts',JSON.stringify(state.prompts));
     renderPrompts();
-    toast('Prompt added');
-}
-
-function editPrompt(id){
-    const p = state.prompts.find(x=>x.id===id);
-    const name = prompt('Name:',p.name);
-    const subject = prompt('Subject prompt:',p.subject);
-    const body = prompt('Body prompt:',p.body);
-    if(name && subject && body){
-        p.name = name; p.subject = subject; p.body = body;
-        localStorage.setItem('esm_prompts',JSON.stringify(state.prompts));
-        renderPrompts();
-        toast('Prompt updated');
-    }
 }
 
 async function generateSubjects(){
     const p = state.prompts.find(x=>x.id===state.lastPrompt) || state.prompts[0];
     const res = await callAI(p.subject);
-    const lines = res.split('\n').map(l=>l.replace(/^\d+[\.\)]\s*/,'').trim()).filter(Boolean);
-    const valid = lines.filter(s=>s.length>=36 && s.split(' ').length>=7).slice(0,3);
-    const list = document.getElementById('subjectResults');
-    list.innerHTML = valid.map(s=>`<div class="subject-item" onclick="document.getElementById('subject').value='${s}';updatePreview()">${s}</div>`).join('');
-    toast('Generated subjects');
+    if(!res) return;
+    const lines = res.split('\n').map(l=>l.replace(/^\d+[\.\)]\s*/,'').trim());
+    const valid = lines.filter(s=>s.length>=36 && s.split(' ').length>=7);
+    const list = $('subjectResults');
+    list.innerHTML = valid.slice(0,3).map(s=>`<div class="subject-item" onclick="$('subject').value='${s}';updatePreview()">${s}</div>`).join('');
+    if(valid.length===0) toast('No valid subjects - check Raw Output');
 }
 
 async function generateBody(){
     const p = state.prompts.find(x=>x.id===state.lastPrompt) || state.prompts[0];
     const res = await callAI(p.body);
-    document.getElementById('body').value = res;
+    if(!res) return;
+    $('body').value = res;
     updatePreview();
-    toast('Body generated');
 }
 
 function insertPrefix(prefix){
-    const input = document.getElementById('subject');
-    input.value = prefix + input.value;
+    $('subject').value = prefix + $('subject').value;
     updatePreview();
 }
 
 function updatePreview(){
-    const sub = document.getElementById('subject').value;
-    const body = document.getElementById('body').value;
-    document.getElementById('previewSub').textContent = sub || '...';
-    document.getElementById('previewFrame').innerHTML = body.split('\n\n').map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
-    document.getElementById('subjectInfo').textContent = `${sub.length} chars, ${sub.split(' ').length} words`;
-}
-
-function saveTemplate(){
-    const name = prompt('Template name:');
-    if(!name) return;
-    state.templates.push({id:Date.now(),name,subject:document.getElementById('subject').value,body:document.getElementById('body').value});
-    localStorage.setItem('esm_templates',JSON.stringify(state.templates));
-    renderTemplates();
-}
-
-function renderTemplates(){
-    const list = document.getElementById('templateList');
-    list.innerHTML = state.templates.map(t=>`
-        <div class="template-item">
-            <span onclick="loadTemplate(${t.id})" class="template-name">${t.name}</span>
-            <button class="btn btn-red btn-small" onclick="deleteTemplate(${t.id})">Delete</button>
-        </div>
-    `).join('');
-}
-
-function loadTemplate(id){
-    const t = state.templates.find(x=>x.id===id);
-    document.getElementById('subject').value = t.subject;
-    document.getElementById('body').value = t.body;
-    updatePreview();
-}
-
-function deleteTemplate(id){
-    state.templates = state.templates.filter(x=>x.id!==id);
-    localStorage.setItem('esm_templates',JSON.stringify(state.templates));
-    renderTemplates();
-}
-
-function renderSignatures(){
-    const list = document.getElementById('sigList');
-    list.innerHTML = state.signatures.map(s=>`
-        <div class="sig-item ${s.id===state.currentSig?'sig-active':''}" onclick="state.currentSig=${s.id};localStorage.setItem('esm_sig',${s.id});renderSignatures()">
-            <span class="sig-name">${s.name}</span>
-        </div>
-    `).join('');
-}
-
-function manageSignatures(){
-    alert("Coming soon - signature management");
-}
-
-function insertSignature(){
-    const sig = state.signatures.find(s=>s.id===state.currentSig);
-    if(sig && sig.content){
-        document.getElementById('body').value += '\n\n' + sig.content;
-        updatePreview();
-    }
+    const sub = $('subject').value;
+    const body = $('body').value;
+    $('previewSubject').textContent = sub || '...';
+    const paras = body.split('\n\n').map(p=>p.trim()).filter(Boolean);
+    $('previewFrame').innerHTML = paras.length ? paras.map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('') : '<p style="color:#999">Start typing...</p>';
+    $('subjectInfo').textContent = `${sub.length} chars, ${sub.split(' ').length} words`;
 }
 
 function copyFull(){
-    const full = `SUBJECT: ${document.getElementById('subject').value}\n\n${document.getElementById('body').value}`;
+    const full = `SUBJECT: ${$('subject').value}\n\n${$('body').value}`;
     navigator.clipboard.writeText(full);
     toast('Full email copied');
 }
 
 function copySubject(){
-    navigator.clipboard.writeText(document.getElementById('subject').value);
+    navigator.clipboard.writeText($('subject').value);
     toast('Subject copied');
 }
 
 function copyBody(){
-    const html = document.getElementById('body').value.split('\n\n').map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
+    const html = $('body').value.split('\n\n').map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
     navigator.clipboard.writeText(html);
     toast('Body HTML copied');
 }
 
-function clearBody(){
-    document.getElementById('body').value = '';
-    updatePreview();
-}
-
-function saveUndo(){
-    // simple undo - just remember last value
-    state.lastBody = document.getElementById('body').value;
-}
-
 function undo(){
-    if(state.lastBody !== undefined){
-        document.getElementById('body').value = state.lastBody;
+    if(state.undoStack.length>1){
+        state.undoStack.pop();
+        $('body').value = state.undoStack[state.undoStack.length-1];
         updatePreview();
     }
 }
 
-const helpText = `Email Swipe Machine
+function saveUndo(){
+    const current = $('body').value;
+    if(state.undoStack.length===0 || state.undoStack[state.undoStack.length-1]!==current){
+        state.undoStack.push(current);
+        if(state.undoStack.length>20) state.undoStack.shift();
+    }
+}
 
-1. Get free Groq API key at console.groq.com
-2. Paste it in API Key section
-3. Click any prompt to generate
-4. Pick a subject line
-5. Edit body if needed
-6. Insert signature
-7. Click "Copy Full Email"
-8. Paste into your email platform
+// Save draft
+setInterval(()=>{
+    localStorage.setItem('esm_draft_subject',$('subject').value);
+    localStorage.setItem('esm_draft_body',$('body').value);
+},5000);
 
-All free forever!`;
-
+// Init
+if(state.apiKey) $('apiKey').value = state.apiKey;
 renderPrompts();
-renderTemplates();
-renderSignatures();
+const draftSub = localStorage.getItem('esm_draft_subject');
+const draftBody = localStorage.getItem('esm_draft_body');
+if(draftSub) $('subject').value = draftSub;
+if(draftBody) $('body').value = draftBody;
 updatePreview();
+saveUndo();
 </script>
 </body>
 </html>
