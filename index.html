@@ -8,6 +8,7 @@
         :root {
             --bg: #d4c4a8; --panel: #f5f0e6; --panel2: #efe6d8; --border: #c9b896;
             --muted: #5c4d3a; --gold: #b8860b; --green: #2e7d32; --blue: #1976d2; --red: #d32f2f;
+            --btn-h: 40px;
         }
         body.theme-slate {
             --bg: #111827; --panel: #1f2937; --panel2: #243244; --border: #374151;
@@ -16,39 +17,44 @@
         * { box-sizing: border-box; font-size: 16px; }
         body { margin: 0; font-family: Arial, sans-serif; background: var(--bg); color: #111; line-height: 1.6; }
         
-        .topbar { background: var(--panel); border-bottom: 2px solid var(--gold); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .grid { display: grid; grid-template-columns: 280px 1fr 1fr; gap: 16px; padding: 16px; transition: all 0.3s ease; }
+        .topbar { background: var(--panel); border-bottom: 2px solid var(--gold); padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .grid { display: grid; grid-template-columns: 240px 1fr 1fr; gap: 16px; padding: 16px; transition: all 0.3s ease; }
         .grid.sidebar-closed { grid-template-columns: 60px 1fr 1fr; }
         
         .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px; position: relative; }
         
-        /* Sidebar Polish */
-        .sidebar-content { transition: opacity 0.2s; visibility: visible; }
+        /* Sidebar */
+        .sidebar-content { transition: opacity 0.2s; }
         .sidebar-closed .sidebar-content { opacity: 0; visibility: hidden; height: 0; overflow: hidden; }
-        .toggle-btn { cursor: pointer; background: var(--gold); color: #fff; border: none; padding: 8px; border-radius: 6px; width: 100%; margin-bottom: 15px; font-weight: 900; }
+        .toggle-btn { cursor: pointer; background: var(--gold); color: #fff; border: none; height: 30px; border-radius: 6px; width: 100%; margin-bottom: 15px; font-weight: 900; font-size: 12px; }
 
-        .btn { border: 1px solid var(--border); background: var(--panel2); color: #111; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+        .btn { 
+            border: 1px solid var(--border); background: var(--panel2); color: #111; 
+            height: var(--btn-h); padding: 0 15px; border-radius: 8px; cursor: pointer; 
+            font-weight: 700; display: inline-flex; align-items: center; justify-content: center;
+            white-space: nowrap;
+        }
         .btnGreen { background: var(--green); color: #fff; border: none; }
         .btnBlue { background: var(--blue); color: #fff; border: none; }
         .btnRed { background: var(--red); color: #fff; border: none; }
-        .btnSmall { padding: 4px 10px; font-size: 14px; }
+        .btnIcon { padding: 0 10px; font-size: 18px; }
 
         /* Input & Editor */
         input, select, textarea { width: 100%; padding: 10px; border: 2px solid var(--border); border-radius: 8px; margin-bottom: 12px; background: #fff; }
         .toolbar { display: flex; gap: 4px; background: var(--panel2); padding: 8px; border: 2px solid var(--border); border-bottom: 0; border-radius: 8px 8px 0 0; }
         #bodyEditor, #sourceEditor { width: 100%; max-width: 600px; min-height: 450px; background: #fff; border: 2px solid var(--border); padding: 15px; outline: none; margin: 0 auto; overflow-y: auto; }
-        #sourceEditor { display: none; font-family: monospace; font-size: 14px; }
+        #sourceEditor { display: none; font-family: monospace; }
 
         /* Preview Area */
-        .preview-subject-box { background: #fff; border: 2px solid var(--border); padding: 12px; border-radius: 8px; margin-bottom: 20px; }
-        .preview-body-frame { background: #fff; border: 2px solid var(--border); padding: 25px; min-height: 450px; max-width: 600px; margin: 0 auto; box-shadow: inset 0 0 10px rgba(0,0,0,0.05); }
+        .preview-subject-box { background: #fff; border: 2px solid var(--border); padding: 12px; border-radius: 8px; margin-bottom: 20px; min-height: 50px; }
+        .preview-body-frame { background: #fff; border: 2px solid var(--border); padding: 25px; min-height: 450px; max-width: 600px; margin: 0 auto; }
 
         /* Modals */
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 10000; align-items: center; justify-content: center; padding: 20px; }
         .modal.show { display: flex; }
         .modalInner { background: var(--panel); border: 3px solid var(--border); border-radius: 12px; padding: 25px; width: 100%; max-width: 500px; }
         
-        .tag-row { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+        .tag-row { display: flex; gap: 6px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -57,16 +63,16 @@
 
 <div class="modal" id="settingsModal">
     <div class="modalInner">
-        <h2 style="color:var(--gold); margin-top:0;">API Settings</h2>
+        <h2 style="color:var(--gold); margin-top:0;">Api Key Settings</h2>
         <label style="font-size:12px; font-weight:800;">GROQ API KEY</label>
-        <input id="apiKey" type="password" placeholder="Paste your key here...">
+        <input id="apiKey" type="password" placeholder="Paste key...">
         <button class="btn btnGreen" style="width:100%" onclick="saveSettings()">Save & Close</button>
     </div>
 </div>
 
 <div class="modal" id="promptModal">
     <div class="modalInner">
-        <h2 id="promptTitle" style="color:var(--gold); margin-top:0;">Edit Prompt</h2>
+        <h2 id="promptTitle" style="color:var(--gold); margin-top:0;">Prompt</h2>
         <textarea id="promptArea" style="min-height:200px;"></textarea>
         <div style="display:flex; gap:10px; margin-top:10px;">
             <button class="btn btnGreen" style="flex:1" onclick="closePrompt(true)">Save</button>
@@ -77,10 +83,10 @@
 
 <div class="modal" id="sigModal">
     <div class="modalInner">
-        <h2 style="color:var(--gold); margin-top:0;">Signatures</h2>
+        <h2 style="color:var(--gold); margin-top:0;">Manage Signatures</h2>
         <div id="sigList" style="max-height:150px; overflow-y:auto; margin-bottom:15px; border:1px solid var(--border); background:#fff; padding:5px;"></div>
         <input id="sigNewName" placeholder="Label">
-        <textarea id="sigNewContent" placeholder="Content (HTML ok)"></textarea>
+        <textarea id="sigNewContent" placeholder="Content..."></textarea>
         <button class="btn btnGreen" style="width:100%" onclick="addSig()">Add Signature</button>
         <button class="btn btnSmall" style="width:100%; margin-top:10px;" onclick="$('sigModal').classList.remove('show')">Close</button>
     </div>
@@ -89,7 +95,7 @@
 <div class="topbar">
     <div style="font-weight:900; color:var(--gold); font-size:22px;">Email Swipe Machine</div>
     <div style="display:flex; gap:10px;">
-        <button class="btn btnSmall" onclick="$('settingsModal').classList.add('show')">⚙️ Settings</button>
+        <button class="btn btnSmall" onclick="$('settingsModal').classList.add('show')">⚙️ Api Key Settings</button>
         <button class="btn btnSmall" onclick="toggleSource()" id="srcBtn">HTML Source</button>
         <button class="btn btnSmall" onclick="document.body.classList.toggle('theme-slate')">Toggle Slate</button>
     </div>
@@ -97,83 +103,86 @@
 
 <div class="grid" id="mainGrid">
     <div class="card" style="padding: 10px;">
-        <button class="toggle-btn" onclick="toggleSidebar()" id="tglIco">HIDE SIDEBAR</button>
+        <button class="toggle-btn" onclick="toggleSidebar()" id="tglBtn">HIDE</button>
         <div class="sidebar-content">
             <label style="font-weight:800; font-size:12px; color:var(--muted)">OFFER NAME</label>
-            <input id="offerName" type="text" placeholder="e.g. AI Wealth">
+            <input id="offerName" type="text" oninput="autoSave()">
             
             <label style="font-weight:800; font-size:12px; color:var(--muted)">BENEFITS</label>
-            <textarea id="benefits" style="min-height:100px;"></textarea>
+            <textarea id="benefits" style="min-height:100px;" oninput="autoSave()"></textarea>
             
             <label style="font-weight:800; font-size:12px; color:var(--muted)">CTA TEXT</label>
-            <input id="ctaText" value="Click here to see it">
+            <input id="ctaText" value="Click here to see it" oninput="autoSave()">
 
             <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
-                <button class="btn btnBlue btnSmall" onclick="openPrompt('title')">Edit Title Prompt</button>
-                <button class="btn btnBlue btnSmall" onclick="openPrompt('body')">Edit Body Prompt</button>
-                <button class="btn btnBlue btnSmall" onclick="openPrompt('image')">Edit Image Prompt</button>
+                <button class="btn btnBlue btnSmall" onclick="openPrompt('title')">Title 📝</button>
+                <button class="btn btnBlue btnSmall" onclick="openPrompt('body')">Body 📝</button>
+                <button class="btn btnBlue btnSmall" onclick="openPrompt('image')">Image 📝</button>
             </div>
         </div>
     </div>
 
     <div class="card">
         <div class="tag-row">
-            <button class="btn btnSmall" onclick="addTag('{!firstname_fix}')">{!firstname_fix}</button>
-            <button class="btn btnSmall" onclick="addTag('{!lastname_fix}')">{!lastname_fix}</button>
-            <button class="btn btnSmall" onclick="addTag('⭐')">⭐</button>
+            <button class="btn btnSmall" onclick="insertAtCaret('subject','{!firstname_fix}')">{!firstname_fix}</button>
+            <button class="btn btnSmall" onclick="insertAtCaret('subject','{!lastname_fix}')">{!lastname_fix}</button>
+            <button class="btn btnSmall" onclick="insertAtCaret('subject','⭐')">⭐</button>
         </div>
         
         <div style="display:flex; gap:8px; margin-bottom:10px;">
-            <input id="subject" type="text" placeholder="Subject Line" style="margin:0; flex:1;">
+            <input id="subject" type="text" placeholder="Subject Line" style="margin:0; flex:1;" oninput="update(); autoSave();">
             <button class="btn btnGreen" onclick="generateTitle()">Generate Title</button>
         </div>
 
         <div class="toolbar">
-            <button class="btn btnSmall" onclick="exec('bold')"><b>B</b></button>
-            <button class="btn btnSmall" onclick="exec('italic')"><i>I</i></button>
-            <button class="btn btnSmall" onclick="exec('foreColor','#d32f2f')" style="color:#d32f2f">Red</button>
-            <button class="btn btnSmall" onclick="exec('foreColor','#111111')">Black</button>
+            <button class="btn btnSmall btnIcon" onclick="exec('bold')"><b>B</b></button>
+            <button class="btn btnSmall btnIcon" onclick="exec('italic')"><i>I</i></button>
+            <button class="btn btnSmall btnIcon" onclick="exec('foreColor','#d32f2f')" style="color:#d32f2f">A</button>
+            <button class="btn btnSmall btnIcon" onclick="exec('foreColor','#111111')">A</button>
             <button class="btn btnSmall" onclick="exec('createLink', prompt('Link URL:'))">Link</button>
             <button class="btn btnSmall" onclick="insertImg()">Image + Link</button>
+            <div style="flex:1"></div>
+            <button class="btn btnSmall" onclick="exec('undo')">Undo</button>
         </div>
-        <div id="bodyEditor" contenteditable="true"></div>
+        <div id="bodyEditor" contenteditable="true" oninput="update(); autoSave();"></div>
         <textarea id="sourceEditor"></textarea>
 
         <div style="margin-top:12px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-            <button class="btn btnGreen" onclick="generateBody()">Generate Body</button>
-            <button class="btn btnBlue btnSmall" onclick="$('sigModal').classList.add('show')">Manage</button>
-            <button class="btn btnGreen btnSmall" onclick="insertSig()">Insert</button>
+            <button class="btn btnGreen" onclick="generateBody()" style="flex:2">Generate Body</button>
+            <button class="btn btnBlue" onclick="$('sigModal').classList.add('show')">Manage</button>
+            <button class="btn btnGreen" onclick="insertSig()">Insert</button>
             <select id="sigSelect" style="width:140px; margin:0;"><option value="">Select Sig</option></select>
-            <button class="btn btnBlue btnSmall" onclick="undo()">Undo</button>
-            <button class="btn btnRed btnSmall" onclick="clearBody()">Clear</button>
+            <button class="btn btnRed" onclick="clearBody()">Clear</button>
         </div>
     </div>
 
     <div class="card">
         <div class="preview-subject-box">
-            <label style="font-weight:800; font-size:12px; color:var(--muted); display:block; margin-bottom:4px;">SUBJECT PREVIEW</label>
-            <span id="prevSub" style="font-weight:700;">...</span>
+            <label style="font-weight:800; font-size:10px; color:var(--muted); display:block;">SUBJECT PREVIEW</label>
+            <span id="prevSub" style="font-weight:700;"></span>
         </div>
         
-        <div style="display:flex; gap:10px; margin-bottom:15px; background:var(--panel2); padding:10px; border-radius:8px; border:1px solid var(--border);">
-            <button class="btn btnBlue btnSmall" style="flex:1" onclick="copyText($('subject').value)">Copy Title</button>
-            <button class="btn btnBlue btnSmall" style="flex:1" onclick="copyText(getWrappedBody())">Copy Body HTML</button>
+        <div style="display:flex; gap:8px; margin-bottom:15px;">
+            <button class="btn btnBlue" style="flex:1" onclick="copyText($('subject').value)">Copy Full Title</button>
+            <button class="btn btnBlue" style="flex:1" onclick="copyText(getWrappedBody())">Copy Body HTML</button>
         </div>
 
-        <div class="preview-body-frame" id="prevBody">Preview content...</div>
+        <div class="preview-body-frame" id="prevBody"></div>
         
-        <div style="margin-top:15px; border-top:1px solid var(--border); padding-top:10px;">
-            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:700;">
-                <input type="checkbox" id="useWrapper" checked style="width:auto; margin:0;"> 600px Responsive Wrapper
-            </label>
-            <button class="btn btnGreen" onclick="copyAll()" style="width:100%; margin-top:10px; padding:15px; font-size:18px;">COPY FULL SWIPE</button>
+        <div style="margin-top:15px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:700; font-size:13px;">
+                    <input type="checkbox" id="useWrapper" checked style="width:auto; margin:0;" onchange="update()"> 600px Wrapper
+                </label>
+                <button class="btn btnSmall" onclick="sendTest()">Send Test Email</button>
+            </div>
+            <button class="btn btnGreen" onclick="copyAll()" style="width:100%; height:60px; font-size:20px;">COPY FULL SWIPE</button>
         </div>
     </div>
 </div>
 
 <script>
     const $ = id => document.getElementById(id);
-    let lastBody = "";
     let activePrompt = "";
     const prompts = {
         title: "Return ONLY one string. Curiosity tone. Use ⭐ if natural.",
@@ -185,20 +194,18 @@
     
     function toggleSidebar() { 
         $("mainGrid").classList.toggle("sidebar-closed"); 
-        $("tglIco").textContent = $("mainGrid").classList.contains("sidebar-closed") ? "OPEN SIDEBAR" : "HIDE SIDEBAR";
+        $("tglBtn").textContent = $("mainGrid").classList.contains("sidebar-closed") ? "SHOW" : "HIDE";
     }
 
-    // Settings
     function saveSettings() {
         localStorage.setItem("esm_key", $("apiKey").value);
         $("settingsModal").classList.remove("show");
-        showToast("Settings Saved");
+        showToast("Api Key Saved");
     }
 
-    // Prompts
     function openPrompt(type) {
         activePrompt = type;
-        $("promptTitle").textContent = `Edit ${type.toUpperCase()} Prompt`;
+        $("promptTitle").textContent = `${type.toUpperCase()} Prompt Settings`;
         $("promptArea").value = prompts[type];
         $("promptModal").classList.add("show");
     }
@@ -207,9 +214,26 @@
         $("promptModal").classList.remove("show");
     }
 
-    // Editor
-    function exec(c, v=null) { document.execCommand(c, false, v); update(); }
-    function addTag(t) { $("subject").value += t; update(); }
+    // Caret Insertion Logic
+    function insertAtCaret(id, text) {
+        const el = $(id);
+        if (id === 'subject') {
+            const start = el.selectionStart;
+            const end = el.selectionEnd;
+            el.value = el.value.substring(0, start) + text + el.value.substring(end);
+            el.focus();
+            el.selectionStart = el.selectionEnd = start + text.length;
+        } else {
+            document.execCommand('insertText', false, text);
+        }
+        update();
+    }
+
+    function exec(c, v=null) { 
+        $("bodyEditor").focus();
+        document.execCommand(c, false, v); 
+        update(); 
+    }
     
     function insertImg() {
         const url = prompt("Image URL:");
@@ -225,15 +249,17 @@
             $("bodyEditor").innerHTML = $("sourceEditor").value;
             $("sourceEditor").style.display = "none";
             $("bodyEditor").style.display = "block";
+            $("srcBtn").textContent = "HTML Source";
         } else {
             $("sourceEditor").value = $("bodyEditor").innerHTML;
             $("bodyEditor").style.display = "none";
             $("sourceEditor").style.display = "block";
+            $("srcBtn").textContent = "Visual Editor";
         }
     }
 
     async function callAI(p) {
-        const key = $("apiKey").value || localStorage.getItem("esm_key");
+        const key = localStorage.getItem("esm_key");
         if(!key) { showToast("Enter API Key in Settings"); return null; }
         try {
             const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -248,19 +274,18 @@
     async function generateTitle() {
         const p = prompts.title + `\nOffer: ${$("offerName").value}\nBenefits: ${$("benefits").value}`;
         const res = await callAI(p);
-        if(res) { $("subject").value = res.replace(/"/g,''); update(); }
+        if(res) { $("subject").value = res.replace(/"/g,''); update(); autoSave(); }
     }
 
     async function generateBody() {
-        saveUndoState();
         const p = prompts.body + `\nOffer: ${$("offerName").value}\nBenefits: ${$("benefits").value}\nCTA: ${$("ctaText").value}`;
         const res = await callAI(p);
-        if(res) { $("bodyEditor").innerHTML = res.replace(/\n/g,"<br>"); update(); }
+        if(res) { exec('insertHTML', res.replace(/\n/g,"<br>")); autoSave(); }
     }
 
     function update() {
-        $("prevSub").textContent = $("subject").value || "...";
-        $("prevBody").innerHTML = $("bodyEditor").innerHTML || "Preview...";
+        $("prevSub").textContent = $("subject").value;
+        $("prevBody").innerHTML = $("bodyEditor").innerHTML;
     }
 
     function getWrappedBody() {
@@ -272,30 +297,60 @@
     // Signatures
     let sigs = JSON.parse(localStorage.getItem("esm_sigs") || "[]");
     function renderSigs() {
-        $("sigList").innerHTML = sigs.map((s,i)=>`<div style="display:flex;justify-content:space-between;padding:4px;border-bottom:1px solid #eee;"><span>${s.name}</span> <button onclick="delSig(${i})">X</button></div>`).join('');
+        $("sigList").innerHTML = sigs.map((s,i)=>`<div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #eee;background:#fff;"><span>${s.name}</span> <button class="btnRed btnSmall" onclick="delSig(${i})">Del</button></div>`).join('');
         $("sigSelect").innerHTML = '<option value="">Select Sig</option>' + sigs.map((s,i)=>`<option value="${i}">${s.name}</option>`).join('');
     }
     function addSig() { 
+        if(!$("sigNewName").value) return;
         sigs.push({name:$("sigNewName").value, content:$("sigNewContent").value}); 
         localStorage.setItem("esm_sigs", JSON.stringify(sigs)); renderSigs(); 
+        $("sigNewName").value = ""; $("sigNewContent").value = "";
     }
     window.delSig = i => { sigs.splice(i,1); localStorage.setItem("esm_sigs", JSON.stringify(sigs)); renderSigs(); };
     function insertSig() {
         const s = sigs[$("sigSelect").value];
-        if(s) { exec('insertHTML', `<br><br>${s.content.replace(/\n/g,"<br>")}`); }
+        if(s) exec('insertHTML', `<br><br>${s.content.replace(/\n/g,"<br>")}`);
     }
 
-    // Undo & Clipboard
-    function saveUndoState() { lastBody = $("bodyEditor").innerHTML; }
-    function undo() { if(lastBody) { let current = $("bodyEditor").innerHTML; $("bodyEditor").innerHTML = lastBody; lastBody = current; update(); } }
-    function clearBody() { saveUndoState(); $("bodyEditor").innerHTML = ""; update(); }
+    // Persistence
+    function autoSave() {
+        const data = {
+            sub: $("subject").value,
+            body: $("bodyEditor").innerHTML,
+            offer: $("offerName").value,
+            benefits: $("benefits").value,
+            cta: $("ctaText").value
+        };
+        localStorage.setItem("esm_draft", JSON.stringify(data));
+    }
+
+    function loadDraft() {
+        const d = JSON.parse(localStorage.getItem("esm_draft"));
+        if(d) {
+            $("subject").value = d.sub || "";
+            $("bodyEditor").innerHTML = d.body || "";
+            $("offerName").value = d.offer || "";
+            $("benefits").value = d.benefits || "";
+            $("ctaText").value = d.cta || "";
+            update();
+        }
+    }
+
+    function sendTest() {
+        const sub = encodeURIComponent($("subject").value);
+        const body = encodeURIComponent($("bodyEditor").innerText); // Use innerText for standard mailto
+        window.location.href = `mailto:?subject=${sub}&body=${body}`;
+    }
+
+    function clearBody() { if(confirm("Clear everything?")) { $("bodyEditor").innerHTML = ""; $("subject").value = ""; update(); autoSave(); } }
     function copyText(t) { navigator.clipboard.writeText(t); showToast("Copied!"); }
     function copyAll() { copyText(`${$("subject").value}\n\n${getWrappedBody()}`); }
 
-    $("subject").oninput = update;
-    $("bodyEditor").oninput = update;
-    $("apiKey").value = localStorage.getItem("esm_key") || "";
-    renderSigs();
+    window.onload = () => {
+        $("apiKey").value = localStorage.getItem("esm_key") || "";
+        loadDraft();
+        renderSigs();
+    };
 </script>
 </body>
 </html>
