@@ -49,34 +49,6 @@
 <body>
   <div class="toast" id="toast"></div>
 
-  <!-- RAW MODAL -->
-  <div class="modal" id="rawModal">
-    <div class="modalInner">
-      <div style="display:flex;justify-content:space-between;margin-bottom:10px">
-        <h2 style="margin:0;color:var(--gold)">Raw AI Output (Debug)</h2>
-        <button class="btn btnRed" id="closeRaw">Close</button>
-      </div>
-      <textarea id="rawText" style="width:100%;min-height:380px;font-family:monospace;font-size:14px"></textarea>
-      <button class="btn btnBlue" id="copyRaw" style="margin-top:8px">Copy Raw</button>
-    </div>
-  </div>
-
-  <!-- SIGNATURE MODAL -->
-  <div class="modal" id="sigModal">
-    <div class="modalInner">
-      <div style="display:flex;justify-content:space-between;margin-bottom:10px">
-        <h2 style="margin:0;color:var(--gold)">Signatures</h2>
-        <button class="btn btnRed" id="closeSig">Close</button>
-      </div>
-      <div id="sigList"></div>
-      <div class="divider"></div>
-      <h2 style="margin:0 0 8px;color:var(--gold)">Add New Signature</h2>
-      <input id="sigNewName" type="text" placeholder="e.g. Default">
-      <textarea id="sigNewContent" placeholder="Paste signature here..."></textarea>
-      <button class="btn btnGreen" id="addSig" style="margin-top:10px">Add Signature</button>
-    </div>
-  </div>
-
   <div class="wrap">
     <div class="topbar">
       <div class="title">Email Swipe Machine</div>
@@ -128,7 +100,7 @@
         <button class="btn btnGreen" id="genSubjects" style="margin:8px 0">Generate 1 Title</button>
         <div class="subjects" id="subjectResults"></div>
 
-        <!-- Title Prompt moved here (under generated title, above email body) -->
+        <!-- Title Prompt is here (under generated title) -->
         <div class="divider"></div>
         <h2>Custom Title Prompt (editable)</h2>
         <textarea id="customTitlePrompt" style="min-height:100px">Return ONLY one string. Must be 36-80 characters long and have at least 7 words. Natural curiosity tone. Optional ⭐ only.</textarea>
@@ -148,25 +120,26 @@
           <button class="btn btnRed" id="clearBody">Clear Body</button>
         </div>
 
-        <!-- Image Insert Section -->
-        <div class="divider"></div>
-        <h2>Insert Image into Email Body</h2>
-        <label>Image URL (direct link)</label>
-        <input id="imageUrl" type="text" placeholder="https://your-image-link.com/image.png">
-        <label>Image Link URL (optional)</label>
-        <input id="imageLink" type="text" placeholder="https://your-offer-link.com" value="">
-        <button class="btn btnGreen" id="insertImageBtn" style="margin-top:8px">Insert Image into Body</button>
-
         <!-- Custom Body Prompt -->
         <div class="divider"></div>
         <h2>Custom Body Prompt (editable)</h2>
         <textarea id="customBodyPrompt" style="min-height:100px">Write exactly one short email body. Use 1 or 2 paragraphs (2-3 sentences max). Start first line with ⭐{!name_fix}. No links, no names.</textarea>
 
+        <!-- Image Prompt (follows title + body style) -->
         <div class="divider"></div>
-        <h2>Image Generator Prompt (max 2 paragraphs)</h2>
-        <button class="btn btnGreen" id="genImage" style="width:100%">Generate Image Prompt</button>
+        <h2>Custom Image Prompt (editable - Free)</h2>
+        <textarea id="customImagePrompt" style="min-height:100px">Create a maximum 2-paragraph image generation prompt for a free AI image tool (Bing, Gemini, or Ideogram). The image is for a marketing email about the offer.</textarea>
+        <button class="btn btnGreen" id="genImage" style="width:100%;margin-top:8px">Generate Image Prompt</button>
         <textarea id="imageResult" style="min-height:130px;margin-top:8px" readonly></textarea>
-        <button class="btn btnBlue" id="copyImageDesc">Copy Image Prompt</button>
+        <button class="btn btnBlue" id="copyImageDesc">Copy Image Prompt (Free)</button>
+
+        <div class="divider"></div>
+        <h2>Insert Image into Body</h2>
+        <label>Image URL</label>
+        <input id="imageUrl" type="text" placeholder="https://your-image-link.com/image.png">
+        <label>Image Link URL (optional)</label>
+        <input id="imageLink" type="text" placeholder="https://your-offer-link.com">
+        <button class="btn btnGreen" id="insertImageBtn" style="margin-top:8px">Insert Image into Body</button>
 
         <div class="divider"></div>
         <h2>Signatures</h2>
@@ -179,7 +152,7 @@
       <div class="card">
         <h2>Preview + Copy</h2>
         <div class="previewSubject"><strong>Subject:</strong> <span id="prevSub">...</span></div>
-        <div class="previewFrame" id="prevBody" style="max-width:600px;margin:0 auto;">Preview appears here...</div>
+        <div class="previewFrame" id="prevBody">Preview appears here...</div>
         <button class="btn btnGreen" id="copyFull" style="width:100%;margin:12px 0">Copy Full Email (HTML Version)</button>
         <button class="btn btnBlue" id="copySubject">Copy Subject</button>
         <button class="btn btnBlue" id="copyBodyHtml">Copy Body HTML</button>
@@ -197,7 +170,6 @@ function showToast(msg, err=false){
   setTimeout(()=>t.classList.remove("show"), 2800);
 }
 
-// GROQ CALL
 async function callGroq(prompt){
   const key = $("apiKey").value.trim() || localStorage.getItem("esm_apiKey") || "";
   if(!key) return showToast("Groq API Key required", true);
@@ -226,11 +198,7 @@ async function generateSubjectsHard(){
   const div = document.createElement("div");
   div.className = "subjectItem";
   div.innerHTML = `<div style="font-weight:900">${text}</div>`;
-  div.onclick = () => {
-    $("subject").value = text;
-    updatePreview();
-    showToast("Title selected");
-  };
+  div.onclick = () => { $("subject").value = text; updatePreview(); showToast("Title selected"); };
   $("subjectResults").appendChild(div);
 }
 
@@ -245,68 +213,42 @@ async function generateBodyHard(){
   }
 }
 
-// Image Prompt (max 2 paragraphs)
+// Generate Image Prompt (max 2 paragraphs, follows title/body style)
 async function generateImage(){
-  const prompt = `Create a maximum 2-paragraph image generation prompt for Grok Imagine.\nOffer: ${$("offerName").value || "this offer"}\nBenefits: ${$("benefits").value || ""}`;
+  const prompt = $("customImagePrompt").value + `\nOffer: ${$("offerName").value || "this offer"}\nBenefits: ${$("benefits").value || ""}`;
   const result = await callGroq(prompt);
   if(result){
     $("imageResult").value = result;
-    showToast("Image prompt generated (max 2 paragraphs)");
+    showToast("Free image prompt generated");
   }
 }
 
-// Insert Image into Body (Herculist / My Lead Gen Secret style)
+// Insert image into body
 $("insertImageBtn").onclick = () => {
   const url = $("imageUrl").value.trim();
   const link = $("imageLink").value.trim() || "#";
-  if(!url) return showToast("Enter an image URL first", true);
-  
-  const imgHTML = `<p><span style="font-size:16px"><a href="${link}" target="_blank"><img alt="Marketing Image" src="${url}" style="max-width:100%; height:auto; display:block; margin:10px auto;" /></a></span></p>`;
-  
+  if(!url) return showToast("Enter image URL first", true);
+  const imgHTML = `<p><span style="font-size:16px"><a href="${link}" target="_blank"><img src="${url}" style="max-width:100%;height:auto;display:block;margin:10px auto;" alt="Marketing Image"/></a></span></p>`;
   const current = $("body").value;
   $("body").value = current ? current + "\n\n" + imgHTML : imgHTML;
   updatePreview();
-  showToast("Image inserted into body (HTML format)");
+  showToast("Image inserted into body");
 };
-
-// Copy Full Email as HTML Version (matches your example style)
-async function copyFull(){
-  const subject = $("subject").value.trim();
-  let bodyHTML = $("body").value.trim();
-  
-  // Wrap body in the exact style from your example
-  const fullHTML = `
-SUBJECT: ${subject}
-
-<p><span style="font-size:16px">⭐{!name_fix}</span></p>
-${bodyHTML}
-<p><span style="font-size:16px">Stay Blessed,<br>Troy Pringle</span></p>
-<p>&nbsp;</p>
-<p><span style="font-size:16px"><span style="color:#999999">Please Whitelist and add this email to your address book.</span></span></p>`;
-  
-  await navigator.clipboard.writeText(fullHTML);
-  showToast("Full email copied as HTML (ready for Herculist / My Lead Gen Secret)");
-}
 
 function updatePreview(){
   $("prevSub").textContent = $("subject").value.trim() || "...";
-  let html = $("body").value || "";
-  $("prevBody").innerHTML = html ? html.replace(/\n/g, "<br>") : "Preview appears here...";
+  const paras = $("body").value.split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean);
+  $("prevBody").innerHTML = paras.length ? paras.map(p => `<p>${p.replace(/\n/g,"<br>")}</p>`).join("") : "Preview appears here...";
 }
 
-// Prefix inserts
-document.querySelectorAll(".pill").forEach(p => {
-  p.onclick = () => {
-    if(p.dataset.prefix) $("subject").value = p.dataset.prefix + $("subject").value;
-    else if(p.dataset.bodytag) $("body").value += ($("body").value ? "\n" : "") + p.dataset.bodytag;
-    updatePreview();
-  };
-});
+$("copyFull").onclick = () => {
+  const full = $("subject").value.trim() + "\n\n" + $("body").value.trim();
+  navigator.clipboard.writeText(full).then(() => showToast("Full email copied (HTML version)"));
+};
 
 $("genSubjects").onclick = generateSubjectsHard;
 $("genBody").onclick = generateBodyHard;
 $("genImage").onclick = generateImage;
-$("copyFull").onclick = copyFull;
 
 $("saveKey").onclick = () => { localStorage.setItem("esm_apiKey", $("apiKey").value.trim()); showToast("Key saved"); };
 $("toggleTheme").onclick = () => document.body.classList.toggle("theme-slate");
