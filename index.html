@@ -125,7 +125,7 @@
         <label>Subject Line</label>
         <input id="subject" type="text">
         <div id="subjectCounter" class="smallNote"></div>
-        <button class="btn btnGreen" id="genSubjects" style="margin:8px 0">Generate 3 Subjects</button>
+        <button class="btn btnGreen" id="genSubjects" style="margin:8px 0">Generate 1 Title</button>
         <div class="subjects" id="subjectResults"></div>
 
         <div class="divider"></div>
@@ -138,7 +138,7 @@
         </div>
 
         <div style="margin-top:10px">
-          <button class="btn btnGreen" id="genBody">Generate 3 Short Bodies</button>
+          <button class="btn btnGreen" id="genBody">Generate 1 Short Body</button>
           <button class="btn btnBlue" id="undoBody">Undo</button>
           <button class="btn btnRed" id="clearBody">Clear Body</button>
         </div>
@@ -146,15 +146,15 @@
         <!-- Visible Custom Prompt Areas -->
         <div class="divider"></div>
         <h2>Custom Title Prompt (editable)</h2>
-        <textarea id="customTitlePrompt" style="min-height:120px">Return ONLY a valid JSON array of exactly 3 strings. Each must be 36-80 characters and at least 7 words. Natural curiosity tone. Optional ⭐ only.</textarea>
+        <textarea id="customTitlePrompt" style="min-height:100px">Return ONLY one string. Must be 36-80 characters long and have at least 7 words. Natural curiosity tone. Optional ⭐ only.</textarea>
 
         <h2 style="margin-top:16px">Custom Body Prompt (editable)</h2>
-        <textarea id="customBodyPrompt" style="min-height:120px">Write exactly 3 short email bodies. Each body must be 1 or 2 paragraphs (2-3 sentences max). Start first line with ⭐{!name_fix}. No links, no names.</textarea>
+        <textarea id="customBodyPrompt" style="min-height:100px">Write exactly one short email body. Use 1 or 2 paragraphs (2-3 sentences max). Start first line with ⭐{!name_fix}. No links, no names.</textarea>
 
         <div class="divider"></div>
         <h2>Image Generator</h2>
-        <button class="btn btnGreen" id="genImage" style="width:100%">Generate Actual Image Prompt</button>
-        <p class="smallNote">Copy & paste into Grok Imagine</p>
+        <button class="btn btnGreen" id="genImage" style="width:100%">Generate Image Prompt (max 2 paragraphs)</button>
+        <p class="smallNote">Copy & paste into Grok Imagine for the real image</p>
         <textarea id="imageResult" style="min-height:130px;margin-top:8px" readonly></textarea>
         <button class="btn btnBlue" id="copyImageDesc">Copy Image Prompt</button>
 
@@ -206,72 +206,82 @@ async function callGroq(prompt){
   }
 }
 
-// SUBJECTS - strict 3 titles
+// GENERATE 1 TITLE
 async function generateSubjectsHard(){
   $("subjectResults").innerHTML = "";
   const prompt = $("customTitlePrompt").value + `\nOffer: ${$("offerName").value || "this offer"}\nBenefits: ${$("benefits").value || ""}`;
   const text = await callGroq(prompt);
   if(!text) return;
   $("rawText").value = text;
-  let arr = [];
-  try { arr = JSON.parse(text); } catch { arr = text.split("\n").map(l=>l.trim()).filter(Boolean); }
-  arr = arr.slice(0,3);
-  const container = $("subjectResults");
-  arr.forEach(s => {
-    const div = document.createElement("div");
-    div.className = "subjectItem";
-    div.innerHTML = `<div style="font-weight:900">${s}</div>`;
-    div.onclick = () => {
-      document.querySelectorAll(".subjectItem").forEach(x => x.classList.remove("selected"));
-      div.classList.add("selected");
-      $("subject").value = s;
-      updatePreview();
-      showToast("Subject selected");
-    };
-    container.appendChild(div);
-  });
+  const div = document.createElement("div");
+  div.className = "subjectItem";
+  div.innerHTML = `<div style="font-weight:900">${text}</div>`;
+  div.onclick = () => {
+    $("subject").value = text;
+    updatePreview();
+    showToast("Title selected");
+  };
+  $("subjectResults").appendChild(div);
 }
 
-// BODY - 3 short bodies
+// GENERATE 1 SHORT BODY
 async function generateBodyHard(){
   const prompt = $("customBodyPrompt").value + `\nOffer: ${$("offerName").value || "this offer"}\nBenefits: ${$("benefits").value || ""}`;
   const text = await callGroq(prompt);
   if(text){
     $("body").value = text;
     updatePreview();
-    showToast("3 short bodies generated");
+    showToast("1 short body generated");
   }
 }
 
-// Prefix fixes
-document.querySelectorAll(".pill").forEach(p => {
-  p.onclick = () => {
-    if(p.dataset.prefix){
-      $("subject").value = p.dataset.prefix + $("subject").value;
-    } else if(p.dataset.bodytag){
-      $("body").value += ($("body").value ? "\n" : "") + p.dataset.bodytag;
-    }
-    updatePreview();
-  };
-});
+// IMAGE PROMPT – max 2 paragraphs, follows same style as body/title
+async function generateImage(){
+  const prompt = `Create a maximum 2-paragraph image generation prompt for Grok Imagine.
+The image is for a marketing email.
+Offer: ${$("offerName").value || "this offer"}
+Benefits: ${$("benefits").value || ""}`;
+  const result = await callGroq(prompt);
+  if(result){
+    $("imageResult").value = result;
+    showToast("Image prompt generated (max 2 paragraphs)");
+  }
+}
 
+// UPDATE PREVIEW
 function updatePreview(){
   $("prevSub").textContent = $("subject").value.trim() || "...";
   const paras = $("body").value.split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean);
   $("prevBody").innerHTML = paras.length ? paras.map(p => `<p>${p.replace(/\n/g,"<br>")}</p>`).join("") : "Preview appears here...";
 }
 
-$("genSubjects").onclick = generateSubjectsHard;
-$("genBody").onclick = generateBodyHard;
+// COPY CLEAN
 $("copyFull").onclick = () => {
   const full = $("subject").value.trim() + "\n\n" + $("body").value.trim();
   navigator.clipboard.writeText(full).then(() => showToast("Full email copied clean"));
 };
 
+// PREFIX INSERTS
+document.querySelectorAll(".pill").forEach(p => {
+  p.onclick = () => {
+    if(p.dataset.prefix) $("subject").value = p.dataset.prefix + $("subject").value;
+    else if(p.dataset.bodytag) $("body").value += ($("body").value ? "\n" : "") + p.dataset.bodytag;
+    updatePreview();
+  };
+});
+
+// BUTTONS
+$("genSubjects").onclick = generateSubjectsHard;
+$("genBody").onclick = generateBodyHard;
+$("genImage").onclick = generateImage;
+
 $("saveKey").onclick = () => { localStorage.setItem("esm_apiKey", $("apiKey").value.trim()); showToast("Key saved"); };
 $("toggleTheme").onclick = () => document.body.classList.toggle("theme-slate");
 $("openRaw").onclick = () => $("rawModal").classList.add("show");
 $("closeRaw").onclick = () => $("rawModal").classList.remove("show");
+
+$("subject").oninput = updatePreview;
+$("body").oninput = updatePreview;
 
 updatePreview();
 </script>
