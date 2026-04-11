@@ -1,183 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Email Swipe Machine</title>
+    <style>
+        :root {
+            --bg: #d4c4a8; --panel: #f5f0e6; --panel2: #efe6d8; --border: #c9b896;
+            --muted: #5c4d3a; --gold: #b8860b; --green: #2e7d32; --blue: #1976d2; --red: #d32f2f;
+        }
+        body.theme-slate {
+            --bg: #111827; --panel: #1f2937; --panel2: #243244; --border: #374151;
+            --muted: #cbd5e1; --gold: #fbbf24; --green: #22c55e; --red: #ef4444;
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, sans-serif; background: var(--bg); color: #111; font-size: 16px; line-height: 1.6; transition: background 0.3s; }
+        .wrap { max-width: 1700px; margin: 0 auto; padding: 18px; }
+        .topbar { background: var(--panel); border: 2px solid var(--gold); border-radius: 10px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; }
+        .title { font-weight: 800; font-size: 22px; color: var(--gold); }
+        .btn { border: 1px solid var(--border); background: var(--panel2); color: #111; padding: 10px 12px; border-radius: 8px; cursor: pointer; font-weight: 700; }
+        .btn:hover { filter: brightness(0.95); }
+        .btnGreen { background: var(--green); color: #fff; border: none; }
+        .btnBlue { background: var(--blue); color: #fff; border: none; }
+        .btnRed { background: var(--red); color: #fff; border: none; }
+        .btnSmall { padding: 6px 10px; font-size: 13px; }
+        .grid { margin-top: 16px; display: grid; grid-template-columns: 400px 1fr 400px; gap: 16px; }
+        @media (max-width: 1200px) { .grid { grid-template-columns: 1fr; } }
+        .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+        .card h2 { margin: 0 0 10px 0; color: var(--gold); font-size: 18px; }
+        label { display: block; font-weight: 800; color: var(--muted); font-size: 12px; text-transform: uppercase; margin: 12px 0 4px; }
+        input, textarea, select { width: 100%; padding: 10px; border: 2px solid var(--border); border-radius: 8px; background: #fff; font-size: 15px; }
+        textarea { min-height: 120px; resize: vertical; }
+        .pillRow { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
+        .pill { border: 1px solid var(--border); background: var(--panel2); padding: 5px 10px; border-radius: 20px; cursor: pointer; font-weight: 700; font-size: 12px; }
+        .subjectItem { background: #fff; border: 2px solid #aaa; padding: 10px; border-radius: 8px; margin-bottom: 8px; cursor: pointer; }
+        .subjectItem:hover { border-color: var(--gold); }
+        .previewSubject { background: #fff; border: 2px solid var(--border); border-bottom: 0; padding: 10px; border-radius: 10px 10px 0 0; font-size: 14px; }
+        .previewFrame { background: #fff; border: 2px solid var(--border); border-radius: 0 0 10px 10px; padding: 20px; min-height: 400px; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,.8); display: none; z-index: 1000; padding: 20px; overflow: auto; }
+        .modal.show { display: block; }
+        .modalInner { max-width: 600px; margin: 40px auto; background: var(--panel); border: 2px solid var(--border); border-radius: 12px; padding: 20px; }
+        #bodyEditor { border: 2px solid var(--border); min-height: 250px; padding: 15px; background: #fff; outline: none; border-radius: 8px; }
+        .toast { position: fixed; right: 20px; bottom: 20px; background: #333; color: #fff; padding: 12px 20px; border-radius: 8px; display: none; z-index: 9999; }
+        .divider { height: 1px; background: var(--border); margin: 15px 0; }
+        .smallNote { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    </style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal" id="rawModal">
+    <div class="modalInner">
+        <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+            <h2 style="margin:0;color:var(--gold)">Raw Debug</h2>
+            <button class="btn btnRed btnSmall" onclick="$('rawModal').classList.remove('show')">Close</button>
+        </div>
+        <textarea id="rawText" style="min-height:300px; font-family:monospace; font-size:12px;"></textarea>
+    </div>
+</div>
+
+<div class="modal" id="sigModal">
+    <div class="modalInner">
+        <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+            <h2 style="margin:0;color:var(--gold)">Manage Signatures</h2>
+            <button class="btn btnRed btnSmall" onclick="$('sigModal').classList.remove('show')">Close</button>
+        </div>
+        <div id="sigList"></div>
+        <div class="divider"></div>
+        <input id="sigNewName" type="text" placeholder="Signature Name (e.g. Best Regards)">
+        <textarea id="sigNewContent" placeholder="Paste your signature text or HTML here..."></textarea>
+        <button class="btn btnGreen" id="addSig" style="margin-top:10px; width:100%">Save New Signature</button>
+    </div>
+</div>
+
+<div class="modal" id="imageModal">
+    <div class="modalInner">
+        <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+            <h2 style="margin:0;color:var(--gold)">Image Placeholder</h2>
+            <button class="btn btnRed btnSmall" onclick="$('imageModal').classList.remove('show')">Close</button>
+        </div>
+        <p class="smallNote">Select an image style to insert a placeholder into your email.</p>
+        <div class="pillRow">
+            <button class="btn btnBlue" onclick="insertImage('600x300')">Large Banner</button>
+            <button class="btn btnBlue" onclick="insertImage('300x250')">Square Sidebar</button>
+        </div>
+    </div>
+</div>
+
+<div class="wrap">
+    <div class="topbar">
+        <div class="title">Email Swipe Machine</div>
+        <div>
+            <button class="btn btnSmall" id="toggleTheme">Toggle Slate</button>
+            <button class="btn btnSmall" onclick="$('rawModal').classList.add('show')">Raw Data</button>
+        </div>
+    </div>
+
+    <div class="grid">
+        <div class="card">
+            <h2>1. Setup & Offer</h2>
+            <label>Groq API Key</label>
+            <div style="display:flex; gap:5px">
+                <input id="apiKey" type="password" placeholder="Paste Groq key">
+                <button class="btn btnGreen btnSmall" id="saveKey">Save</button>
+            </div>
+            
+            <label>Model</label>
+            <select id="model">
+                <option value="llama-3.1-8b-instant">llama-3.1-8b-instant</option>
+                <option value="llama-3.3-70b-versatile">llama-3.3-70b (Smarter)</option>
+            </select>
+
+            <div class="divider"></div>
+            <label>Offer Name</label>
+            <input id="offerName" type="text" placeholder="e.g. Traffic Lead Bot">
+            <label>Benefits (One per line)</label>
+            <textarea id="benefits" placeholder="High conversion&#10;Easy setup"></textarea>
+            <label>CTA Text</label>
+            <input id="ctaText" value="Click here to see it now">
+        </div>
+
+        <div class="card">
+            <h2>2. Compose</h2>
+            <label>Subject Helpers (Click to add)</label>
+            <div class="pillRow">
+                <div class="pill" onclick="addTag('{!firstname_fix}⭐ ')">{!firstname_fix}⭐</div>
+                <div class="pill" onclick="addTag('⭐ ')">⭐</div>
+                <div class="pill" onclick="addTag('RE: ')">RE:</div>
+            </div>
+            
+            <label>Subject Line</label>
+            <input id="subject" type="text">
+            <div id="subjectCounter" class="smallNote">0 chars</div>
+            
+            <button class="btn btnGreen" id="genSubjects" style="margin:10px 0; width:100%">Generate Smart Title</button>
+            <div id="subjectResults"></div>
+
+            <div class="divider"></div>
+            
+            <label>Email Body</label>
+            <div id="bodyEditor" contenteditable="true"></div>
+            
+            <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap">
+                <button class="btn btnGreen" id="genBody">Generate AI Body</button>
+                <button class="btn btnBlue" id="undoBody">Undo</button>
+                <button class="btn btnRed btnSmall" id="clearBody">Clear</button>
+            </div>
+
+            <div class="divider"></div>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center">
+                <h2 style="font-size:16px; margin:0">Signatures</h2>
+                <button class="btn btnSmall btnBlue" id="manageSigs">Manage</button>
+            </div>
+            <select id="sigSelect" style="margin-top:8px">
+                <option value="">-- Select Signature --</option>
+            </select>
+            <button class="btn btnGreen btnSmall" id="insertSig" style="margin-top:5px">Insert Selected</button>
+            
+            <div class="divider"></div>
+            <button class="btn btnBlue" style="width:100%" onclick="$('imageModal').classList.add('show')">Insert Image Placeholder</button>
+        </div>
+
+        <div class="card">
+            <h2>3. Preview & Copy</h2>
+            <div class="previewSubject"><strong>Subject:</strong> <span id="prevSub">...</span></div>
+            <div class="previewFrame" id="prevBody">Preview appears here...</div>
+            
+            <button class="btn btnGreen" id="copyFull" style="width:100%; margin:15px 0">Copy Full HTML Email</button>
+            
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
+                <button class="btn btnBlue btnSmall" id="copySubject">Copy Subject</button>
+                <button class="btn btnBlue btnSmall" id="copyBodyHtml">Copy Body HTML</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-const $ = (id) => document.getElementById(id);
+    const $ = id => document.getElementById(id);
+    let lastBody = "";
 
-function showToast(msg, err=false){
-  const t = $("toast");
-  if (!t) { console.error("Toast element missing"); return; }
-  t.textContent = msg;
-  t.style.border = err ? "2px solid var(--red)" : "2px solid var(--green)";
-  t.classList.add("show");
-  setTimeout(()=>t.classList.remove("show"), 2800);
-}
-
-async function callGroq(prompt){
-  const key = $("apiKey").value.trim() || localStorage.getItem("esm_apiKey") || "";
-  if(!key){ showToast("Groq API Key required", true); return null; }
-
-  try{
-    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-        "Authorization":`Bearer ${key}`
-      },
-      body:JSON.stringify({
-        model: $("model").value,
-        messages:[{role:"user",content:prompt}],
-        temperature:0.7,
-        max_tokens:1200
-      })
-    });
-
-    if(!res.ok){
-      const errText = await res.text();
-      throw new Error(`HTTP ${res.status}: ${errText}`);
+    function showToast(msg, err=false) {
+        const t = $("toast");
+        t.textContent = msg;
+        t.style.display = "block";
+        t.style.borderLeft = err ? "5px solid var(--red)" : "5px solid var(--green)";
+        setTimeout(() => t.style.display = "none", 3000);
     }
 
-    const data = await res.json();
-    const out = data?.choices?.[0]?.message?.content;
-    if(!out) throw new Error("No output returned from API.");
-    return out.trim();
+    // --- API LOGIC ---
+    async function callGroq(prompt) {
+        const key = $("apiKey").value.trim() || localStorage.getItem("esm_apiKey") || "";
+        if(!key) { showToast("Missing API Key", true); return null; }
+        
+        try {
+            const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${key}` },
+                body: JSON.stringify({
+                    model: $("model").value,
+                    messages: [{ role: "user", content: prompt }],
+                    temperature: 0.7
+                })
+            });
+            const data = await res.json();
+            if(data.error) throw new Error(data.error.message);
+            return data.choices[0].message.content.trim();
+        } catch(e) {
+            $("rawText").value = e.message;
+            showToast("API Error", true);
+            return null;
+        }
+    }
 
-  }catch(e){
-    const raw = $("rawText");
-    if (raw) raw.value = e.message;
-    showToast("API error – check Raw Output", true);
-    return null;
-  }
-}
+    // --- GENERATORS ---
+    $("genSubjects").onclick = async () => {
+        const prompt = `Generate ONE high-curiosity email subject line (36-80 chars). 
+        Offer: ${$("offerName").value}. Benefits: ${$("benefits").value}. 
+        Format: Return ONLY the subject text.`;
+        
+        const res = await callGroq(prompt);
+        if(res) {
+            $("subjectResults").innerHTML = `<div class="subjectItem" onclick="setSubject('${res.replace(/'/g, "\\'")}')">${res}</div>`;
+        }
+    };
 
-// Generate Title (1 only)
-async function generateSubjectsHard(){
-  const results = $("subjectResults");
-  if (!results) return;
-  results.innerHTML = "";
+    $("genBody").onclick = async () => {
+        lastBody = $("bodyEditor").innerHTML;
+        const prompt = `Write a short 2-paragraph email for: ${$("offerName").value}. 
+        Benefits: ${$("benefits").value}. Use tag {!name_fix} at start. 
+        Ends with CTA: ${$("ctaText").value}. Plain text, use <br> for breaks.`;
+        
+        const res = await callGroq(prompt);
+        if(res) {
+            $("bodyEditor").innerHTML = res.replace(/\n/g, "<br>");
+            updatePreview();
+        }
+    };
 
-  const prompt =
-    ( $("customTitlePrompt")?.value || "" ) +
-    `\nOffer: ${$("offerName")?.value || "this offer"}` +
-    `\nBenefits:\n${$("benefits")?.value || ""}`;
+    // --- SIGNATURES ---
+    let sigs = JSON.parse(localStorage.getItem("esm_sigs") || "[]");
+    
+    function renderSigs() {
+        $("sigList").innerHTML = sigs.map((s, i) => `
+            <div style="display:flex; justify-content:space-between; background:#fff; padding:8px; margin-bottom:5px; border-radius:5px">
+                <span>${s.name}</span>
+                <button class="btn btnRed btnSmall" onclick="deleteSig(${i})">Delete</button>
+            </div>
+        `).join('');
+        
+        $("sigSelect").innerHTML = '<option value="">-- Select Signature --</option>' + 
+            sigs.map((s, i) => `<option value="${i}">${s.name}</option>`).join('');
+    }
 
-  const text = await callGroq(prompt);
-  if(!text) return;
+    $("addSig").onclick = () => {
+        const name = $("sigNewName").value;
+        const content = $("sigNewContent").value;
+        if(!name || !content) return;
+        sigs.push({ name, content });
+        localStorage.setItem("esm_sigs", JSON.stringify(sigs));
+        $("sigNewName").value = ""; $("sigNewContent").value = "";
+        renderSigs();
+        showToast("Signature saved");
+    };
 
-  if ($("rawText")) $("rawText").value = text;
+    window.deleteSig = (i) => {
+        sigs.splice(i, 1);
+        localStorage.setItem("esm_sigs", JSON.stringify(sigs));
+        renderSigs();
+    };
 
-  const div = document.createElement("div");
-  div.className = "subjectItem";
-  div.innerHTML = `<div style="font-weight:900">${text}</div>`;
-  div.onclick = () => {
-    if ($("subject")) $("subject").value = text;
-    updatePreview();
-    showToast("Title selected");
-  };
-  results.appendChild(div);
-}
+    $("insertSig").onclick = () => {
+        const i = $("sigSelect").value;
+        if(i === "") return;
+        $("bodyEditor").innerHTML += "<br><br>" + sigs[i].content.replace(/\n/g, "<br>");
+        updatePreview();
+    };
 
-// Generate Body (1 only)
-async function generateBodyHard(){
-  const prompt =
-    ( $("customBodyPrompt")?.value || "" ) +
-    `\nOffer: ${$("offerName")?.value || "this offer"}` +
-    `\nBenefits:\n${$("benefits")?.value || ""}`;
+    // --- HELPERS ---
+    function updatePreview() {
+        const sub = $("subject").value;
+        $("prevSub").textContent = sub || "No Subject";
+        $("prevBody").innerHTML = $("bodyEditor").innerHTML || "Compose your email...";
+        $("subjectCounter").textContent = `${sub.length} characters`;
+    }
 
-  const text = await callGroq(prompt);
-  if(!text) return;
+    window.setSubject = (val) => { $("subject").value = val; updatePreview(); };
+    window.addTag = (tag) => { $("subject").value = tag + $("subject").value; updatePreview(); };
+    window.insertImage = (dim) => {
+        $("bodyEditor").innerHTML += `<br><img src="https://via.placeholder.com/${dim}" style="max-width:100%"><br>`;
+        $("imageModal").classList.remove('show');
+        updatePreview();
+    };
 
-  if ($("rawText")) $("rawText").value = text;
-  const editor = $("bodyEditor");
-  if (editor) editor.innerHTML = text.replace(/\n/g, "<br>");
-  updatePreview();
-  showToast("Body generated");
-}
+    // --- BUTTONS ---
+    $("undoBody").onclick = () => { if(lastBody) $("bodyEditor").innerHTML = lastBody; updatePreview(); };
+    $("clearBody").onclick = () => { lastBody = $("bodyEditor").innerHTML; $("bodyEditor").innerHTML = ""; updatePreview(); };
+    $("saveKey").onclick = () => { localStorage.setItem("esm_apiKey", $("apiKey").value); showToast("Key Saved"); };
+    $("toggleTheme").onclick = () => document.body.classList.toggle("theme-slate");
+    $("manageSigs").onclick = () => $("sigModal").classList.add("show");
+    
+    $("copyFull").onclick = () => {
+        const full = `Subject: ${$("subject").value}\n\n${$("bodyEditor").innerHTML}`;
+        navigator.clipboard.writeText(full);
+        showToast("HTML Email Copied!");
+    };
 
-function updatePreview(){
-  const prevSub = $("prevSub");
-  const subject = $("subject");
-  if (prevSub && subject) prevSub.textContent = subject.value.trim() || "...";
+    $("subject").oninput = updatePreview;
+    $("bodyEditor").oninput = updatePreview;
 
-  const editor = $("bodyEditor");
-  const prevBody = $("prevBody");
-  if (editor && prevBody) prevBody.innerHTML = editor.innerHTML || "Preview appears here...";
-}
-
-// --- wire up buttons (all guarded) ---
-const genSubjectsBtn = $("genSubjects");
-if (genSubjectsBtn) genSubjectsBtn.onclick = generateSubjectsHard;
-
-const genBodyBtn = $("genBody");
-if (genBodyBtn) genBodyBtn.onclick = generateBodyHard;
-
-const copyFullBtn = $("copyFull");
-if (copyFullBtn) copyFullBtn.onclick = () => {
-  const subject = $("subject")?.value.trim() || "";
-  const body = $("bodyEditor")?.innerHTML || "";
-  const full = subject + "\n\n" + body;
-  navigator.clipboard.writeText(full).then(() => showToast("Full email copied (HTML)"));
-};
-
-const saveKeyBtn = $("saveKey");
-if (saveKeyBtn) saveKeyBtn.onclick = () => {
-  const key = $("apiKey")?.value.trim() || "";
-  localStorage.setItem("esm_apiKey", key);
-  showToast("Key saved");
-};
-
-const toggleThemeBtn = $("toggleTheme");
-if (toggleThemeBtn) toggleThemeBtn.onclick = () => document.body.classList.toggle("theme-slate");
-
-const openRawBtn = $("openRaw");
-if (openRawBtn) openRawBtn.onclick = () => {
-  const rawModal = $("rawModal");
-  if (rawModal) rawModal.classList.add("show");
-  else showToast("Raw modal missing", true);
-};
-
-const closeRawBtn = $("closeRaw");
-if (closeRawBtn) closeRawBtn.onclick = () => {
-  const rawModal = $("rawModal");
-  if (rawModal) rawModal.classList.remove("show");
-};
-
-const subjectInput = $("subject");
-if (subjectInput) subjectInput.oninput = updatePreview;
-
-const editor = $("bodyEditor");
-if (editor) editor.oninput = updatePreview;
-
-// Image modal (optional) — add HTML if you want it; for now just guard
-const openImageBtn = $("openImageModal");
-if (openImageBtn) openImageBtn.onclick = () => {
-  const m = $("imageModal");
-  if(!m) return showToast("Image modal not built yet (no #imageModal).", true);
-  m.classList.add("show");
-};
-
-// Signatures (optional) — guard so page still works if not implemented
-const manageSigsBtn = $("manageSigs");
-if (manageSigsBtn) manageSigsBtn.onclick = () => {
-  const m = $("sigModal");
-  if(!m) return showToast("Signature modal not built yet (no #sigModal).", true);
-  m.classList.add("show");
-};
-
-const closeSigBtn = $("closeSig");
-if (closeSigBtn) closeSigBtn.onclick = () => {
-  const m = $("sigModal");
-  if(m) m.classList.remove("show");
-};
-
-const insertSigBtn = $("insertSig");
-if (insertSigBtn) insertSigBtn.onclick = () => {
-  showToast("Signature insertion not implemented yet.", true);
-};
-
-// Optional: restore saved key
-const apiKeyInput = $("apiKey");
-if (apiKeyInput && localStorage.getItem("esm_apiKey")) {
-  apiKeyInput.value = localStorage.getItem("esm_apiKey");
-}
-
-// Initialize preview
-updatePreview();
+    // Init
+    $("apiKey").value = localStorage.getItem("esm_apiKey") || "";
+    renderSigs();
 </script>
+</body>
+</html>
