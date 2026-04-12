@@ -17,18 +17,17 @@
         * { box-sizing: border-box; font-size: 16px; }
         body { margin: 0; font-family: Arial, sans-serif; background: var(--bg); color: #111; line-height: 1.6; }
         
-        /* Layout */
         .topbar { background: var(--panel); border-bottom: 2px solid var(--gold); padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .grid { display: grid; grid-template-columns: 200px 1fr 1fr; gap: 16px; padding: 16px; transition: all 0.3s ease; }
+        .grid { display: grid; grid-template-columns: 240px 1fr 1fr; gap: 16px; padding: 16px; transition: all 0.3s ease; }
         .grid.sidebar-closed { grid-template-columns: 60px 1fr 1fr; }
+        
         .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px; position: relative; }
         
-        /* Sidebar Toggle */
+        /* Sidebar */
         .sidebar-content { transition: opacity 0.2s; }
         .sidebar-closed .sidebar-content { opacity: 0; visibility: hidden; height: 0; overflow: hidden; }
-        .toggle-btn { cursor: pointer; background: var(--gold); color: #fff; border: none; height: 28px; border-radius: 4px; width: 100%; margin-bottom: 15px; font-weight: 900; font-size: 11px; }
+        .toggle-btn { cursor: pointer; background: var(--gold); color: #fff; border: none; height: 30px; border-radius: 6px; width: 100%; margin-bottom: 15px; font-weight: 900; font-size: 12px; }
 
-        /* Global Button Style */
         .btn { 
             border: 1px solid var(--border); background: var(--panel2); color: #111; 
             height: var(--btn-h); padding: 0 15px; border-radius: 8px; cursor: pointer; 
@@ -38,13 +37,13 @@
         .btnGreen { background: var(--green); color: #fff; border: none; }
         .btnBlue { background: var(--blue); color: #fff; border: none; }
         .btnRed { background: var(--red); color: #fff; border: none; }
-        .btnSmall { height: 32px; padding: 0 10px; font-size: 14px; }
+        .btnIcon { padding: 0 10px; font-size: 18px; }
 
-        /* Inputs */
+        /* Input & Editor */
         input, select, textarea { width: 100%; padding: 10px; border: 2px solid var(--border); border-radius: 8px; margin-bottom: 12px; background: #fff; }
         .toolbar { display: flex; gap: 4px; background: var(--panel2); padding: 8px; border: 2px solid var(--border); border-bottom: 0; border-radius: 8px 8px 0 0; }
-        #bodyEditor { width: 100%; max-width: 600px; min-height: 450px; background: #fff; border: 2px solid var(--border); padding: 15px; outline: none; margin: 0 auto; overflow-y: auto; }
-        #sourceEditor { display: none; width: 100%; max-width: 600px; min-height: 450px; margin: 0 auto; font-family: monospace; }
+        #bodyEditor, #sourceEditor { width: 100%; max-width: 600px; min-height: 450px; background: #fff; border: 2px solid var(--border); padding: 15px; outline: none; margin: 0 auto; overflow-y: auto; }
+        #sourceEditor { display: none; font-family: monospace; }
 
         /* Preview Area */
         .preview-subject-box { background: #fff; border: 2px solid var(--border); padding: 12px; border-radius: 8px; margin-bottom: 20px; min-height: 50px; }
@@ -54,6 +53,8 @@
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 10000; align-items: center; justify-content: center; padding: 20px; }
         .modal.show { display: flex; }
         .modalInner { background: var(--panel); border: 3px solid var(--border); border-radius: 12px; padding: 25px; width: 100%; max-width: 500px; }
+        
+        .tag-row { display: flex; gap: 6px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -63,19 +64,31 @@
 <div class="modal" id="settingsModal">
     <div class="modalInner">
         <h2 style="color:var(--gold); margin-top:0;">Api Key Settings</h2>
-        <input id="apiKey" type="password" placeholder="Enter Groq API Key...">
+        <label style="font-size:12px; font-weight:800;">GROQ API KEY</label>
+        <input id="apiKey" type="password" placeholder="Paste key...">
         <button class="btn btnGreen" style="width:100%" onclick="saveSettings()">Save & Close</button>
     </div>
 </div>
 
 <div class="modal" id="promptModal">
     <div class="modalInner">
-        <h2 id="promptTitle" style="color:var(--gold); margin-top:0;">Prompt Settings</h2>
+        <h2 id="promptTitle" style="color:var(--gold); margin-top:0;">Prompt</h2>
         <textarea id="promptArea" style="min-height:200px;"></textarea>
         <div style="display:flex; gap:10px; margin-top:10px;">
-            <button class="btn btnGreen" style="flex:1" onclick="closePrompt(true)">Save Prompt</button>
+            <button class="btn btnGreen" style="flex:1" onclick="closePrompt(true)">Save</button>
             <button class="btn btnRed" style="flex:1" onclick="closePrompt(false)">Cancel</button>
         </div>
+    </div>
+</div>
+
+<div class="modal" id="sigModal">
+    <div class="modalInner">
+        <h2 style="color:var(--gold); margin-top:0;">Manage Signatures</h2>
+        <div id="sigList" style="max-height:150px; overflow-y:auto; margin-bottom:15px; border:1px solid var(--border); background:#fff; padding:5px;"></div>
+        <input id="sigNewName" placeholder="Label">
+        <textarea id="sigNewContent" placeholder="Content..."></textarea>
+        <button class="btn btnGreen" style="width:100%" onclick="addSig()">Add Signature</button>
+        <button class="btn btnSmall" style="width:100%; margin-top:10px;" onclick="$('sigModal').classList.remove('show')">Close</button>
     </div>
 </div>
 
@@ -92,11 +105,13 @@
     <div class="card" style="padding: 10px;">
         <button class="toggle-btn" onclick="toggleSidebar()" id="tglBtn">HIDE</button>
         <div class="sidebar-content">
-            <label style="font-weight:800; font-size:11px; color:var(--muted)">OFFER NAME</label>
+            <label style="font-weight:800; font-size:12px; color:var(--muted)">OFFER NAME</label>
             <input id="offerName" type="text" oninput="autoSave()">
-            <label style="font-weight:800; font-size:11px; color:var(--muted)">BENEFITS</label>
+            
+            <label style="font-weight:800; font-size:12px; color:var(--muted)">BENEFITS</label>
             <textarea id="benefits" style="min-height:100px;" oninput="autoSave()"></textarea>
-            <label style="font-weight:800; font-size:11px; color:var(--muted)">CTA TEXT</label>
+            
+            <label style="font-weight:800; font-size:12px; color:var(--muted)">CTA TEXT</label>
             <input id="ctaText" value="Click here to see it" oninput="autoSave()">
 
             <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
@@ -108,7 +123,7 @@
     </div>
 
     <div class="card">
-        <div style="display:flex; gap:6px; margin-bottom:10px;">
+        <div class="tag-row">
             <button class="btn btnSmall" onclick="insertAtCaret('subject','{!firstname_fix}')">{!firstname_fix}</button>
             <button class="btn btnSmall" onclick="insertAtCaret('subject','{!lastname_fix}')">{!lastname_fix}</button>
             <button class="btn btnSmall" onclick="insertAtCaret('subject','⭐')">⭐</button>
@@ -120,10 +135,10 @@
         </div>
 
         <div class="toolbar">
-            <button class="btn btnSmall" onclick="exec('bold')"><b>B</b></button>
-            <button class="btn btnSmall" onclick="exec('italic')"><i>I</i></button>
-            <button class="btn btnSmall" onclick="exec('foreColor','#d32f2f')" style="color:#d32f2f">A</button>
-            <button class="btn btnSmall" onclick="exec('foreColor','#111111')">A</button>
+            <button class="btn btnSmall btnIcon" onclick="exec('bold')"><b>B</b></button>
+            <button class="btn btnSmall btnIcon" onclick="exec('italic')"><i>I</i></button>
+            <button class="btn btnSmall btnIcon" onclick="exec('foreColor','#d32f2f')" style="color:#d32f2f">A</button>
+            <button class="btn btnSmall btnIcon" onclick="exec('foreColor','#111111')">A</button>
             <button class="btn btnSmall" onclick="exec('createLink', prompt('Link URL:'))">Link</button>
             <button class="btn btnSmall" onclick="insertImg()">Image + Link</button>
             <div style="flex:1"></div>
@@ -132,7 +147,7 @@
         <div id="bodyEditor" contenteditable="true" oninput="update(); autoSave();"></div>
         <textarea id="sourceEditor"></textarea>
 
-        <div style="margin-top:12px; display:flex; gap:8px;">
+        <div style="margin-top:12px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
             <button class="btn btnGreen" onclick="generateBody()" style="flex:2">Generate Body</button>
             <button class="btn btnBlue" onclick="$('sigModal').classList.add('show')">Manage</button>
             <button class="btn btnGreen" onclick="insertSig()">Insert</button>
@@ -146,11 +161,14 @@
             <label style="font-weight:800; font-size:10px; color:var(--muted); display:block;">SUBJECT PREVIEW</label>
             <span id="prevSub" style="font-weight:700;"></span>
         </div>
+        
         <div style="display:flex; gap:8px; margin-bottom:15px;">
             <button class="btn btnBlue" style="flex:1" onclick="copyText($('subject').value)">Copy Full Title</button>
             <button class="btn btnBlue" style="flex:1" onclick="copyText(getWrappedBody())">Copy Body HTML</button>
         </div>
+
         <div class="preview-body-frame" id="prevBody"></div>
+        
         <div style="margin-top:15px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                 <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:700; font-size:13px;">
@@ -166,9 +184,7 @@
 <script>
     const $ = id => document.getElementById(id);
     let activePrompt = "";
-    
-    // THE FIX: Load prompts from storage or use defaults
-    let prompts = JSON.parse(localStorage.getItem("esm_prompts")) || {
+    const prompts = {
         title: "Return ONLY one string. Curiosity tone. Use ⭐ if natural.",
         body: "Write 2 short paragraphs. Start with ⭐{!firstname_fix}. Punchy marketing style.",
         image: "Describe a high-converting image for this offer."
@@ -193,17 +209,12 @@
         $("promptArea").value = prompts[type];
         $("promptModal").classList.add("show");
     }
-
     function closePrompt(save) {
-        if(save) {
-            prompts[activePrompt] = $("promptArea").value;
-            // THE FIX: Persist to localStorage
-            localStorage.setItem("esm_prompts", JSON.stringify(prompts));
-            showToast("Prompt Saved");
-        }
+        if(save) prompts[activePrompt] = $("promptArea").value;
         $("promptModal").classList.remove("show");
     }
 
+    // Caret Insertion Logic
     function insertAtCaret(id, text) {
         const el = $(id);
         if (id === 'subject') {
@@ -213,13 +224,16 @@
             el.focus();
             el.selectionStart = el.selectionEnd = start + text.length;
         } else {
-            $("bodyEditor").focus();
             document.execCommand('insertText', false, text);
         }
         update();
     }
 
-    function exec(c, v=null) { $("bodyEditor").focus(); document.execCommand(c, false, v); update(); }
+    function exec(c, v=null) { 
+        $("bodyEditor").focus();
+        document.execCommand(c, false, v); 
+        update(); 
+    }
     
     function insertImg() {
         const url = prompt("Image URL:");
@@ -280,14 +294,51 @@
         return `<table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:600px; margin:0 auto;"><tr><td style="font-family:Arial, sans-serif; font-size:16px; line-height:1.6; color:#111111;">${content}</td></tr></table>`;
     }
 
+    // Signatures
+    let sigs = JSON.parse(localStorage.getItem("esm_sigs") || "[]");
+    function renderSigs() {
+        $("sigList").innerHTML = sigs.map((s,i)=>`<div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #eee;background:#fff;"><span>${s.name}</span> <button class="btnRed btnSmall" onclick="delSig(${i})">Del</button></div>`).join('');
+        $("sigSelect").innerHTML = '<option value="">Select Sig</option>' + sigs.map((s,i)=>`<option value="${i}">${s.name}</option>`).join('');
+    }
+    function addSig() { 
+        if(!$("sigNewName").value) return;
+        sigs.push({name:$("sigNewName").value, content:$("sigNewContent").value}); 
+        localStorage.setItem("esm_sigs", JSON.stringify(sigs)); renderSigs(); 
+        $("sigNewName").value = ""; $("sigNewContent").value = "";
+    }
+    window.delSig = i => { sigs.splice(i,1); localStorage.setItem("esm_sigs", JSON.stringify(sigs)); renderSigs(); };
+    function insertSig() {
+        const s = sigs[$("sigSelect").value];
+        if(s) exec('insertHTML', `<br><br>${s.content.replace(/\n/g,"<br>")}`);
+    }
+
+    // Persistence
     function autoSave() {
-        const data = { sub: $("subject").value, body: $("bodyEditor").innerHTML, offer: $("offerName").value, benefits: $("benefits").value, cta: $("ctaText").value };
+        const data = {
+            sub: $("subject").value,
+            body: $("bodyEditor").innerHTML,
+            offer: $("offerName").value,
+            benefits: $("benefits").value,
+            cta: $("ctaText").value
+        };
         localStorage.setItem("esm_draft", JSON.stringify(data));
+    }
+
+    function loadDraft() {
+        const d = JSON.parse(localStorage.getItem("esm_draft"));
+        if(d) {
+            $("subject").value = d.sub || "";
+            $("bodyEditor").innerHTML = d.body || "";
+            $("offerName").value = d.offer || "";
+            $("benefits").value = d.benefits || "";
+            $("ctaText").value = d.cta || "";
+            update();
+        }
     }
 
     function sendTest() {
         const sub = encodeURIComponent($("subject").value);
-        const body = encodeURIComponent($("bodyEditor").innerText);
+        const body = encodeURIComponent($("bodyEditor").innerText); // Use innerText for standard mailto
         window.location.href = `mailto:?subject=${sub}&body=${body}`;
     }
 
@@ -297,12 +348,8 @@
 
     window.onload = () => {
         $("apiKey").value = localStorage.getItem("esm_key") || "";
-        const d = JSON.parse(localStorage.getItem("esm_draft"));
-        if(d) {
-            $("subject").value = d.sub || ""; $("bodyEditor").innerHTML = d.body || "";
-            $("offerName").value = d.offer || ""; $("benefits").value = d.benefits || ""; $("ctaText").value = d.cta || "";
-            update();
-        }
+        loadDraft();
+        renderSigs();
     };
 </script>
 </body>
