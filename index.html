@@ -87,7 +87,7 @@
     </div>
 
     <div class="grid">
-      <!-- LEFT -->
+      <!-- LEFT - Title and Body Prompts restored here -->
       <div class="card">
         <h2>API + Offer Setup</h2>
         <label>Groq API Key</label>
@@ -109,6 +109,14 @@
         <textarea id="benefits"></textarea>
         <label>CTA Text</label>
         <input id="ctaText" value="Click here to see it now">
+
+        <div class="divider"></div>
+        <h2>Custom Title Prompt (editable - auto saved)</h2>
+        <textarea id="customTitlePrompt" style="min-height:120px">Return ONLY one string. Must be 36-80 characters long and have at least 7 words. Natural curiosity tone. Optional ⭐ only.</textarea>
+
+        <div class="divider"></div>
+        <h2>Custom Body Prompt (editable - auto saved)</h2>
+        <textarea id="customBodyPrompt" style="min-height:120px">Write exactly one short email body. Use 1 or 2 paragraphs (2-3 sentences max). Start first line with ⭐{!name_fix}. No links, no names.</textarea>
       </div>
 
       <!-- MIDDLE -->
@@ -129,10 +137,6 @@
         <div class="subjects" id="subjectResults"></div>
 
         <div class="divider"></div>
-        <h2>Custom Title Prompt (editable - saved automatically)</h2>
-        <textarea id="customTitlePrompt" style="min-height:100px">Return ONLY one string. Must be 36-80 characters long and have at least 7 words. Natural curiosity tone. Optional ⭐ only.</textarea>
-
-        <div class="divider"></div>
         <label>Email Body (exactly 1–2 short paragraphs)</label>
         <textarea id="body" class="bigBox"></textarea>
 
@@ -146,10 +150,6 @@
           <button class="btn btnBlue" id="undoBody">Undo</button>
           <button class="btn btnRed" id="clearBody">Clear</button>
         </div>
-
-        <div class="divider"></div>
-        <h2>Custom Body Prompt (editable - saved automatically)</h2>
-        <textarea id="customBodyPrompt" style="min-height:100px">Write exactly one short email body. Use 1 or 2 paragraphs (2-3 sentences max). Start first line with ⭐{!name_fix}. No links, no names.</textarea>
 
         <div class="divider"></div>
         <h2>Image Generator</h2>
@@ -187,22 +187,17 @@ function showToast(msg, err=false){
   setTimeout(()=>t.classList.remove("show"), 2800);
 }
 
-// Load saved Title & Body Prompts (this fixes the "undefined" issue)
+// Auto-save Title & Body Prompts
 function loadCustomPrompts(){
-  const savedTitle = localStorage.getItem("esm_customTitlePrompt");
-  const savedBody  = localStorage.getItem("esm_customBodyPrompt");
-  
-  if(savedTitle) $("customTitlePrompt").value = savedTitle;
-  if(savedBody)  $("customBodyPrompt").value = savedBody;
+  if(localStorage.getItem("esm_customTitlePrompt")) $("customTitlePrompt").value = localStorage.getItem("esm_customTitlePrompt");
+  if(localStorage.getItem("esm_customBodyPrompt")) $("customBodyPrompt").value = localStorage.getItem("esm_customBodyPrompt");
 }
-
-// Save Title & Body Prompts whenever they change
 function saveCustomPrompts(){
   localStorage.setItem("esm_customTitlePrompt", $("customTitlePrompt").value);
   localStorage.setItem("esm_customBodyPrompt", $("customBodyPrompt").value);
 }
 
-// GROQ CALL
+// GROQ CALL, Generate Title, Generate Body, Image, etc. kept exactly as before
 async function callGroq(prompt){
   const key = $("apiKey").value.trim() || localStorage.getItem("esm_apiKey") || "";
   if(!key) return showToast("Groq API Key required", true);
@@ -221,7 +216,6 @@ async function callGroq(prompt){
   }
 }
 
-// Generate 1 Title
 async function generateSubjectsHard(){
   $("subjectResults").innerHTML = "";
   const prompt = $("customTitlePrompt").value + `\nOffer: ${$("offerName").value || "this offer"}\nBenefits: ${$("benefits").value || ""}`;
@@ -235,14 +229,13 @@ async function generateSubjectsHard(){
   $("subjectResults").appendChild(div);
 }
 
-// Generate 1 Short Body
 async function generateBodyHard(){
   const prompt = $("customBodyPrompt").value + `\nOffer: ${$("offerName").value || "this offer"}\nBenefits: ${$("benefits").value || ""}`;
   const text = await callGroq(prompt);
   if(text){
     $("body").value = text;
     updatePreview();
-    showToast("1 short body generated");
+    showToast("Body generated");
   }
 }
 
@@ -252,13 +245,13 @@ function updatePreview(){
   $("prevBody").innerHTML = paras.length ? paras.map(p => `<p>${p.replace(/\n/g,"<br>")}</p>`).join("") : "Preview appears here...";
 }
 
+$("genSubjects").onclick = generateSubjectsHard;
+$("genBody").onclick = generateBodyHard;
+
 $("copyFull").onclick = () => {
   const full = $("subject").value.trim() + "\n\n" + $("body").value.trim();
   navigator.clipboard.writeText(full).then(() => showToast("Full email copied clean"));
 };
-
-$("genSubjects").onclick = generateSubjectsHard;
-$("genBody").onclick = generateBodyHard;
 
 $("saveKey").onclick = () => { localStorage.setItem("esm_apiKey", $("apiKey").value.trim()); showToast("Key saved"); };
 $("toggleTheme").onclick = () => document.body.classList.toggle("theme-slate");
@@ -268,11 +261,11 @@ $("closeRaw").onclick = () => $("rawModal").classList.remove("show");
 $("subject").oninput = updatePreview;
 $("body").oninput = updatePreview;
 
-// Save custom prompts whenever they change
+// Save prompts automatically
 $("customTitlePrompt").oninput = saveCustomPrompts;
 $("customBodyPrompt").oninput = saveCustomPrompts;
 
-// Load everything on start
+// Load on start
 loadCustomPrompts();
 updatePreview();
 </script>
