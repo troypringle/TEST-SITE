@@ -26,14 +26,18 @@
         
         .sidebar-content { transition: opacity 0.2s; }
         .sidebar-closed .sidebar-content { opacity: 0; visibility: hidden; height: 0; overflow: hidden; }
-        .toggle-btn { cursor: pointer; background: var(--gold); color: #fff; border: none; height: 30px; border-radius: 6px; width: 100%; margin-bottom: 15px; font-weight: 900; font-size: 12px; }
+        .toggle-btn { cursor: pointer; background: var(--gold); color: #fff; border: none; height: 30px; border-radius: 6px; width: 100%; margin-bottom: 15px; font-weight: 900; font-size: 12px; transition: transform 0.1s; }
+        .toggle-btn:active { transform: scale(0.95); }
 
         .btn { 
             border: 1px solid var(--border); background: var(--panel2); color: #111; 
             height: var(--btn-h); padding: 0 15px; border-radius: 8px; cursor: pointer; 
             font-weight: 700; display: inline-flex; align-items: center; justify-content: center;
-            white-space: nowrap;
+            white-space: nowrap; transition: all 0.2s ease;
         }
+        .btn:hover { filter: brightness(0.9); transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn:active { transform: translateY(1px); box-shadow: none; filter: brightness(0.8); }
+        
         .btnGreen { background: var(--green); color: #fff; border: none; }
         .btnBlue { background: var(--blue); color: #fff; border: none; }
         .btnRed { background: var(--red); color: #fff; border: none; }
@@ -44,14 +48,13 @@
         #bodyEditor, #sourceEditor { width: 100%; max-width: 600px; min-height: 450px; background: #fff; border: 2px solid var(--border); padding: 15px; outline: none; margin: 0 auto; overflow-y: auto; }
         #sourceEditor { display: none; font-family: monospace; }
 
-        .preview-subject-box { background: #fff; border: 2px solid var(--border); padding: 12px; border-radius: 8px; margin-bottom: 20px; min-height: 50px; }
-        .preview-body-frame { background: #fff; border: 2px solid var(--border); padding: 25px; min-height: 450px; max-width: 600px; margin: 0 auto; }
-
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 10000; align-items: center; justify-content: center; padding: 20px; }
         .modal.show { display: flex; }
         .modalInner { background: var(--panel); border: 3px solid var(--border); border-radius: 12px; padding: 25px; width: 100%; max-width: 500px; }
         
         .tag-row { display: flex; gap: 6px; margin-bottom: 10px; }
+        .preview-body-frame { background: #fff; border: 2px solid var(--border); padding: 25px; min-height: 450px; max-width: 600px; margin: 0 auto; }
+        .preview-subject-box { background: #fff; border: 2px solid var(--border); padding: 12px; border-radius: 8px; margin-bottom: 20px; min-height: 50px; }
     </style>
 </head>
 <body>
@@ -62,24 +65,27 @@
     <div class="modalInner">
         <h2 style="color:var(--gold); margin-top:0;">UI Settings</h2>
         <button class="btn btnBlue" style="width:100%; margin-bottom:10px;" onclick="document.body.classList.toggle('theme-slate')">Toggle Slate Theme</button>
-        <button class="btn btnSmall" style="width:100%; margin-top:10px;" onclick="$('settingsModal').classList.remove('show')">Close</button>
+        <button class="btn" style="width:100%; margin-top:10px;" onclick="$('settingsModal').classList.remove('show')">Close</button>
     </div>
 </div>
 
 <div class="modal" id="apiModal">
     <div class="modalInner">
-        <h2 style="color:var(--gold); margin-top:0;">API Keys & Debug</h2>
-        
+        <h2 style="color:var(--gold); margin-top:0;">API Keys</h2>
         <label style="font-size:11px; font-weight:800;">GROQ KEY</label>
         <input id="apiKey" type="password" placeholder="Groq Key...">
-        
-        <label style="font-size:11px; font-weight:800;">HUGGING FACE TOKEN (FREE)</label>
+        <label style="font-size:11px; font-weight:800;">HUGGING FACE TOKEN</label>
         <input id="hfKey" type="password" placeholder="HF Token...">
-        
-        <label style="font-size:10px; font-weight:800; color:var(--red);">DEBUG LOG</label>
-        <div id="apiErrorLog" style="font-size:11px; background:#fff; border:1px solid var(--border); padding:8px; min-height:40px; margin-bottom:12px; color:#d32f2f; white-space:pre-wrap; overflow-y:auto; max-height:100px;">No errors.</div>
-        
-        <button class="btn btnGreen" style="width:100%" onclick="saveKeys()">Save & Close</button>
+        <button class="btn btnGreen" style="width:100%" onclick="saveKeys()">Save Keys</button>
+        <button class="btn" style="width:100%; margin-top:10px;" onclick="$('apiModal').classList.remove('show')">Cancel</button>
+    </div>
+</div>
+
+<div class="modal" id="errorModal">
+    <div class="modalInner">
+        <h2 style="color:var(--red); margin-top:0;">🐞 Debug Log</h2>
+        <div id="apiErrorLog" style="font-size:12px; background:#fff; border:1px solid var(--border); padding:12px; min-height:150px; margin-bottom:15px; color:#d32f2f; white-space:pre-wrap; overflow-y:auto; max-height:300px;">No errors reported in this session.</div>
+        <button class="btn btnBlue" style="width:100%" onclick="$('errorModal').classList.remove('show')">Got it</button>
     </div>
 </div>
 
@@ -88,7 +94,7 @@
         <h2 id="promptTitle" style="color:var(--gold); margin-top:0;">Prompt</h2>
         <textarea id="promptArea" style="min-height:200px;"></textarea>
         <div style="display:flex; gap:10px; margin-top:10px;">
-            <button class="btn btnGreen" style="flex:1" onclick="closePrompt(true)">Save</button>
+            <button class="btn btnGreen" style="flex:1" onclick="closePrompt(true)">Save Prompt</button>
             <button class="btn btnRed" style="flex:1" onclick="closePrompt(false)">Cancel</button>
         </div>
     </div>
@@ -96,21 +102,22 @@
 
 <div class="modal" id="sigModal">
     <div class="modalInner">
-        <h2 style="color:var(--gold); margin-top:0;">Manage Signatures</h2>
+        <h2 style="color:var(--gold); margin-top:0;">Signatures</h2>
         <div id="sigList" style="max-height:150px; overflow-y:auto; margin-bottom:15px; border:1px solid var(--border); background:#fff; padding:5px;"></div>
         <input id="sigNewName" placeholder="Label">
         <textarea id="sigNewContent" placeholder="Content..."></textarea>
         <button class="btn btnGreen" style="width:100%" onclick="addSig()">Add Signature</button>
-        <button class="btn btnSmall" style="width:100%; margin-top:10px;" onclick="$('sigModal').classList.remove('show')">Close</button>
+        <button class="btn" style="width:100%; margin-top:10px;" onclick="$('sigModal').classList.remove('show')">Close</button>
     </div>
 </div>
 
 <div class="topbar">
     <div style="font-weight:900; color:var(--gold); font-size:22px;">Email Swipe Machine</div>
     <div style="display:flex; gap:10px;">
-        <button class="btn btnSmall" onclick="$('apiModal').classList.add('show')">🔑 API Keys</button>
-        <button class="btn btnSmall" onclick="$('settingsModal').classList.add('show')">⚙️ Settings</button>
-        <button class="btn btnSmall" onclick="toggleSource()" id="srcBtn">HTML Source</button>
+        <button class="btn btnRed" onclick="$('errorModal').classList.add('show')">🐞 Debug</button>
+        <button class="btn" onclick="$('apiModal').classList.add('show')">🔑 API Keys</button>
+        <button class="btn" onclick="$('settingsModal').classList.add('show')">⚙️ Settings</button>
+        <button class="btn" onclick="toggleSource()" id="srcBtn">HTML Source</button>
     </div>
 </div>
 
@@ -128,9 +135,9 @@
             <input id="ctaText" value="Click here to see it" oninput="autoSave()">
 
             <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
-                <button class="btn btnBlue btnSmall" onclick="openPrompt('title')">Title 📝</button>
-                <button class="btn btnBlue btnSmall" onclick="openPrompt('body')">Body 📝</button>
-                <button class="btn btnBlue btnSmall" onclick="openPrompt('image')">Image 📝</button>
+                <button class="btn btnBlue" onclick="openPrompt('title')">Title Prompt 📝</button>
+                <button class="btn btnBlue" onclick="openPrompt('body')">Body Prompt 📝</button>
+                <button class="btn btnBlue" onclick="openPrompt('image')">Image Prompt 📝</button>
             </div>
         </div>
     </div>
@@ -142,8 +149,8 @@
             <button class="btn btnSmall" onclick="insertAtCaret('subject','⭐')">⭐</button>
             <div style="flex:1"></div>
             <select id="modelSelect" style="width:160px; margin:0; font-size:12px; font-weight:700;" onchange="autoSave()">
-                <option value="puter-gemini">Gemini (Puter - No Key)</option>
                 <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Groq)</option>
+                <option value="puter-gemini">Gemini (Puter - No Key)</option>
                 <option value="hf-mistral">Mistral 7B (HuggingFace)</option>
                 <option value="llama-3.1-8b-instant">Llama 3.1 8B (Groq)</option>
             </select>
@@ -155,14 +162,14 @@
         </div>
 
         <div class="toolbar">
-            <button class="btn btnSmall btnIcon" onclick="exec('bold')"><b>B</b></button>
-            <button class="btn btnSmall btnIcon" onclick="exec('italic')"><i>I</i></button>
-            <button class="btn btnSmall btnIcon" onclick="exec('foreColor','#d32f2f')" style="color:#d32f2f">A</button>
-            <button class="btn btnSmall btnIcon" onclick="exec('foreColor','#111111')">A</button>
-            <button class="btn btnSmall" onclick="exec('createLink', prompt('Link URL:'))">Link</button>
-            <button class="btn btnSmall" onclick="insertImg()">Image + Link</button>
+            <button class="btn btnIcon" onclick="exec('bold')"><b>B</b></button>
+            <button class="btn btnIcon" onclick="exec('italic')"><i>I</i></button>
+            <button class="btn btnIcon" onclick="exec('foreColor','#d32f2f')" style="color:#d32f2f">A</button>
+            <button class="btn btnIcon" onclick="exec('foreColor','#111111')">A</button>
+            <button class="btn" onclick="exec('createLink', prompt('Link URL:'))">Link</button>
+            <button class="btn" onclick="insertImg()">Image</button>
             <div style="flex:1"></div>
-            <button class="btn btnSmall" onclick="exec('undo')">Undo</button>
+            <button class="btn" onclick="exec('undo')">Undo</button>
         </div>
         <div id="bodyEditor" contenteditable="true" oninput="update(); autoSave();"></div>
         <textarea id="sourceEditor"></textarea>
@@ -183,19 +190,16 @@
         </div>
         
         <div style="display:flex; gap:8px; margin-bottom:15px;">
-            <button class="btn btnBlue" style="flex:1" onclick="copyText($('subject').value)">Copy Full Title</button>
-            <button class="btn btnBlue" style="flex:1" onclick="copyText(getWrappedBody())">Copy Body HTML</button>
+            <button class="btn btnBlue" style="flex:1" onclick="copyText($('subject').value)">Copy Title</button>
+            <button class="btn btnBlue" style="flex:1" onclick="copyText(getWrappedBody())">Copy HTML Body</button>
         </div>
 
         <div class="preview-body-frame" id="prevBody"></div>
         
         <div style="margin-top:15px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:700; font-size:13px;">
-                    <input type="checkbox" id="useWrapper" checked style="width:auto; margin:0;" onchange="update()"> 600px Wrapper
-                </label>
-                <button class="btn btnSmall" onclick="sendTest()">Send Test Email</button>
-            </div>
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:700; font-size:13px; margin-bottom:10px;">
+                <input type="checkbox" id="useWrapper" checked style="width:auto; margin:0;" onchange="update()"> 600px Wrapper
+            </label>
             <button class="btn btnGreen" onclick="copyAll()" style="width:100%; height:60px; font-size:20px;">COPY FULL SWIPE</button>
         </div>
     </div>
@@ -204,7 +208,9 @@
 <script>
     const $ = id => document.getElementById(id);
     let activePrompt = "";
-    const prompts = {
+    
+    // PERSISTENT PROMPTS LOGIC
+    let prompts = JSON.parse(localStorage.getItem("esm_prompts")) || {
         title: "Return ONLY one string.",
         body: "Write 2 short paragraphs.",
         image: "Describe a high-converting image for this offer."
@@ -221,7 +227,7 @@
         localStorage.setItem("esm_key", $("apiKey").value);
         localStorage.setItem("esm_hf_key", $("hfKey").value);
         $("apiModal").classList.remove("show");
-        showToast("Keys Saved");
+        showToast("Keys Stored Safely");
     }
 
     async function callAI(p) {
@@ -231,16 +237,13 @@
         const errorLog = $("apiErrorLog");
         
         try {
-            // OPTION 1: PUTER (GEMINI)
             if (selectedModel === "puter-gemini") {
                 const response = await puter.ai.chat(p);
-                errorLog.textContent = "Last Puter request successful.";
                 return response.toString();
             }
             
-            // OPTION 2: HUGGING FACE
             if (selectedModel === "hf-mistral") {
-                if(!hfKey) { showToast("Enter HF Token"); return null; }
+                if(!hfKey) throw new Error("Missing HF Token");
                 const res = await fetch("https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3", {
                     method: "POST", headers: { "Authorization": `Bearer ${hfKey}`, "Content-Type": "application/json" },
                     body: JSON.stringify({ inputs: p })
@@ -250,20 +253,18 @@
                 return d[0].generated_text.replace(p, "").trim();
             }
 
-            // OPTION 3: GROQ
-            if(!groqKey) { showToast("Enter Groq Key"); return null; }
+            if(!groqKey) throw new Error("Missing Groq API Key");
             const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method:"POST", headers:{"Authorization":`Bearer ${groqKey}`,"Content-Type":"application/json"},
                 body: JSON.stringify({model:selectedModel, messages:[{role:"user",content:p}]})
             });
             const d = await res.json();
-            if (!res.ok) throw new Error(d.error ? d.error.message : "Groq API Error");
-            errorLog.textContent = "Last Groq request successful.";
+            if (!res.ok) throw new Error(d.error ? d.error.message : "API Error");
             return d.choices[0].message.content.trim();
 
         } catch(e) { 
-            errorLog.textContent = `Error: ${e.message}`;
-            showToast("AI Failed - Check API Modal");
+            errorLog.textContent = `[${new Date().toLocaleTimeString()}] ${e.message}`;
+            showToast("AI Error - Check Debug Log");
             return null; 
         }
     }
@@ -274,8 +275,13 @@
         $("promptArea").value = prompts[type];
         $("promptModal").classList.add("show");
     }
+    
     function closePrompt(save) {
-        if(save) prompts[activePrompt] = $("promptArea").value;
+        if(save) {
+            prompts[activePrompt] = $("promptArea").value;
+            localStorage.setItem("esm_prompts", JSON.stringify(prompts));
+            showToast("Prompt Saved to Browser");
+        }
         $("promptModal").classList.remove("show");
     }
 
@@ -302,8 +308,8 @@
     function insertImg() {
         const url = prompt("Image URL:");
         if(!url) return;
-        const link = prompt("Destination Link (optional):");
-        const html = link ? `<a href="${link}" target="_blank"><img src="${url}" style="max-width:100%; height:auto;"></a>` : `<img src="${url}" style="max-width:100%; height:auto;">`;
+        const link = prompt("Link URL (optional):");
+        const html = link ? `<a href="${link}" target="_blank"><img src="${url}" style="max-width:100%;"></a>` : `<img src="${url}" style="max-width:100%;">`;
         exec('insertHTML', html);
     }
     
@@ -347,7 +353,7 @@
 
     let sigs = JSON.parse(localStorage.getItem("esm_sigs") || "[]");
     function renderSigs() {
-        $("sigList").innerHTML = sigs.map((s,i)=>`<div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #eee;background:#fff;"><span>${s.name}</span> <button class="btnRed btnSmall" onclick="delSig(${i})">Del</button></div>`).join('');
+        $("sigList").innerHTML = sigs.map((s,i)=>`<div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #eee;background:#fff;"><span>${s.name}</span> <button class="btnRed" style="height:25px; padding:0 10px;" onclick="delSig(${i})">Del</button></div>`).join('');
         $("sigSelect").innerHTML = '<option value="">Select Sig</option>' + sigs.map((s,i)=>`<option value="${i}">${s.name}</option>`).join('');
     }
     function addSig() { 
@@ -385,12 +391,6 @@
             if(d.model) $("modelSelect").value = d.model;
             update();
         }
-    }
-
-    function sendTest() {
-        const sub = encodeURIComponent($("subject").value);
-        const body = encodeURIComponent($("bodyEditor").innerText);
-        window.location.href = `mailto:?subject=${sub}&body=${body}`;
     }
 
     function clearBody() { if(confirm("Clear everything?")) { $("bodyEditor").innerHTML = ""; $("subject").value = ""; update(); autoSave(); } }
