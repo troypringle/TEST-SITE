@@ -185,8 +185,8 @@
     const $ = id => document.getElementById(id);
     let activePrompt = "";
     const prompts = {
-        title: "Return ONLY one string. Curiosity tone. Use ⭐ if natural.",
-        body: "Write 2 short paragraphs. Start with ⭐{!firstname_fix}. Punchy marketing style.",
+        title: "Return ONLY one string.",
+        body: "Write 2 short paragraphs.",
         image: "Describe a high-converting image for this offer."
     };
 
@@ -214,7 +214,6 @@
         $("promptModal").classList.remove("show");
     }
 
-    // Caret Insertion Logic
     function insertAtCaret(id, text) {
         const el = $(id);
         if (id === 'subject') {
@@ -294,7 +293,6 @@
         return `<table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:600px; margin:0 auto;"><tr><td style="font-family:Arial, sans-serif; font-size:16px; line-height:1.6; color:#111111;">${content}</td></tr></table>`;
     }
 
-    // Signatures
     let sigs = JSON.parse(localStorage.getItem("esm_sigs") || "[]");
     function renderSigs() {
         $("sigList").innerHTML = sigs.map((s,i)=>`<div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #eee;background:#fff;"><span>${s.name}</span> <button class="btnRed btnSmall" onclick="delSig(${i})">Del</button></div>`).join('');
@@ -312,7 +310,6 @@
         if(s) exec('insertHTML', `<br><br>${s.content.replace(/\n/g,"<br>")}`);
     }
 
-    // Persistence
     function autoSave() {
         const data = {
             sub: $("subject").value,
@@ -338,7 +335,7 @@
 
     function sendTest() {
         const sub = encodeURIComponent($("subject").value);
-        const body = encodeURIComponent($("bodyEditor").innerText); // Use innerText for standard mailto
+        const body = encodeURIComponent($("bodyEditor").innerText);
         window.location.href = `mailto:?subject=${sub}&body=${body}`;
     }
 
