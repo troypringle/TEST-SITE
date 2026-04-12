@@ -1,273 +1,309 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Email Swipe Machine</title>
-  <style>
-    :root{
-      --bg:#d4c4a8; --panel:#f5f0e6; --panel2:#efe6d8; --border:#c9b896;
-      --muted:#5c4d3a; --gold:#b8860b; --green:#2e7d32; --blue:#1976d2; --red:#d32f2f;
-    }
-    body.theme-slate{
-      --bg:#111827; --panel:#1f2937; --panel2:#243244; --border:#374151;
-      --muted:#cbd5e1; --gold:#fbbf24; --green:#22c55e; --red:#ef4444;
-    }
-    *{box-sizing:border-box}
-    body{margin:0; font-family:Arial,sans-serif; background:var(--bg); color:#111; font-size:16px; line-height:1.6;}
-    .wrap{max-width:1700px;margin:0 auto;padding:18px;}
-    .topbar{background:var(--panel); border:2px solid var(--gold); border-radius:10px; padding:14px 16px; display:flex; justify-content:space-between; align-items:center;}
-    .title{font-weight:800; font-size:22px; color:var(--gold);}
-    .btn{border:1px solid var(--border); background:var(--panel2); color:#111; padding:10px 12px; border-radius:8px; cursor:pointer; font-weight:700;}
-    .btn:hover{filter:brightness(0.98)}
-    .btnGreen{background:var(--green); color:#fff; border:none}
-    .btnBlue{background:var(--blue); color:#fff; border:none}
-    .btnRed{background:var(--red); color:#fff; border:none}
-    .grid{margin-top:16px; display:grid; grid-template-columns:420px 1fr 1fr; gap:16px;}
-    .card{background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:16px;}
-    .card h2{margin:0 0 10px 0; color:var(--gold); font-size:18px;}
-    label{display:block; font-weight:800; color:var(--muted); font-size:13px; text-transform:uppercase; margin:12px 0 6px;}
-    input,textarea{width:100%; padding:12px; border:2px solid var(--border); border-radius:8px; background:#fff; font-size:16px;}
-    textarea{min-height:160px; resize:vertical;}
-    .bigBox{min-height:210px !important;}
-    .pillRow{display:flex; gap:10px; flex-wrap:wrap; margin:8px 0;}
-    .pill{border:2px solid var(--border); background:var(--panel2); padding:8px 12px; border-radius:999px; cursor:pointer; font-weight:800; font-size:14px;}
-    .subjects{margin-top:10px}
-    .subjectItem{background:#fff; border:2px solid #aaa; padding:12px; border-radius:10px; margin-bottom:10px; cursor:pointer;}
-    .subjectItem.selected{border-color:var(--green); box-shadow:0 0 0 3px rgba(46,125,50,.15);}
-    .previewSubject{background:#fff; border:2px solid var(--border); border-bottom:0; padding:12px; border-radius:10px 10px 0 0;}
-    .previewFrame{background:#fff; border:2px solid var(--border); border-radius:0 0 10px 10px; padding:14px; min-height:420px; font-family:Arial,sans-serif; max-width:600px; margin:0 auto;}
-    .toast{position:fixed; right:20px; bottom:20px; background:rgba(0,0,0,.88); color:#fff; padding:12px 16px; border-radius:10px; font-weight:800; display:none; z-index:9999;}
-    .toast.show{display:block}
-    .divider{height:1px; background:var(--border); margin:14px 0}
-    .smallNote{font-size:13px; color:var(--muted); margin-top:6px;}
-    .modal{position:fixed; inset:0; background:rgba(0,0,0,.75); display:none; z-index:10000; padding:20px; overflow:auto;}
-    .modal.show{display:block}
-    .modalInner{max-width:900px; margin:40px auto; background:var(--panel); border:2px solid var(--border); border-radius:12px; padding:20px;}
-  </style>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Email Swipe Machine</title>
+    <style>
+        :root {
+            --bg: #d4c4a8; --panel: #f5f0e6; --panel2: #efe6d8; --border: #c9b896;
+            --muted: #5c4d3a; --gold: #b8860b; --green: #2e7d32; --blue: #1976d2; --red: #d32f2f;
+            --btn-h: 40px;
+        }
+        body.theme-slate {
+            --bg: #111827; --panel: #1f2937; --panel2: #243244; --border: #374151;
+            --muted: #cbd5e1; --gold: #fbbf24; --green: #22c55e; --red: #ef4444;
+        }
+        * { box-sizing: border-box; font-size: 16px; }
+        body { margin: 0; font-family: Arial, sans-serif; background: var(--bg); color: #111; line-height: 1.6; }
+        
+        /* Layout */
+        .topbar { background: var(--panel); border-bottom: 2px solid var(--gold); padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .grid { display: grid; grid-template-columns: 200px 1fr 1fr; gap: 16px; padding: 16px; transition: all 0.3s ease; }
+        .grid.sidebar-closed { grid-template-columns: 60px 1fr 1fr; }
+        .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px; position: relative; }
+        
+        /* Sidebar Toggle */
+        .sidebar-content { transition: opacity 0.2s; }
+        .sidebar-closed .sidebar-content { opacity: 0; visibility: hidden; height: 0; overflow: hidden; }
+        .toggle-btn { cursor: pointer; background: var(--gold); color: #fff; border: none; height: 28px; border-radius: 4px; width: 100%; margin-bottom: 15px; font-weight: 900; font-size: 11px; }
+
+        /* Global Button Style */
+        .btn { 
+            border: 1px solid var(--border); background: var(--panel2); color: #111; 
+            height: var(--btn-h); padding: 0 15px; border-radius: 8px; cursor: pointer; 
+            font-weight: 700; display: inline-flex; align-items: center; justify-content: center;
+            white-space: nowrap;
+        }
+        .btnGreen { background: var(--green); color: #fff; border: none; }
+        .btnBlue { background: var(--blue); color: #fff; border: none; }
+        .btnRed { background: var(--red); color: #fff; border: none; }
+        .btnSmall { height: 32px; padding: 0 10px; font-size: 14px; }
+
+        /* Inputs */
+        input, select, textarea { width: 100%; padding: 10px; border: 2px solid var(--border); border-radius: 8px; margin-bottom: 12px; background: #fff; }
+        .toolbar { display: flex; gap: 4px; background: var(--panel2); padding: 8px; border: 2px solid var(--border); border-bottom: 0; border-radius: 8px 8px 0 0; }
+        #bodyEditor { width: 100%; max-width: 600px; min-height: 450px; background: #fff; border: 2px solid var(--border); padding: 15px; outline: none; margin: 0 auto; overflow-y: auto; }
+        #sourceEditor { display: none; width: 100%; max-width: 600px; min-height: 450px; margin: 0 auto; font-family: monospace; }
+
+        /* Preview Area */
+        .preview-subject-box { background: #fff; border: 2px solid var(--border); padding: 12px; border-radius: 8px; margin-bottom: 20px; min-height: 50px; }
+        .preview-body-frame { background: #fff; border: 2px solid var(--border); padding: 25px; min-height: 450px; max-width: 600px; margin: 0 auto; }
+
+        /* Modals */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 10000; align-items: center; justify-content: center; padding: 20px; }
+        .modal.show { display: flex; }
+        .modalInner { background: var(--panel); border: 3px solid var(--border); border-radius: 12px; padding: 25px; width: 100%; max-width: 500px; }
+    </style>
 </head>
 <body>
-  <div class="toast" id="toast"></div>
 
-  <!-- RAW MODAL -->
-  <div class="modal" id="rawModal">
+<div id="toast" style="position:fixed; bottom:20px; right:20px; background:#333; color:#fff; padding:12px 24px; display:none; border-radius:8px; z-index:99999;"></div>
+
+<div class="modal" id="settingsModal">
     <div class="modalInner">
-      <div style="display:flex;justify-content:space-between;margin-bottom:10px">
-        <h2 style="margin:0;color:var(--gold)">Raw AI Output (Debug)</h2>
-        <button class="btn btnRed" id="closeRaw">Close</button>
-      </div>
-      <textarea id="rawText" style="width:100%;min-height:380px;font-family:monospace;font-size:14px"></textarea>
-      <button class="btn btnBlue" id="copyRaw" style="margin-top:8px">Copy Raw</button>
+        <h2 style="color:var(--gold); margin-top:0;">Api Key Settings</h2>
+        <input id="apiKey" type="password" placeholder="Enter Groq API Key...">
+        <button class="btn btnGreen" style="width:100%" onclick="saveSettings()">Save & Close</button>
     </div>
-  </div>
+</div>
 
-  <!-- SIGNATURE MODAL -->
-  <div class="modal" id="sigModal">
+<div class="modal" id="promptModal">
     <div class="modalInner">
-      <div style="display:flex;justify-content:space-between;margin-bottom:10px">
-        <h2 style="margin:0;color:var(--gold)">Signatures</h2>
-        <button class="btn btnRed" id="closeSig">Close</button>
-      </div>
-      <div id="sigList"></div>
-      <div class="divider"></div>
-      <h2 style="margin:0 0 8px;color:var(--gold)">Add New Signature</h2>
-      <input id="sigNewName" type="text" placeholder="e.g. Default">
-      <textarea id="sigNewContent" placeholder="Paste signature here..."></textarea>
-      <button class="btn btnGreen" id="addSig" style="margin-top:10px">Add Signature</button>
+        <h2 id="promptTitle" style="color:var(--gold); margin-top:0;">Prompt Settings</h2>
+        <textarea id="promptArea" style="min-height:200px;"></textarea>
+        <div style="display:flex; gap:10px; margin-top:10px;">
+            <button class="btn btnGreen" style="flex:1" onclick="closePrompt(true)">Save Prompt</button>
+            <button class="btn btnRed" style="flex:1" onclick="closePrompt(false)">Cancel</button>
+        </div>
     </div>
-  </div>
+</div>
 
-  <div class="wrap">
-    <div class="topbar">
-      <div class="title">Email Swipe Machine</div>
-      <div>
-        <button class="btn btnSmall" id="toggleTheme">Toggle Slate</button>
-        <button class="btn btnSmall" id="openRaw">Raw Output</button>
-      </div>
+<div class="topbar">
+    <div style="font-weight:900; color:var(--gold); font-size:22px;">Email Swipe Machine</div>
+    <div style="display:flex; gap:10px;">
+        <button class="btn btnSmall" onclick="$('settingsModal').classList.add('show')">⚙️ Api Key Settings</button>
+        <button class="btn btnSmall" onclick="toggleSource()" id="srcBtn">HTML Source</button>
+        <button class="btn btnSmall" onclick="document.body.classList.toggle('theme-slate')">Toggle Slate</button>
+    </div>
+</div>
+
+<div class="grid" id="mainGrid">
+    <div class="card" style="padding: 10px;">
+        <button class="toggle-btn" onclick="toggleSidebar()" id="tglBtn">HIDE</button>
+        <div class="sidebar-content">
+            <label style="font-weight:800; font-size:11px; color:var(--muted)">OFFER NAME</label>
+            <input id="offerName" type="text" oninput="autoSave()">
+            <label style="font-weight:800; font-size:11px; color:var(--muted)">BENEFITS</label>
+            <textarea id="benefits" style="min-height:100px;" oninput="autoSave()"></textarea>
+            <label style="font-weight:800; font-size:11px; color:var(--muted)">CTA TEXT</label>
+            <input id="ctaText" value="Click here to see it" oninput="autoSave()">
+
+            <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
+                <button class="btn btnBlue btnSmall" onclick="openPrompt('title')">Title 📝</button>
+                <button class="btn btnBlue btnSmall" onclick="openPrompt('body')">Body 📝</button>
+                <button class="btn btnBlue btnSmall" onclick="openPrompt('image')">Image 📝</button>
+            </div>
+        </div>
     </div>
 
-    <div class="grid">
-      <!-- LEFT - Title and Body Prompts restored here -->
-      <div class="card">
-        <h2>API + Offer Setup</h2>
-        <label>Groq API Key</label>
-        <input id="apiKey" type="password" placeholder="Paste Groq key">
-        <button class="btn btnGreen" id="saveKey">Save Key</button>
-
-        <div class="divider"></div>
-        <label>Model</label>
-        <select id="model">
-          <option value="llama-3.1-8b-instant">llama-3.1-8b-instant (Fast - Only Working Model)</option>
-        </select>
-
-        <div class="divider"></div>
-        <label>Offer Name</label>
-        <input id="offerName" type="text" placeholder="e.g. My AI Lead Tool">
-        <label>Offer Link (optional)</label>
-        <input id="offerLink" type="text">
-        <label>Benefits (1 per line)</label>
-        <textarea id="benefits"></textarea>
-        <label>CTA Text</label>
-        <input id="ctaText" value="Click here to see it now">
-
-        <div class="divider"></div>
-        <h2>Custom Title Prompt (editable - auto saved)</h2>
-        <textarea id="customTitlePrompt" style="min-height:120px">Return ONLY one string. Must be 36-80 characters long and have at least 7 words. Natural curiosity tone. Optional ⭐ only.</textarea>
-
-        <div class="divider"></div>
-        <h2>Custom Body Prompt (editable - auto saved)</h2>
-        <textarea id="customBodyPrompt" style="min-height:120px">Write exactly one short email body. Use 1 or 2 paragraphs (2-3 sentences max). Start first line with ⭐{!name_fix}. No links, no names.</textarea>
-      </div>
-
-      <!-- MIDDLE -->
-      <div class="card">
-        <h2>Subject + Body</h2>
+    <div class="card">
+        <div style="display:flex; gap:6px; margin-bottom:10px;">
+            <button class="btn btnSmall" onclick="insertAtCaret('subject','{!firstname_fix}')">{!firstname_fix}</button>
+            <button class="btn btnSmall" onclick="insertAtCaret('subject','{!lastname_fix}')">{!lastname_fix}</button>
+            <button class="btn btnSmall" onclick="insertAtCaret('subject','⭐')">⭐</button>
+        </div>
         
-        <h2 style="font-size:15px;color:var(--gold);margin:10px 0 6px">Subject Prefix</h2>
-        <div class="pillRow">
-          <div class="pill" data-prefix="{!firstname_fix}⭐ ">{!firstname_fix}⭐</div>
-          <div class="pill" data-prefix="{!lastname_fix}⭐ ">{!lastname_fix}⭐</div>
-          <div class="pill" data-prefix="⭐ ">⭐</div>
+        <div style="display:flex; gap:8px; margin-bottom:10px;">
+            <input id="subject" type="text" placeholder="Subject Line" style="margin:0; flex:1;" oninput="update(); autoSave();">
+            <button class="btn btnGreen" onclick="generateTitle()">Generate Title</button>
         </div>
 
-        <label>Subject Line</label>
-        <input id="subject" type="text">
-        <div id="subjectCounter" class="smallNote"></div>
-        <button class="btn btnGreen" id="genSubjects" style="margin:8px 0">Generate 1 Title</button>
-        <div class="subjects" id="subjectResults"></div>
-
-        <div class="divider"></div>
-        <label>Email Body (exactly 1–2 short paragraphs)</label>
-        <textarea id="body" class="bigBox"></textarea>
-
-        <div class="pillRow">
-          <div class="pill" data-bodytag="{!firstname_fix}⭐ ">{!firstname_fix}⭐</div>
-          <div class="pill" data-bodytag="{!lastname_fix}⭐ ">{!lastname_fix}⭐</div>
+        <div class="toolbar">
+            <button class="btn btnSmall" onclick="exec('bold')"><b>B</b></button>
+            <button class="btn btnSmall" onclick="exec('italic')"><i>I</i></button>
+            <button class="btn btnSmall" onclick="exec('foreColor','#d32f2f')" style="color:#d32f2f">A</button>
+            <button class="btn btnSmall" onclick="exec('foreColor','#111111')">A</button>
+            <button class="btn btnSmall" onclick="exec('createLink', prompt('Link URL:'))">Link</button>
+            <button class="btn btnSmall" onclick="insertImg()">Image + Link</button>
+            <div style="flex:1"></div>
+            <button class="btn btnSmall" onclick="exec('undo')">Undo</button>
         </div>
+        <div id="bodyEditor" contenteditable="true" oninput="update(); autoSave();"></div>
+        <textarea id="sourceEditor"></textarea>
 
-        <div style="margin-top:10px">
-          <button class="btn btnGreen" id="genBody">Generate 1 Short Body</button>
-          <button class="btn btnBlue" id="undoBody">Undo</button>
-          <button class="btn btnRed" id="clearBody">Clear</button>
+        <div style="margin-top:12px; display:flex; gap:8px;">
+            <button class="btn btnGreen" onclick="generateBody()" style="flex:2">Generate Body</button>
+            <button class="btn btnBlue" onclick="$('sigModal').classList.add('show')">Manage</button>
+            <button class="btn btnGreen" onclick="insertSig()">Insert</button>
+            <select id="sigSelect" style="width:140px; margin:0;"><option value="">Select Sig</option></select>
+            <button class="btn btnRed" onclick="clearBody()">Clear</button>
         </div>
-
-        <div class="divider"></div>
-        <h2>Image Generator</h2>
-        <button class="btn btnGreen" id="genImage" style="width:100%">Generate Image Prompt (max 2 paragraphs)</button>
-        <p class="smallNote">Copy & paste into Grok Imagine for the real image</p>
-        <textarea id="imageResult" style="min-height:130px;margin-top:8px" readonly></textarea>
-        <button class="btn btnBlue" id="copyImageDesc">Copy Image Prompt</button>
-
-        <div class="divider"></div>
-        <h2>Signatures</h2>
-        <button class="btn btnBlue" id="manageSigs">Manage Signatures</button>
-        <button class="btn btnGreen" id="insertSig">Insert Selected</button>
-        <p id="sigStatus" class="smallNote"></p>
-      </div>
-
-      <!-- RIGHT -->
-      <div class="card">
-        <h2>Preview + Copy</h2>
-        <div class="previewSubject"><strong>Subject:</strong> <span id="prevSub">...</span></div>
-        <div class="previewFrame" id="prevBody">Preview appears here...</div>
-        <button class="btn btnGreen" id="copyFull" style="width:100%;margin:12px 0">Copy Full Email (Clean)</button>
-        <button class="btn btnBlue" id="copySubject">Copy Subject</button>
-        <button class="btn btnBlue" id="copyBodyHtml">Copy Body HTML</button>
-      </div>
     </div>
-  </div>
+
+    <div class="card">
+        <div class="preview-subject-box">
+            <label style="font-weight:800; font-size:10px; color:var(--muted); display:block;">SUBJECT PREVIEW</label>
+            <span id="prevSub" style="font-weight:700;"></span>
+        </div>
+        <div style="display:flex; gap:8px; margin-bottom:15px;">
+            <button class="btn btnBlue" style="flex:1" onclick="copyText($('subject').value)">Copy Full Title</button>
+            <button class="btn btnBlue" style="flex:1" onclick="copyText(getWrappedBody())">Copy Body HTML</button>
+        </div>
+        <div class="preview-body-frame" id="prevBody"></div>
+        <div style="margin-top:15px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:700; font-size:13px;">
+                    <input type="checkbox" id="useWrapper" checked style="width:auto; margin:0;" onchange="update()"> 600px Wrapper
+                </label>
+                <button class="btn btnSmall" onclick="sendTest()">Send Test Email</button>
+            </div>
+            <button class="btn btnGreen" onclick="copyAll()" style="width:100%; height:60px; font-size:20px;">COPY FULL SWIPE</button>
+        </div>
+    </div>
+</div>
 
 <script>
-const $ = id => document.getElementById(id);
-function showToast(msg, err=false){
-  const t = $("toast");
-  t.textContent = msg;
-  t.style.border = err ? "2px solid var(--red)" : "2px solid var(--green)";
-  t.classList.add("show");
-  setTimeout(()=>t.classList.remove("show"), 2800);
-}
+    const $ = id => document.getElementById(id);
+    let activePrompt = "";
+    
+    // THE FIX: Load prompts from storage or use defaults
+    let prompts = JSON.parse(localStorage.getItem("esm_prompts")) || {
+        title: "Return ONLY one string. Curiosity tone. Use ⭐ if natural.",
+        body: "Write 2 short paragraphs. Start with ⭐{!firstname_fix}. Punchy marketing style.",
+        image: "Describe a high-converting image for this offer."
+    };
 
-// Auto-save Title & Body Prompts
-function loadCustomPrompts(){
-  if(localStorage.getItem("esm_customTitlePrompt")) $("customTitlePrompt").value = localStorage.getItem("esm_customTitlePrompt");
-  if(localStorage.getItem("esm_customBodyPrompt")) $("customBodyPrompt").value = localStorage.getItem("esm_customBodyPrompt");
-}
-function saveCustomPrompts(){
-  localStorage.setItem("esm_customTitlePrompt", $("customTitlePrompt").value);
-  localStorage.setItem("esm_customBodyPrompt", $("customBodyPrompt").value);
-}
+    function showToast(m) { const t=$("toast"); t.textContent=m; t.style.display="block"; setTimeout(()=>t.style.display="none",2500); }
+    
+    function toggleSidebar() { 
+        $("mainGrid").classList.toggle("sidebar-closed"); 
+        $("tglBtn").textContent = $("mainGrid").classList.contains("sidebar-closed") ? "SHOW" : "HIDE";
+    }
 
-// GROQ CALL, Generate Title, Generate Body, Image, etc. kept exactly as before
-async function callGroq(prompt){
-  const key = $("apiKey").value.trim() || localStorage.getItem("esm_apiKey") || "";
-  if(!key) return showToast("Groq API Key required", true);
-  try{
-    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method:"POST",
-      headers:{"Content-Type":"application/json","Authorization":`Bearer ${key}`},
-      body:JSON.stringify({model:$("model").value, messages:[{role:"user",content:prompt}], temperature:0.7, max_tokens:1200})
-    });
-    const data = await res.json();
-    return data.choices[0].message.content.trim();
-  }catch(e){
-    $("rawText").value = e.message;
-    showToast("API error – check Raw Output", true);
-    return null;
-  }
-}
+    function saveSettings() {
+        localStorage.setItem("esm_key", $("apiKey").value);
+        $("settingsModal").classList.remove("show");
+        showToast("Api Key Saved");
+    }
 
-async function generateSubjectsHard(){
-  $("subjectResults").innerHTML = "";
-  const prompt = $("customTitlePrompt").value + `\nOffer: ${$("offerName").value || "this offer"}\nBenefits: ${$("benefits").value || ""}`;
-  const text = await callGroq(prompt);
-  if(!text) return;
-  $("rawText").value = text;
-  const div = document.createElement("div");
-  div.className = "subjectItem";
-  div.innerHTML = `<div style="font-weight:900">${text}</div>`;
-  div.onclick = () => { $("subject").value = text; updatePreview(); showToast("Title selected"); };
-  $("subjectResults").appendChild(div);
-}
+    function openPrompt(type) {
+        activePrompt = type;
+        $("promptTitle").textContent = `${type.toUpperCase()} Prompt Settings`;
+        $("promptArea").value = prompts[type];
+        $("promptModal").classList.add("show");
+    }
 
-async function generateBodyHard(){
-  const prompt = $("customBodyPrompt").value + `\nOffer: ${$("offerName").value || "this offer"}\nBenefits: ${$("benefits").value || ""}`;
-  const text = await callGroq(prompt);
-  if(text){
-    $("body").value = text;
-    updatePreview();
-    showToast("Body generated");
-  }
-}
+    function closePrompt(save) {
+        if(save) {
+            prompts[activePrompt] = $("promptArea").value;
+            // THE FIX: Persist to localStorage
+            localStorage.setItem("esm_prompts", JSON.stringify(prompts));
+            showToast("Prompt Saved");
+        }
+        $("promptModal").classList.remove("show");
+    }
 
-function updatePreview(){
-  $("prevSub").textContent = $("subject").value.trim() || "...";
-  const paras = $("body").value.split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean);
-  $("prevBody").innerHTML = paras.length ? paras.map(p => `<p>${p.replace(/\n/g,"<br>")}</p>`).join("") : "Preview appears here...";
-}
+    function insertAtCaret(id, text) {
+        const el = $(id);
+        if (id === 'subject') {
+            const start = el.selectionStart;
+            const end = el.selectionEnd;
+            el.value = el.value.substring(0, start) + text + el.value.substring(end);
+            el.focus();
+            el.selectionStart = el.selectionEnd = start + text.length;
+        } else {
+            $("bodyEditor").focus();
+            document.execCommand('insertText', false, text);
+        }
+        update();
+    }
 
-$("genSubjects").onclick = generateSubjectsHard;
-$("genBody").onclick = generateBodyHard;
+    function exec(c, v=null) { $("bodyEditor").focus(); document.execCommand(c, false, v); update(); }
+    
+    function insertImg() {
+        const url = prompt("Image URL:");
+        if(!url) return;
+        const link = prompt("Destination Link (optional):");
+        const html = link ? `<a href="${link}" target="_blank"><img src="${url}" style="max-width:100%; height:auto;"></a>` : `<img src="${url}" style="max-width:100%; height:auto;">`;
+        exec('insertHTML', html);
+    }
+    
+    function toggleSource() {
+        const isSrc = $("sourceEditor").style.display === "block";
+        if(isSrc) {
+            $("bodyEditor").innerHTML = $("sourceEditor").value;
+            $("sourceEditor").style.display = "none";
+            $("bodyEditor").style.display = "block";
+            $("srcBtn").textContent = "HTML Source";
+        } else {
+            $("sourceEditor").value = $("bodyEditor").innerHTML;
+            $("bodyEditor").style.display = "none";
+            $("sourceEditor").style.display = "block";
+            $("srcBtn").textContent = "Visual Editor";
+        }
+    }
 
-$("copyFull").onclick = () => {
-  const full = $("subject").value.trim() + "\n\n" + $("body").value.trim();
-  navigator.clipboard.writeText(full).then(() => showToast("Full email copied clean"));
-};
+    async function callAI(p) {
+        const key = localStorage.getItem("esm_key");
+        if(!key) { showToast("Enter API Key in Settings"); return null; }
+        try {
+            const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method:"POST", headers:{"Authorization":`Bearer ${key}`,"Content-Type":"application/json"},
+                body: JSON.stringify({model:"llama-3.1-8b-instant", messages:[{role:"user",content:p}]})
+            });
+            const d = await res.json();
+            return d.choices[0].message.content.trim();
+        } catch(e) { return null; }
+    }
 
-$("saveKey").onclick = () => { localStorage.setItem("esm_apiKey", $("apiKey").value.trim()); showToast("Key saved"); };
-$("toggleTheme").onclick = () => document.body.classList.toggle("theme-slate");
-$("openRaw").onclick = () => $("rawModal").classList.add("show");
-$("closeRaw").onclick = () => $("rawModal").classList.remove("show");
+    async function generateTitle() {
+        const p = prompts.title + `\nOffer: ${$("offerName").value}\nBenefits: ${$("benefits").value}`;
+        const res = await callAI(p);
+        if(res) { $("subject").value = res.replace(/"/g,''); update(); autoSave(); }
+    }
 
-$("subject").oninput = updatePreview;
-$("body").oninput = updatePreview;
+    async function generateBody() {
+        const p = prompts.body + `\nOffer: ${$("offerName").value}\nBenefits: ${$("benefits").value}\nCTA: ${$("ctaText").value}`;
+        const res = await callAI(p);
+        if(res) { exec('insertHTML', res.replace(/\n/g,"<br>")); autoSave(); }
+    }
 
-// Save prompts automatically
-$("customTitlePrompt").oninput = saveCustomPrompts;
-$("customBodyPrompt").oninput = saveCustomPrompts;
+    function update() {
+        $("prevSub").textContent = $("subject").value;
+        $("prevBody").innerHTML = $("bodyEditor").innerHTML;
+    }
 
-// Load on start
-loadCustomPrompts();
-updatePreview();
+    function getWrappedBody() {
+        const content = $("bodyEditor").innerHTML;
+        if(!$("useWrapper").checked) return content;
+        return `<table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:600px; margin:0 auto;"><tr><td style="font-family:Arial, sans-serif; font-size:16px; line-height:1.6; color:#111111;">${content}</td></tr></table>`;
+    }
+
+    function autoSave() {
+        const data = { sub: $("subject").value, body: $("bodyEditor").innerHTML, offer: $("offerName").value, benefits: $("benefits").value, cta: $("ctaText").value };
+        localStorage.setItem("esm_draft", JSON.stringify(data));
+    }
+
+    function sendTest() {
+        const sub = encodeURIComponent($("subject").value);
+        const body = encodeURIComponent($("bodyEditor").innerText);
+        window.location.href = `mailto:?subject=${sub}&body=${body}`;
+    }
+
+    function clearBody() { if(confirm("Clear everything?")) { $("bodyEditor").innerHTML = ""; $("subject").value = ""; update(); autoSave(); } }
+    function copyText(t) { navigator.clipboard.writeText(t); showToast("Copied!"); }
+    function copyAll() { copyText(`${$("subject").value}\n\n${getWrappedBody()}`); }
+
+    window.onload = () => {
+        $("apiKey").value = localStorage.getItem("esm_key") || "";
+        const d = JSON.parse(localStorage.getItem("esm_draft"));
+        if(d) {
+            $("subject").value = d.sub || ""; $("bodyEditor").innerHTML = d.body || "";
+            $("offerName").value = d.offer || ""; $("benefits").value = d.benefits || ""; $("ctaText").value = d.cta || "";
+            update();
+        }
+    };
 </script>
 </body>
 </html>
