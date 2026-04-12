@@ -28,7 +28,6 @@
         .sidebar-content { transition: opacity 0.2s; }
         .sidebar-closed .sidebar-content { opacity: 0; visibility: hidden; height: 0; overflow: hidden; }
         
-        /* HIGHLY RESPONSIVE BUTTONS */
         .btn { 
             border: 2px solid rgba(0,0,0,0.1); background: var(--panel2); color: #111; 
             height: var(--btn-h); padding: 0 15px; border-radius: 8px; cursor: pointer; 
@@ -38,16 +37,8 @@
             position: relative;
             top: 0;
         }
-        .btn:hover { 
-            filter: brightness(1.05); 
-            top: -2px;
-            box-shadow: 0 6px 0px rgba(0,0,0,0.15);
-        }
-        .btn:active { 
-            top: 3px;
-            box-shadow: 0 1px 0px rgba(0,0,0,0.1);
-            transform: scale(0.98);
-        }
+        .btn:hover { filter: brightness(1.05); top: -2px; box-shadow: 0 6px 0px rgba(0,0,0,0.15); }
+        .btn:active { top: 3px; box-shadow: 0 1px 0px rgba(0,0,0,0.1); transform: scale(0.98); }
         
         .btnGreen { background: var(--green); color: #fff; }
         .btnBlue { background: var(--blue); color: #fff; }
@@ -82,33 +73,33 @@
 
 <div class="modal" id="apiModal"><div class="modalInner">
     <h2 style="color:var(--gold); margin-top:0;">API Keys</h2>
-    <label style="font-size:11px; font-weight:800;">GROQ KEY</label>
     <input id="apiKey" type="password" placeholder="Groq Key...">
-    <label style="font-size:11px; font-weight:800;">HUGGING FACE TOKEN</label>
     <input id="hfKey" type="password" placeholder="HF Token...">
     <button class="btn btnGreen" style="width:100%" onclick="saveKeys()">Save Keys</button>
     <button class="btn" style="width:100%; margin-top:10px;" onclick="$('apiModal').classList.remove('show')">Cancel</button>
 </div></div>
 
-<div class="modal" id="errorModal"><div class="modalInner">
-    <h2 style="color:var(--red); margin-top:0;">🐞 Debug Log</h2>
-    <div id="apiErrorLog" style="font-size:12px; background:#fff; border:2px solid var(--border); padding:12px; min-height:150px; margin-bottom:15px; color:#d32f2f; white-space:pre-wrap; overflow-y:auto; max-height:300px; font-family:monospace;">No errors recorded.</div>
-    <button class="btn btnBlue" style="width:100%" onclick="$('errorModal').classList.remove('show')">Close Log</button>
-</div></div>
-
-<div class="modal" id="promptModal"><div class="modalInner">
-    <h2 id="promptTitle" style="color:var(--gold); margin-top:0;">Edit Prompt</h2>
-    <textarea id="promptArea" style="min-height:200px;"></textarea>
-    <div style="display:flex; gap:10px; margin-top:10px;">
-        <button class="btn btnGreen" style="flex:1" onclick="closePrompt(true)">Save Changes</button>
-        <button class="btn btnRed" style="flex:1" onclick="closePrompt(false)">Cancel</button>
+<div class="modal" id="imgMgrModal">
+    <div class="modalInner">
+        <h2 style="color:var(--gold); margin-top:0;">Image Gallery</h2>
+        <label style="font-size:11px; font-weight:800;">GLOBAL AUTO-LINK</label>
+        <input id="globalImgLink" placeholder="https://your-main-offer.com" oninput="saveGlobalLink()">
+        
+        <div id="imgList" style="max-height:150px; overflow-y:auto; margin:10px 0; border:2px solid var(--border); background:#fff; padding:5px;"></div>
+        
+        <label style="font-size:11px; font-weight:800;">ADD NEW IMAGE</label>
+        <input id="imgNewName" placeholder="Label (e.g. Coffee Vibe)">
+        <input id="imgNewUrl" placeholder="Paste Image URL here...">
+        <input id="imgNavLink" placeholder="Specific Link (Optional)...">
+        
+        <button class="btn btnGreen" style="width:100%" onclick="addImgToGallery()">Add to Gallery</button>
+        <button class="btn" style="width:100%; margin-top:10px;" onclick="$('imgMgrModal').classList.remove('show')">Close</button>
     </div>
-</div></div>
+</div>
 
 <div class="topbar">
-    <div style="font-weight:900; color:var(--gold); font-size:24px; text-shadow: 1px 1px 0px rgba(0,0,0,0.1);">Email Swipe Machine</div>
+    <div style="font-weight:900; color:var(--gold); font-size:24px;">Email Swipe Machine</div>
     <div style="display:flex; gap:12px;">
-        <button class="btn btnRed btnSmall" onclick="$('errorModal').classList.add('show')">🐞 Debug</button>
         <button class="btn btnSmall" onclick="$('apiModal').classList.add('show')">🔑 API Keys</button>
         <button class="btn btnSmall" onclick="$('settingsModal').classList.add('show')">⚙️ Settings</button>
         <button class="btn btnBlue btnSmall" onclick="toggleSource()" id="srcBtn">HTML Source</button>
@@ -116,52 +107,28 @@
 </div>
 
 <div class="grid" id="mainGrid">
-    <div class="card" style="padding: 10px;">
+    <div class="card">
         <button class="btn btnSmall btnBlue" style="width:100%; margin-bottom:15px;" onclick="toggleSidebar()" id="tglBtn">HIDE SIDEBAR</button>
         <div class="sidebar-content">
-            <label style="font-weight:800; font-size:12px; color:var(--muted)">OFFER NAME</label>
+            <label style="font-weight:800; font-size:12px;">OFFER NAME</label>
             <input id="offerName" type="text" oninput="autoSave()">
-            
-            <label style="font-weight:800; font-size:12px; color:var(--muted)">BENEFITS (one per line)</label>
+            <label style="font-weight:800; font-size:12px;">BENEFITS</label>
             <textarea id="benefits" style="min-height:100px;" oninput="autoSave()"></textarea>
-            
-            <label style="font-weight:800; font-size:12px; color:var(--muted)">CTA TEXT</label>
+            <label style="font-weight:800; font-size:12px;">CTA TEXT</label>
             <input id="ctaText" value="Click here to see it" oninput="autoSave()">
-
-            <div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;">
-                <button class="btn btnBlue" onclick="openPrompt('title')">Edit Title Prompt 📝</button>
-                <button class="btn btnBlue" onclick="openPrompt('body')">Edit Body Prompt 📝</button>
-                <button class="btn btnBlue" onclick="openPrompt('image')">Edit Image Prompt 📝</button>
-            </div>
         </div>
     </div>
 
     <div class="card">
-        <div class="tag-row">
-            <button class="btn btnSmall" onclick="insertAtCaret('subject','{!firstname_fix}')">{!firstname_fix}</button>
-            <button class="btn btnSmall" onclick="insertAtCaret('subject','{!lastname_fix}')">{!lastname_fix}</button>
-            <button class="btn btnSmall" onclick="insertAtCaret('subject','⭐')">⭐</button>
-            <div style="flex:1"></div>
-            <select id="modelSelect" style="width:180px; margin:0; font-size:12px; font-weight:800;" onchange="autoSave()">
-                <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Groq)</option>
-                <option value="puter-gemini">Gemini (Puter - No Key)</option>
-                <option value="hf-mistral">Mistral 7B (HuggingFace)</option>
-                <option value="llama-3.1-8b-instant">Llama 3.1 8B (Groq)</option>
-            </select>
-        </div>
-        
         <div style="display:flex; gap:10px; margin-bottom:12px;">
-            <input id="subject" type="text" placeholder="Enter Subject Line..." style="margin:0; flex:1; font-weight:bold;" oninput="update(); autoSave();">
+            <input id="subject" type="text" placeholder="Subject..." style="margin:0; flex:1; font-weight:bold;" oninput="update(); autoSave();">
             <button class="btn btnGreen" onclick="generateTitle()">Generate</button>
         </div>
 
         <div class="toolbar">
-            <button class="btn btnIcon btnSmall" onclick="exec('bold')"><b>B</b></button>
-            <button class="btn btnIcon btnSmall" onclick="exec('italic')"><i>I</i></button>
-            <button class="btn btnIcon btnSmall" onclick="exec('foreColor','#d32f2f')" style="color:#d32f2f">A</button>
-            <button class="btn btnIcon btnSmall" onclick="exec('foreColor','#111111')">A</button>
-            <button class="btn btnSmall" onclick="exec('createLink', prompt('Link URL:'))">Link</button>
-            <button class="btn btnSmall" onclick="insertImg()">Image</button>
+            <button class="btn btnIcon btnSmall" onclick="exec('bold')">B</button>
+            <button class="btn btnIcon btnSmall" onclick="exec('italic')">I</button>
+            <button class="btn btnSmall" onclick="exec('createLink', prompt('Link:'))">Link</button>
             <div style="flex:1"></div>
             <button class="btn btnSmall" onclick="exec('undo')">Undo</button>
         </div>
@@ -169,210 +136,81 @@
         <textarea id="sourceEditor"></textarea>
 
         <div style="margin-top:15px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-            <button class="btn btnGreen" onclick="generateBody()" style="flex:2">Generate Email Body</button>
-            <select id="sigSelect" style="width:140px; margin:0;"><option value="">Signatures</option></select>
-            <button class="btn btnGreen" onclick="insertSig()">Insert</button>
+            <button class="btn btnGreen" onclick="generateBody()" style="flex:2">Generate Body</button>
+            <select id="imgGallerySelect" style="width:130px; margin:0; font-size:12px;"><option value="">Pick Image</option></select>
+            <button class="btn btnBlue" onclick="insertGalleryImg()">Insert</button>
+            <button class="btn btnBlue" onclick="insertRandomImg()">🎲 Random</button>
+            <button class="btn btnSmall" onclick="$('imgMgrModal').classList.add('show')">🖼️ Gallery</button>
             <button class="btn btnRed" onclick="clearBody()">Clear</button>
         </div>
     </div>
 
     <div class="card">
-        <div class="preview-subject-box">
-            <label style="font-weight:800; font-size:10px; color:var(--muted); display:block; margin-bottom:4px;">SUBJECT PREVIEW</label>
-            <span id="prevSub" style="font-weight:800; color:var(--blue);"></span>
-        </div>
-        
-        <div style="display:flex; gap:10px; margin-bottom:15px;">
-            <button class="btn btnBlue" style="flex:1" onclick="copyText($('subject').value)">Copy Title</button>
-            <button class="btn btnBlue" style="flex:1" onclick="copyText(getWrappedBody())">Copy HTML</button>
-        </div>
-
+        <div class="preview-subject-box"><span id="prevSub"></span></div>
         <div class="preview-body-frame" id="prevBody"></div>
-        
-        <div style="margin-top:15px;">
-            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:800; font-size:13px; margin-bottom:15px;">
-                <input type="checkbox" id="useWrapper" checked style="width:auto; margin:0; transform: scale(1.2);" onchange="update()"> Use 600px Wrapper
-            </label>
-            <button class="btn btnGreen" onclick="copyAll()" style="width:100%; height:70px; font-size:22px;">COPY FULL SWIPE</button>
-        </div>
+        <button class="btn btnGreen" onclick="copyAll()" style="width:100%; margin-top:15px; height:60px; font-size:20px;">COPY FULL SWIPE</button>
     </div>
 </div>
 
 <script>
     const $ = id => document.getElementById(id);
-    let activePrompt = "";
-    
-    // PERSISTENT PROMPTS
-    let prompts = JSON.parse(localStorage.getItem("esm_prompts")) || {
-        title: "Return ONLY one string.",
-        body: "Write 2 short paragraphs.",
-        image: "Describe a high-converting image for this offer."
-    };
+    let gallery = JSON.parse(localStorage.getItem("esm_gallery") || "[]");
 
     function showToast(m) { const t=$("toast"); t.textContent=m; t.style.display="block"; setTimeout(()=>t.style.display="none",2500); }
+    function exec(c, v=null) { $("bodyEditor").focus(); document.execCommand(c, false, v); update(); }
+    function update() { $("prevSub").textContent = $("subject").value; $("prevBody").innerHTML = $("bodyEditor").innerHTML; }
+
+    // --- GALLERY LOGIC ---
+    function saveGlobalLink() { localStorage.setItem("esm_global_link", $("globalImgLink").value); }
     
-    function toggleSidebar() { 
-        $("mainGrid").classList.toggle("sidebar-closed"); 
-        $("tglBtn").textContent = $("mainGrid").classList.contains("sidebar-closed") ? "SHOW SIDEBAR" : "HIDE SIDEBAR";
+    function renderGallery() {
+        $("globalImgLink").value = localStorage.getItem("esm_global_link") || "";
+        $("imgList").innerHTML = gallery.map((img, i) => `
+            <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #eee; background:#fff;">
+                <span style="font-size:12px;">${img.name}</span>
+                <button class="btnRed" style="height:20px; padding:0 5px;" onclick="delImg(${i})">X</button>
+            </div>`).join('');
+        $("imgGallerySelect").innerHTML = '<option value="">Pick Image</option>' + 
+            gallery.map((img, i) => `<option value="${i}">${img.name}</option>`).join('');
     }
 
-    function saveKeys() {
-        localStorage.setItem("esm_key", $("apiKey").value);
-        localStorage.setItem("esm_hf_key", $("hfKey").value);
-        $("apiModal").classList.remove("show");
-        showToast("Keys Saved Successfully");
+    function addImgToGallery() {
+        const name = $("imgNewName").value, url = $("imgNewUrl").value, link = $("imgNavLink").value;
+        if(!name || !url) return;
+        gallery.push({name, url, link});
+        localStorage.setItem("esm_gallery", JSON.stringify(gallery));
+        $("imgNewName").value = ""; $("imgNewUrl").value = ""; $("imgNavLink").value = "";
+        renderGallery();
     }
 
-    async function callAI(p) {
-        const groqKey = localStorage.getItem("esm_key");
-        const hfKey = localStorage.getItem("esm_hf_key");
-        const selectedModel = $("modelSelect").value;
-        const errorLog = $("apiErrorLog");
-        
-        try {
-            if (selectedModel === "puter-gemini") {
-                const response = await puter.ai.chat(p);
-                return response.toString();
-            }
-            
-            if (selectedModel === "hf-mistral") {
-                if(!hfKey) throw new Error("Missing HF Token in API Settings");
-                const res = await fetch("https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3", {
-                    method: "POST", headers: { "Authorization": `Bearer ${hfKey}`, "Content-Type": "application/json" },
-                    body: JSON.stringify({ inputs: p })
-                });
-                const d = await res.json();
-                if (d.error) throw new Error(d.error);
-                return d[0].generated_text.replace(p, "").trim();
-            }
+    window.delImg = i => { gallery.splice(i, 1); localStorage.setItem("esm_gallery", JSON.stringify(gallery)); renderGallery(); };
 
-            if(!groqKey) throw new Error("Missing Groq API Key in API Settings");
-            const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                method:"POST", headers:{"Authorization":`Bearer ${groqKey}`,"Content-Type":"application/json"},
-                body: JSON.stringify({model:selectedModel, messages:[{role:"user",content:p}]})
-            });
-            const d = await res.json();
-            if (!res.ok) throw new Error(d.error ? d.error.message : "API Error");
-            return d.choices[0].message.content.trim();
-
-        } catch(e) { 
-            errorLog.textContent = `[${new Date().toLocaleTimeString()}] ${e.message}\n\n`;
-            showToast("AI Failed - Check Debug Log");
-            return null; 
-        }
-    }
-
-    function openPrompt(type) {
-        activePrompt = type;
-        $("promptTitle").textContent = `Editing ${type.toUpperCase()} Prompt`;
-        $("promptArea").value = prompts[type];
-        $("promptModal").classList.add("show");
-    }
-    
-    function closePrompt(save) {
-        if(save) {
-            prompts[activePrompt] = $("promptArea").value;
-            localStorage.setItem("esm_prompts", JSON.stringify(prompts));
-            showToast("Prompt Saved to Browser Memory");
-        }
-        $("promptModal").classList.remove("show");
-    }
-
-    function insertAtCaret(id, text) {
-        const el = $(id);
-        const start = el.selectionStart;
-        const end = el.selectionEnd;
-        el.value = el.value.substring(0, start) + text + el.value.substring(end);
-        el.focus();
-        el.selectionStart = el.selectionEnd = start + text.length;
-        update();
-    }
-
-    function exec(c, v=null) { 
-        $("bodyEditor").focus();
-        document.execCommand(c, false, v); 
-        update(); 
-    }
-    
-    function insertImg() {
-        const url = prompt("Image URL:");
-        if(!url) return;
-        const link = prompt("Link URL (optional):");
-        const html = link ? `<a href="${link}" target="_blank"><img src="${url}" style="max-width:100%;"></a>` : `<img src="${url}" style="max-width:100%;">`;
+    function insertGalleryImg(index = null) {
+        const idx = index !== null ? index : $("imgGallerySelect").value;
+        if(idx === "" || !gallery[idx]) return;
+        const img = gallery[idx];
+        const link = img.link || localStorage.getItem("esm_global_link") || "";
+        let html = `<div style="text-align:center; margin:20px 0;">`;
+        html += link ? `<a href="${link}" target="_blank"><img src="${img.url}" style="max-width:100%; border-radius:10px;"></a>` : `<img src="${img.url}" style="max-width:100%; border-radius:10px;">`;
+        html += `</div><br>`;
         exec('insertHTML', html);
     }
-    
-    function toggleSource() {
-        const isSrc = $("sourceEditor").style.display === "block";
-        if(isSrc) {
-            $("bodyEditor").innerHTML = $("sourceEditor").value;
-            $("sourceEditor").style.display = "none";
-            $("bodyEditor").style.display = "block";
-            $("srcBtn").textContent = "HTML Source";
-        } else {
-            $("sourceEditor").value = $("bodyEditor").innerHTML;
-            $("bodyEditor").style.display = "none";
-            $("sourceEditor").style.display = "block";
-            $("srcBtn").textContent = "Visual Editor";
-        }
+
+    function insertRandomImg() {
+        if(gallery.length === 0) return showToast("Gallery Empty");
+        insertGalleryImg(Math.floor(Math.random() * gallery.length));
     }
 
-    async function generateTitle() {
-        const p = prompts.title + `\nOffer: ${$("offerName").value}\nBenefits: ${$("benefits").value}`;
-        const res = await callAI(p);
-        if(res) { $("subject").value = res.replace(/"/g,''); update(); autoSave(); }
-    }
-
-    async function generateBody() {
-        const p = prompts.body + `\nOffer: ${$("offerName").value}\nBenefits: ${$("benefits").value}\nCTA: ${$("ctaText").value}`;
-        const res = await callAI(p);
-        if(res) { exec('insertHTML', res.replace(/\n/g,"<br>")); autoSave(); }
-    }
-
-    function update() {
-        $("prevSub").textContent = $("subject").value;
-        $("prevBody").innerHTML = $("bodyEditor").innerHTML;
-    }
-
-    function getWrappedBody() {
-        const content = $("bodyEditor").innerHTML;
-        if(!$("useWrapper").checked) return content;
-        return `<table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:600px; margin:0 auto;"><tr><td style="font-family:Arial, sans-serif; font-size:16px; line-height:1.6; color:#111111;">${content}</td></tr></table>`;
-    }
-
+    // --- EXISTING APP LOGIC ---
     function autoSave() {
-        const data = {
-            sub: $("subject").value,
-            body: $("bodyEditor").innerHTML,
-            offer: $("offerName").value,
-            benefits: $("benefits").value,
-            cta: $("ctaText").value,
-            model: $("modelSelect").value
-        };
+        const data = { sub: $("subject").value, body: $("bodyEditor").innerHTML, offer: $("offerName").value, benefits: $("benefits").value };
         localStorage.setItem("esm_draft", JSON.stringify(data));
     }
 
-    function loadDraft() {
-        const d = JSON.parse(localStorage.getItem("esm_draft"));
-        if(d) {
-            $("subject").value = d.sub || "";
-            $("bodyEditor").innerHTML = d.body || "";
-            $("offerName").value = d.offer || "";
-            $("benefits").value = d.benefits || "";
-            $("ctaText").value = d.cta || "";
-            if(d.model) $("modelSelect").value = d.model;
-            update();
-        }
-    }
-
-    function clearBody() { if(confirm("This will wipe your current work. Proceed?")) { $("bodyEditor").innerHTML = ""; $("subject").value = ""; update(); autoSave(); } }
-    function copyText(t) { navigator.clipboard.writeText(t); showToast("Copied to Clipboard!"); }
-    function copyAll() { copyText(`${$("subject").value}\n\n${getWrappedBody()}`); }
-
     window.onload = () => {
-        $("apiKey").value = localStorage.getItem("esm_key") || "";
-        $("hfKey").value = localStorage.getItem("esm_hf_key") || "";
-        loadDraft();
+        const d = JSON.parse(localStorage.getItem("esm_draft"));
+        if(d) { $("subject").value=d.sub; $("bodyEditor").innerHTML=d.body; $("offerName").value=d.offer; $("benefits").value=d.benefits; update(); }
+        renderGallery();
     };
 </script>
 </body>
