@@ -77,7 +77,6 @@
         <button class="btn btnSmall" onclick="$('settingsModal').classList.add('show')">⚙️ Api Key Settings</button>
         <button class="btn btnSmall" onclick="toggleSource()" id="srcBtn">HTML Source</button>
         <button class="btn btnSmall" onclick="document.body.classList.toggle('theme-slate')">Toggle Slate</button>
-        <button class="btn btnSmall" onclick="saveAllContent()" style="background:#b8860b;color:#fff;">💾 Save All Content</button>
     </div>
 </div>
 <div class="grid" id="mainGrid">
@@ -153,7 +152,7 @@
     const $ = id => document.getElementById(id);
     let activePrompt = "";
    
-    // THE FIX: Load prompts from storage or use defaults
+    // FIXED: Load prompts from storage or use defaults
     let prompts = JSON.parse(localStorage.getItem("esm_prompts")) || {
         title: "Return ONLY one string. Curiosity tone. Use ⭐ if natural.",
         body: "Write 2 short paragraphs. Start with ⭐{!firstname_fix}. Punchy marketing style.",
@@ -185,7 +184,7 @@
     function closePrompt(save) {
         if(save) {
             prompts[activePrompt] = $("promptArea").value;
-            localStorage.setItem("esm_prompts", JSON.stringify(prompts));   // FIXED - now saves
+            localStorage.setItem("esm_prompts", JSON.stringify(prompts));  // FIXED - now properly saves
             showToast("Prompt Saved");
         }
         $("promptModal").classList.remove("show");
@@ -243,7 +242,12 @@
     async function generateTitle() {
         const p = prompts.title + `\nOffer: ${$("offerName").value}\nBenefits: ${$("benefits").value}`;
         const res = await callAI(p);
-        if(res) { $("subject").value = res.replace(/"/g,''); update(); autoSave(); }
+        if(res) { 
+            $("subject").value = res.replace(/"/g,''); 
+            update(); 
+            autoSave(); 
+            showToast("1 Title generated");
+        }
     }
     async function generateBody() {
         const p = prompts.body + `\nOffer: ${$("offerName").value}\nBenefits: ${$("benefits").value}\nCTA: ${$("ctaText").value}`;
@@ -269,13 +273,6 @@
         };
         localStorage.setItem("esm_draft", JSON.stringify(data));
     }
-
-    // NEW: Save All Content button
-    function saveAllContent() {
-        autoSave();
-        showToast("All content saved");
-    }
-
     function sendTest() {
         const sub = encodeURIComponent($("subject").value);
         const body = encodeURIComponent($("bodyEditor").innerText);
@@ -295,7 +292,10 @@
     window.onload = () => {
         $("apiKey").value = localStorage.getItem("esm_key") || "";
         
-        // Load draft
+        // FIXED: Load saved prompts
+        const savedPrompts = JSON.parse(localStorage.getItem("esm_prompts"));
+        if(savedPrompts) prompts = savedPrompts;
+
         const d = JSON.parse(localStorage.getItem("esm_draft"));
         if(d) {
             $("subject").value = d.sub || ""; 
@@ -305,10 +305,6 @@
             $("ctaText").value = d.cta || "";
             update();
         }
-
-        // Load custom prompts (title, body, image)
-        const savedPrompts = JSON.parse(localStorage.getItem("esm_prompts"));
-        if(savedPrompts) prompts = savedPrompts;
     };
 </script>
 </body>
