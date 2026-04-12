@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Email Swipe Machine</title>
+    <script src="https://js.puter.com/v2/"></script>
     <style>
         :root {
             --bg: #d4c4a8; --panel: #f5f0e6; --panel2: #efe6d8; --border: #c9b896;
@@ -59,14 +60,26 @@
 
 <div class="modal" id="settingsModal">
     <div class="modalInner">
-        <h2 style="color:var(--gold); margin-top:0;">Api Key Settings</h2>
-        <label style="font-size:12px; font-weight:800;">GROQ API KEY</label>
-        <input id="apiKey" type="password" placeholder="Paste key...">
+        <h2 style="color:var(--gold); margin-top:0;">UI Settings</h2>
+        <button class="btn btnBlue" style="width:100%; margin-bottom:10px;" onclick="document.body.classList.toggle('theme-slate')">Toggle Slate Theme</button>
+        <button class="btn btnSmall" style="width:100%; margin-top:10px;" onclick="$('settingsModal').classList.remove('show')">Close</button>
+    </div>
+</div>
+
+<div class="modal" id="apiModal">
+    <div class="modalInner">
+        <h2 style="color:var(--gold); margin-top:0;">API Keys & Debug</h2>
         
-        <label style="font-size:10px; font-weight:800; color:var(--red);">LAST API ERROR (DEBUG)</label>
-        <div id="apiErrorLog" style="font-size:11px; background:#fff; border:1px solid var(--border); padding:8px; min-height:40px; margin-bottom:12px; color:#d32f2f; white-space:pre-wrap; overflow-y:auto; max-height:100px;">No errors logged.</div>
+        <label style="font-size:11px; font-weight:800;">GROQ KEY</label>
+        <input id="apiKey" type="password" placeholder="Groq Key...">
         
-        <button class="btn btnGreen" style="width:100%" onclick="saveSettings()">Save & Close</button>
+        <label style="font-size:11px; font-weight:800;">HUGGING FACE TOKEN (FREE)</label>
+        <input id="hfKey" type="password" placeholder="HF Token...">
+        
+        <label style="font-size:10px; font-weight:800; color:var(--red);">DEBUG LOG</label>
+        <div id="apiErrorLog" style="font-size:11px; background:#fff; border:1px solid var(--border); padding:8px; min-height:40px; margin-bottom:12px; color:#d32f2f; white-space:pre-wrap; overflow-y:auto; max-height:100px;">No errors.</div>
+        
+        <button class="btn btnGreen" style="width:100%" onclick="saveKeys()">Save & Close</button>
     </div>
 </div>
 
@@ -95,9 +108,9 @@
 <div class="topbar">
     <div style="font-weight:900; color:var(--gold); font-size:22px;">Email Swipe Machine</div>
     <div style="display:flex; gap:10px;">
-        <button class="btn btnSmall" onclick="$('settingsModal').classList.add('show')">⚙️ Api Key Settings</button>
+        <button class="btn btnSmall" onclick="$('apiModal').classList.add('show')">🔑 API Keys</button>
+        <button class="btn btnSmall" onclick="$('settingsModal').classList.add('show')">⚙️ Settings</button>
         <button class="btn btnSmall" onclick="toggleSource()" id="srcBtn">HTML Source</button>
-        <button class="btn btnSmall" onclick="document.body.classList.toggle('theme-slate')">Toggle Slate</button>
     </div>
 </div>
 
@@ -129,10 +142,10 @@
             <button class="btn btnSmall" onclick="insertAtCaret('subject','⭐')">⭐</button>
             <div style="flex:1"></div>
             <select id="modelSelect" style="width:160px; margin:0; font-size:12px; font-weight:700;" onchange="autoSave()">
-                <option value="llama-3.1-8b-instant">Llama 3.1 8B (Fast)</option>
-                <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Pro)</option>
-                <option value="mixtral-8x7b-32768">Mixtral 8x7B (Deep)</option>
-                <option value="gemma2-9b-it">Gemma 2 9B (Diverse)</option>
+                <option value="puter-gemini">Gemini (Puter - No Key)</option>
+                <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Groq)</option>
+                <option value="hf-mistral">Mistral 7B (HuggingFace)</option>
+                <option value="llama-3.1-8b-instant">Llama 3.1 8B (Groq)</option>
             </select>
         </div>
         
@@ -204,39 +217,53 @@
         $("tglBtn").textContent = $("mainGrid").classList.contains("sidebar-closed") ? "SHOW" : "HIDE";
     }
 
-    function saveSettings() {
+    function saveKeys() {
         localStorage.setItem("esm_key", $("apiKey").value);
-        $("settingsModal").classList.remove("show");
-        showToast("Api Key Saved");
+        localStorage.setItem("esm_hf_key", $("hfKey").value);
+        $("apiModal").classList.remove("show");
+        showToast("Keys Saved");
     }
 
     async function callAI(p) {
-        const key = localStorage.getItem("esm_key");
+        const groqKey = localStorage.getItem("esm_key");
+        const hfKey = localStorage.getItem("esm_hf_key");
         const selectedModel = $("modelSelect").value;
         const errorLog = $("apiErrorLog");
         
-        if(!key) { showToast("Enter API Key in Settings"); return null; }
-        
         try {
-            const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                method:"POST", headers:{"Authorization":`Bearer ${key}`,"Content-Type":"application/json"},
-                body: JSON.stringify({model:selectedModel, messages:[{role:"user",content:p}]})
-            });
-            
-            const d = await res.json();
-            
-            if (!res.ok) {
-                const errMsg = d.error ? d.error.message : "Unknown API Error";
-                errorLog.textContent = `Error (${res.status}): ${errMsg}`;
-                showToast("AI Failed - Check Settings for Error");
-                return null;
+            // OPTION 1: PUTER (GEMINI)
+            if (selectedModel === "puter-gemini") {
+                const response = await puter.ai.chat(p);
+                errorLog.textContent = "Last Puter request successful.";
+                return response.toString();
             }
             
-            errorLog.textContent = "Last request successful.";
+            // OPTION 2: HUGGING FACE
+            if (selectedModel === "hf-mistral") {
+                if(!hfKey) { showToast("Enter HF Token"); return null; }
+                const res = await fetch("https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3", {
+                    method: "POST", headers: { "Authorization": `Bearer ${hfKey}`, "Content-Type": "application/json" },
+                    body: JSON.stringify({ inputs: p })
+                });
+                const d = await res.json();
+                if (d.error) throw new Error(d.error);
+                return d[0].generated_text.replace(p, "").trim();
+            }
+
+            // OPTION 3: GROQ
+            if(!groqKey) { showToast("Enter Groq Key"); return null; }
+            const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method:"POST", headers:{"Authorization":`Bearer ${groqKey}`,"Content-Type":"application/json"},
+                body: JSON.stringify({model:selectedModel, messages:[{role:"user",content:p}]})
+            });
+            const d = await res.json();
+            if (!res.ok) throw new Error(d.error ? d.error.message : "Groq API Error");
+            errorLog.textContent = "Last Groq request successful.";
             return d.choices[0].message.content.trim();
+
         } catch(e) { 
-            errorLog.textContent = `Network Error: ${e.message}`;
-            showToast("Network Error - Check Settings");
+            errorLog.textContent = `Error: ${e.message}`;
+            showToast("AI Failed - Check API Modal");
             return null; 
         }
     }
@@ -372,6 +399,7 @@
 
     window.onload = () => {
         $("apiKey").value = localStorage.getItem("esm_key") || "";
+        $("hfKey").value = localStorage.getItem("esm_hf_key") || "";
         loadDraft();
         renderSigs();
     };
