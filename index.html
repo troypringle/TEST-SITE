@@ -28,7 +28,6 @@
         .sidebar-content { transition: opacity 0.2s; }
         .sidebar-closed .sidebar-content { opacity: 0; visibility: hidden; height: 0; overflow: hidden; }
         
-        /* HIGHLY RESPONSIVE BUTTONS */
         .btn { 
             border: 2px solid rgba(0,0,0,0.1); background: var(--panel2); color: #111; 
             height: var(--btn-h); padding: 0 15px; border-radius: 8px; cursor: pointer; 
@@ -48,7 +47,7 @@
         .btnSmall { height: 32px; font-size: 13px; }
 
         input, select, textarea { width: 100%; padding: 10px; border: 2px solid var(--border); border-radius: 8px; margin-bottom: 12px; background: #fff; }
-        .toolbar { display: flex; gap: 6px; background: var(--panel2); padding: 8px; border: 2px solid var(--border); border-bottom: 0; border-radius: 8px 8px 0 0; }
+        .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; background: var(--panel2); padding: 8px; border: 2px solid var(--border); border-bottom: 0; border-radius: 8px 8px 0 0; }
         
         #bodyEditor, #sourceEditor { width: 100%; max-width: 600px; min-height: 450px; background: #fff; border: 2px solid var(--border); padding: 15px; outline: none; margin: 0 auto; overflow-y: auto; }
         #sourceEditor { display: none; font-family: monospace; }
@@ -96,6 +95,20 @@
         <button class="btn btnRed" style="flex:1" onclick="closePrompt(false)">Cancel</button>
     </div>
 </div></div>
+
+<div class="modal" id="sigMgrModal">
+    <div class="modalInner">
+        <h2 style="color:var(--gold); margin-top:0;">Manage Signatures</h2>
+        <div id="sigList" style="max-height:150px; overflow-y:auto; margin:10px 0; border:2px solid var(--border); background:#fff; padding:5px;"></div>
+        
+        <label style="font-size:11px; font-weight:800;">ADD NEW SIGNATURE</label>
+        <input id="sigNewName" placeholder="Label (e.g. My Main Sig)">
+        <textarea id="sigNewHTML" placeholder="Paste HTML or text here..." style="min-height:100px;"></textarea>
+        
+        <button class="btn btnGreen" style="width:100%" onclick="addSig()">Save Signature</button>
+        <button class="btn" style="width:100%; margin-top:10px;" onclick="$('sigMgrModal').classList.remove('show')">Close</button>
+    </div>
+</div>
 
 <div class="modal" id="imgMgrModal">
     <div class="modalInner">
@@ -171,7 +184,14 @@
             <button class="btn btnIcon btnSmall" onclick="exec('foreColor','#d32f2f')" style="color:#d32f2f">A</button>
             <button class="btn btnIcon btnSmall" onclick="exec('foreColor','#111111')">A</button>
             <button class="btn btnSmall" onclick="exec('createLink', prompt('Link URL:'))">Link</button>
-            <button class="btn btnSmall" onclick="insertImg()">Image</button> 
+            <button class="btn btnSmall" onclick="insertImg()">Manual Img</button>
+            
+            <span style="border-left:2px solid var(--border); margin:0 4px;"></span>
+            <select id="imgGallerySelect" style="width:110px; margin:0; padding:0 4px; font-size:12px; height:32px; border-radius:4px;"><option value="">Gallery...</option></select>
+            <button class="btn btnBlue btnSmall" onclick="insertGalleryImg()">Insert</button>
+            <button class="btn btnBlue btnSmall" onclick="insertRandomImg()" title="Surprise Me">🎲 Random</button>
+            <button class="btn btnSmall" onclick="$('imgMgrModal').classList.add('show')" title="Manage Gallery">🖼️</button>
+            
             <div style="flex:1"></div>
             <button class="btn btnSmall" onclick="exec('undo')">Undo</button>
         </div>
@@ -180,13 +200,9 @@
 
         <div style="margin-top:15px; display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
             <button class="btn btnGreen" onclick="generateBody()" style="flex:2">Generate Body</button>
-            <select id="sigSelect" style="width:110px; margin:0; font-size:12px;"><option value="">Signatures</option></select>
+            <select id="sigSelect" style="width:140px; margin:0; font-size:12px;"><option value="">Signatures</option></select>
             <button class="btn btnBlue btnSmall" onclick="insertSig()">Ins. Sig</button>
-            
-            <select id="imgGallerySelect" style="width:110px; margin:0; font-size:12px;"><option value="">Pick Image</option></select>
-            <button class="btn btnBlue btnSmall" onclick="insertGalleryImg()">Ins. Img</button>
-            <button class="btn btnBlue btnSmall" onclick="insertRandomImg()" title="Surprise Me">🎲</button>
-            <button class="btn btnSmall" onclick="$('imgMgrModal').classList.add('show')" title="Manage Gallery">🖼️</button>
+            <button class="btn btnSmall" onclick="$('sigMgrModal').classList.add('show')" title="Manage Signatures">Manage Sigs</button>
             
             <button class="btn btnRed btnSmall" onclick="clearBody()">Clear</button>
         </div>
@@ -218,15 +234,14 @@
     const $ = id => document.getElementById(id);
     let activePrompt = "";
     
-    // PERSISTENT PROMPTS
     let prompts = JSON.parse(localStorage.getItem("esm_prompts")) || {
         title: "Return ONLY one string.",
         body: "Write 2 short paragraphs.",
         image: "Describe a high-converting image for this offer."
     };
 
-    // IMAGE GALLERY VARIABLE
     let gallery = JSON.parse(localStorage.getItem("esm_gallery") || "[]");
+    let signatures = JSON.parse(localStorage.getItem("esm_signatures") || "[]"); // RESTORED
 
     function showToast(m) { const t=$("toast"); t.textContent=m; t.style.display="block"; setTimeout(()=>t.style.display="none",2500); }
     
@@ -242,7 +257,7 @@
         showToast("Keys Saved Successfully");
     }
 
-    // YOUR AI LOGIC (Intact with Debugging)
+    // AI LOGIC
     async function callAI(p) {
         const groqKey = localStorage.getItem("esm_key");
         const hfKey = localStorage.getItem("esm_hf_key");
@@ -282,14 +297,13 @@
         }
     }
 
-    // PROMPT EDITOR LOGIC
+    // PROMPTS
     function openPrompt(type) {
         activePrompt = type;
         $("promptTitle").textContent = `Editing ${type.toUpperCase()} Prompt`;
         $("promptArea").value = prompts[type];
         $("promptModal").classList.add("show");
     }
-    
     function closePrompt(save) {
         if(save) {
             prompts[activePrompt] = $("promptArea").value;
@@ -315,7 +329,6 @@
         update(); 
     }
     
-    // OLD MANUAL IMAGE TOOL (Left intact)
     function insertImg() {
         const url = prompt("Image URL:");
         if(!url) return;
@@ -363,31 +376,66 @@
     }
 
     function autoSave() {
-        const data = {
-            sub: $("subject").value,
-            body: $("bodyEditor").innerHTML,
-            offer: $("offerName").value,
-            benefits: $("benefits").value,
-            cta: $("ctaText").value,
-            model: $("modelSelect").value
-        };
+        const data = { sub: $("subject").value, body: $("bodyEditor").innerHTML, offer: $("offerName").value, benefits: $("benefits").value, cta: $("ctaText").value, model: $("modelSelect").value };
         localStorage.setItem("esm_draft", JSON.stringify(data));
     }
 
     function loadDraft() {
         const d = JSON.parse(localStorage.getItem("esm_draft"));
         if(d) {
-            $("subject").value = d.sub || "";
-            $("bodyEditor").innerHTML = d.body || "";
-            $("offerName").value = d.offer || "";
-            $("benefits").value = d.benefits || "";
-            $("ctaText").value = d.cta || "";
+            $("subject").value = d.sub || ""; $("bodyEditor").innerHTML = d.body || ""; $("offerName").value = d.offer || ""; $("benefits").value = d.benefits || ""; $("ctaText").value = d.cta || "";
             if(d.model) $("modelSelect").value = d.model;
             update();
         }
     }
 
-    // --- NEW IMAGE GALLERY LOGIC ---
+    // --- RESTORED SIGNATURE LOGIC ---
+    function renderSigs() {
+        const list = $("sigList");
+        if(list) {
+            list.innerHTML = signatures.map((sig, i) => `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; border-bottom:1px solid #eee; background: white; margin-bottom: 2px;">
+                    <span style="font-size:12px; font-weight:bold; color: #333;">${sig.name}</span>
+                    <button class="btn btnRed btnSmall" style="height:22px; padding:0 8px; font-size:10px;" onclick="delSig(${i})">Del</button>
+                </div>
+            `).join('');
+        }
+        const select = $("sigSelect");
+        if(select) {
+            select.innerHTML = '<option value="">Signatures...</option>' + 
+                signatures.map((sig, i) => `<option value="${i}">${sig.name}</option>`).join('');
+        }
+    }
+
+    function addSig() {
+        const name = $("sigNewName").value;
+        const html = $("sigNewHTML").value;
+        if(!name || !html) { alert("Please provide a Name and HTML/Text."); return; }
+        
+        signatures.push({ name, html });
+        localStorage.setItem("esm_signatures", JSON.stringify(signatures));
+        
+        $("sigNewName").value = ""; $("sigNewHTML").value = "";
+        renderSigs();
+        showToast("Signature Added!");
+    }
+
+    window.delSig = function(i) {
+        if(confirm("Delete this signature?")) {
+            signatures.splice(i, 1);
+            localStorage.setItem("esm_signatures", JSON.stringify(signatures));
+            renderSigs();
+        }
+    };
+
+    function insertSig() {
+        const idx = $("sigSelect").value;
+        if(idx === "" || !signatures[idx]) { showToast("Select a signature first!"); return; }
+        exec('insertHTML', "<br><br>" + signatures[idx].html);
+    }
+
+
+    // --- IMAGE GALLERY LOGIC ---
     function saveGlobalLink() { localStorage.setItem("esm_global_link", $("globalImgLink").value); }
     
     function renderGallery() {
@@ -401,10 +449,9 @@
                 </div>
             `).join('');
         }
-        
         const select = $("imgGallerySelect");
         if(select) {
-            select.innerHTML = '<option value="">Pick Image</option>' + 
+            select.innerHTML = '<option value="">Gallery...</option>' + 
                 gallery.map((img, i) => `<option value="${i}">${img.name}</option>`).join('');
         }
     }
@@ -414,10 +461,8 @@
         const url = $("imgNewUrl").value;
         const link = $("imgNavLink").value;
         if(!name || !url) { alert("Please provide at least a Name and Image URL."); return; }
-        
         gallery.push({ name, url, link });
         localStorage.setItem("esm_gallery", JSON.stringify(gallery));
-        
         $("imgNewName").value = ""; $("imgNewUrl").value = ""; $("imgNavLink").value = "";
         renderGallery();
         showToast("Image Added!");
@@ -446,7 +491,6 @@
             html += `<img src="${img.url}" style="max-width:100%; border-radius:10px;">`;
         }
         html += `</div><br>`;
-        
         exec('insertHTML', html);
     }
 
@@ -456,11 +500,6 @@
         showToast("Random Image Inserted!");
     }
     
-    // Placeholder for your insert signature button so it doesn't crash
-    function insertSig() {
-        showToast("Signature logic goes here!");
-    }
-
     function clearBody() { if(confirm("This will wipe your current work. Proceed?")) { $("bodyEditor").innerHTML = ""; $("subject").value = ""; update(); autoSave(); } }
     function copyText(t) { navigator.clipboard.writeText(t); showToast("Copied to Clipboard!"); }
     function copyAll() { copyText(`${$("subject").value}\n\n${getWrappedBody()}`); }
@@ -469,7 +508,8 @@
         $("apiKey").value = localStorage.getItem("esm_key") || "";
         $("hfKey").value = localStorage.getItem("esm_hf_key") || "";
         loadDraft();
-        renderGallery(); // Initializes the gallery
+        renderGallery(); 
+        renderSigs(); // Ensures signatures load on startup
     };
 </script>
 </body>
