@@ -23,7 +23,6 @@
         
         .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px; position: relative; }
         
-        /* Sidebar */
         .sidebar-content { transition: opacity 0.2s; }
         .sidebar-closed .sidebar-content { opacity: 0; visibility: hidden; height: 0; overflow: hidden; }
         .toggle-btn { cursor: pointer; background: var(--gold); color: #fff; border: none; height: 30px; border-radius: 6px; width: 100%; margin-bottom: 15px; font-weight: 900; font-size: 12px; }
@@ -39,17 +38,14 @@
         .btnRed { background: var(--red); color: #fff; border: none; }
         .btnIcon { padding: 0 10px; font-size: 18px; }
 
-        /* Input & Editor */
         input, select, textarea { width: 100%; padding: 10px; border: 2px solid var(--border); border-radius: 8px; margin-bottom: 12px; background: #fff; }
         .toolbar { display: flex; gap: 4px; background: var(--panel2); padding: 8px; border: 2px solid var(--border); border-bottom: 0; border-radius: 8px 8px 0 0; }
         #bodyEditor, #sourceEditor { width: 100%; max-width: 600px; min-height: 450px; background: #fff; border: 2px solid var(--border); padding: 15px; outline: none; margin: 0 auto; overflow-y: auto; }
         #sourceEditor { display: none; font-family: monospace; }
 
-        /* Preview Area */
         .preview-subject-box { background: #fff; border: 2px solid var(--border); padding: 12px; border-radius: 8px; margin-bottom: 20px; min-height: 50px; }
         .preview-body-frame { background: #fff; border: 2px solid var(--border); padding: 25px; min-height: 450px; max-width: 600px; margin: 0 auto; }
 
-        /* Modals */
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 10000; align-items: center; justify-content: center; padding: 20px; }
         .modal.show { display: flex; }
         .modalInner { background: var(--panel); border: 3px solid var(--border); border-radius: 12px; padding: 25px; width: 100%; max-width: 500px; }
@@ -66,6 +62,10 @@
         <h2 style="color:var(--gold); margin-top:0;">Api Key Settings</h2>
         <label style="font-size:12px; font-weight:800;">GROQ API KEY</label>
         <input id="apiKey" type="password" placeholder="Paste key...">
+        
+        <label style="font-size:10px; font-weight:800; color:var(--red);">LAST API ERROR (DEBUG)</label>
+        <div id="apiErrorLog" style="font-size:11px; background:#fff; border:1px solid var(--border); padding:8px; min-height:40px; margin-bottom:12px; color:#d32f2f; white-space:pre-wrap; overflow-y:auto; max-height:100px;">No errors logged.</div>
+        
         <button class="btn btnGreen" style="width:100%" onclick="saveSettings()">Save & Close</button>
     </div>
 </div>
@@ -130,8 +130,8 @@
             <div style="flex:1"></div>
             <select id="modelSelect" style="width:160px; margin:0; font-size:12px; font-weight:700;" onchange="autoSave()">
                 <option value="llama-3.1-8b-instant">Llama 3.1 8B (Fast)</option>
-                <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Smart)</option>
-                <option value="mixtral-8x7b-32768">Mixtral 8x7B (Creative)</option>
+                <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Pro)</option>
+                <option value="mixtral-8x7b-32768">Mixtral 8x7B (Deep)</option>
                 <option value="gemma2-9b-it">Gemma 2 9B (Diverse)</option>
             </select>
         </div>
@@ -210,6 +210,37 @@
         showToast("Api Key Saved");
     }
 
+    async function callAI(p) {
+        const key = localStorage.getItem("esm_key");
+        const selectedModel = $("modelSelect").value;
+        const errorLog = $("apiErrorLog");
+        
+        if(!key) { showToast("Enter API Key in Settings"); return null; }
+        
+        try {
+            const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method:"POST", headers:{"Authorization":`Bearer ${key}`,"Content-Type":"application/json"},
+                body: JSON.stringify({model:selectedModel, messages:[{role:"user",content:p}]})
+            });
+            
+            const d = await res.json();
+            
+            if (!res.ok) {
+                const errMsg = d.error ? d.error.message : "Unknown API Error";
+                errorLog.textContent = `Error (${res.status}): ${errMsg}`;
+                showToast("AI Failed - Check Settings for Error");
+                return null;
+            }
+            
+            errorLog.textContent = "Last request successful.";
+            return d.choices[0].message.content.trim();
+        } catch(e) { 
+            errorLog.textContent = `Network Error: ${e.message}`;
+            showToast("Network Error - Check Settings");
+            return null; 
+        }
+    }
+
     function openPrompt(type) {
         activePrompt = type;
         $("promptTitle").textContent = `${type.toUpperCase()} Prompt Settings`;
@@ -262,20 +293,6 @@
             $("sourceEditor").style.display = "block";
             $("srcBtn").textContent = "Visual Editor";
         }
-    }
-
-    async function callAI(p) {
-        const key = localStorage.getItem("esm_key");
-        const selectedModel = $("modelSelect").value;
-        if(!key) { showToast("Enter API Key in Settings"); return null; }
-        try {
-            const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                method:"POST", headers:{"Authorization":`Bearer ${key}`,"Content-Type":"application/json"},
-                body: JSON.stringify({model:selectedModel, messages:[{role:"user",content:p}]})
-            });
-            const d = await res.json();
-            return d.choices[0].message.content.trim();
-        } catch(e) { return null; }
     }
 
     async function generateTitle() {
