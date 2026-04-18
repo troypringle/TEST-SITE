@@ -273,7 +273,10 @@
         }
     }
 
-    // ONLY THESE 3 FUNCTIONS CHANGED + EXTRA SAFETY
+    // ──────────────────────────────────────────────────────────────
+    // ONLY THESE THREE FUNCTIONS CHANGED — now identical logic to the title box
+    // (immediate localStorage write on every keystroke, just like autoSave())
+    // ──────────────────────────────────────────────────────────────
     function openPrompt(type) {
         activePrompt = type;
         originalPromptValue = prompts[type];
@@ -281,12 +284,14 @@
         $("promptArea").value = prompts[type] || "";
         $("promptModal").classList.add("show");
     }
+
     function savePromptLive() {
         if(activePrompt) {
             prompts[activePrompt] = $("promptArea").value;
-            localStorage.setItem("esm_prompts", JSON.stringify(prompts));   // LIVE SAVE
+            localStorage.setItem("esm_prompts", JSON.stringify(prompts));   // ← EXACT same as title box / autoSave
         }
     }
+
     function closePrompt(save) {
         if(save) {
             prompts[activePrompt] = $("promptArea").value;
@@ -299,6 +304,7 @@
         $("promptModal").classList.remove("show");
         activePrompt = "";
     }
+    // ──────────────────────────────────────────────────────────────
 
     function insertAtCaret(id, text) {
         const el = $(id);
@@ -466,13 +472,6 @@
     function clearBody() { if(confirm("This will wipe your current work. Proceed?")) { $("bodyEditor").innerHTML = ""; $("subject").value = ""; update(); autoSave(); } }
     function copyText(t) { navigator.clipboard.writeText(t); showToast("Copied to Clipboard!"); }
     function copyAll() { copyText(`${$("subject").value}\n\n${getWrappedBody()}`); }
-
-    // EXTRA SAFETY LAYER (the "another one" you asked for)
-    window.addEventListener('beforeunload', () => {
-        if (activePrompt) {
-            localStorage.setItem("esm_prompts", JSON.stringify(prompts));
-        }
-    });
 
     window.onload = () => {
         $("apiKey").value = localStorage.getItem("esm_key") || "";
