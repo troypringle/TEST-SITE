@@ -140,9 +140,10 @@
             <label style="font-weight:800; font-size:12px; color:var(--muted)">CTA TEXT</label>
             <input id="ctaText" value="Click here to see it" oninput="autoSave()">
             <div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;">
-                <button class="btn btnBlue" onclick="openPrompt('title')">Edit Title Prompt ✏️</button>
-                <button class="btn btnBlue" onclick="openPrompt('body')">Edit Body Prompt ✏️</button>
-                <button class="btn btnBlue" onclick="openPrompt('image')">Edit Image Prompt ✏️</button>
+                <!-- DIFFERENT PENCIL so you know this is the new version -->
+                <button class="btn btnBlue" onclick="openPrompt('title')">Edit Title Prompt 📝</button>
+                <button class="btn btnBlue" onclick="openPrompt('body')">Edit Body Prompt 📝</button>
+                <button class="btn btnBlue" onclick="openPrompt('image')">Edit Image Prompt 📝</button>
             </div>
         </div>
     </div>
@@ -273,10 +274,7 @@
         }
     }
 
-    // ──────────────────────────────────────────────────────────────
-    // ONLY THESE THREE FUNCTIONS CHANGED — now identical logic to the title box
-    // (immediate localStorage write on every keystroke, just like autoSave())
-    // ──────────────────────────────────────────────────────────────
+    // ──────── PROMPT BOXES NOW USE EXACT SAME LIVE-SAVE LOGIC AS TITLE BOX ────────
     function openPrompt(type) {
         activePrompt = type;
         originalPromptValue = prompts[type];
@@ -288,7 +286,7 @@
     function savePromptLive() {
         if(activePrompt) {
             prompts[activePrompt] = $("promptArea").value;
-            localStorage.setItem("esm_prompts", JSON.stringify(prompts));   // ← EXACT same as title box / autoSave
+            localStorage.setItem("esm_prompts", JSON.stringify(prompts));   // ← same instant save as title box
         }
     }
 
@@ -304,7 +302,7 @@
         $("promptModal").classList.remove("show");
         activePrompt = "";
     }
-    // ──────────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────────────────────
 
     function insertAtCaret(id, text) {
         const el = $(id);
@@ -472,6 +470,13 @@
     function clearBody() { if(confirm("This will wipe your current work. Proceed?")) { $("bodyEditor").innerHTML = ""; $("subject").value = ""; update(); autoSave(); } }
     function copyText(t) { navigator.clipboard.writeText(t); showToast("Copied to Clipboard!"); }
     function copyAll() { copyText(`${$("subject").value}\n\n${getWrappedBody()}`); }
+
+    // extra safety layer (same as before)
+    window.addEventListener('beforeunload', () => {
+        if (activePrompt) {
+            localStorage.setItem("esm_prompts", JSON.stringify(prompts));
+        }
+    });
 
     window.onload = () => {
         $("apiKey").value = localStorage.getItem("esm_key") || "";
