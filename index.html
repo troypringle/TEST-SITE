@@ -272,7 +272,8 @@
             return null;
         }
     }
-    // PROMPTS - FIXED FOR RELIABLE SAVING (only these 3 functions changed)
+
+    // ONLY THESE 3 FUNCTIONS CHANGED + EXTRA SAFETY
     function openPrompt(type) {
         activePrompt = type;
         originalPromptValue = prompts[type];
@@ -283,7 +284,7 @@
     function savePromptLive() {
         if(activePrompt) {
             prompts[activePrompt] = $("promptArea").value;
-            localStorage.setItem("esm_prompts", JSON.stringify(prompts));  // LIVE SAVE
+            localStorage.setItem("esm_prompts", JSON.stringify(prompts));   // LIVE SAVE
         }
     }
     function closePrompt(save) {
@@ -298,6 +299,7 @@
         $("promptModal").classList.remove("show");
         activePrompt = "";
     }
+
     function insertAtCaret(id, text) {
         const el = $(id);
         const start = el.selectionStart;
@@ -464,6 +466,14 @@
     function clearBody() { if(confirm("This will wipe your current work. Proceed?")) { $("bodyEditor").innerHTML = ""; $("subject").value = ""; update(); autoSave(); } }
     function copyText(t) { navigator.clipboard.writeText(t); showToast("Copied to Clipboard!"); }
     function copyAll() { copyText(`${$("subject").value}\n\n${getWrappedBody()}`); }
+
+    // EXTRA SAFETY LAYER (the "another one" you asked for)
+    window.addEventListener('beforeunload', () => {
+        if (activePrompt) {
+            localStorage.setItem("esm_prompts", JSON.stringify(prompts));
+        }
+    });
+
     window.onload = () => {
         $("apiKey").value = localStorage.getItem("esm_key") || "";
         $("hfKey").value = localStorage.getItem("esm_hf_key") || "";
