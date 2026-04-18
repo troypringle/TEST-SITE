@@ -242,7 +242,7 @@
     };
 
     let gallery = JSON.parse(localStorage.getItem("esm_gallery") || "[]");
-    let signatures = JSON.parse(localStorage.getItem("esm_signatures") || "[]"); // RESTORED
+    let signatures = JSON.parse(localStorage.getItem("esm_signatures") || "[]");
 
     function showToast(m) { const t=$("toast"); t.textContent=m; t.style.display="block"; setTimeout(()=>t.style.display="none",2500); }
     
@@ -258,7 +258,6 @@
         showToast("Keys Saved Successfully");
     }
 
-    // AI LOGIC
     async function callAI(p) {
         const groqKey = localStorage.getItem("esm_key");
         const hfKey = localStorage.getItem("esm_hf_key");
@@ -298,7 +297,7 @@
         }
     }
 
-    // PROMPTS
+    // PROMPTS - UPDATED FOR RELIABLE SAVING
     function openPrompt(type) {
         activePrompt = type;
         originalPromptValue = prompts[type];
@@ -310,21 +309,22 @@
     function savePromptLive() {
         if(activePrompt) {
             prompts[activePrompt] = $("promptArea").value;
-            localStorage.setItem("esm_prompts", JSON.stringify(prompts));
         }
     }
 
     function closePrompt(save) {
         if(save) {
-            savePromptLive();
+            // Commit current value to prompts and then to local storage
+            prompts[activePrompt] = $("promptArea").value;
+            localStorage.setItem("esm_prompts", JSON.stringify(prompts));
             showToast("Prompt Saved to Browser Memory");
         } else {
-            if(activePrompt) {
-                prompts[activePrompt] = originalPromptValue;
-                localStorage.setItem("esm_prompts", JSON.stringify(prompts));
-            }
+            // Restore original value
+            prompts[activePrompt] = originalPromptValue;
+            localStorage.setItem("esm_prompts", JSON.stringify(prompts));
         }
         $("promptModal").classList.remove("show");
+        activePrompt = "";
     }
 
     function insertAtCaret(id, text) {
@@ -403,7 +403,6 @@
         }
     }
 
-    // --- RESTORED SIGNATURE LOGIC ---
     function renderSigs() {
         const list = $("sigList");
         if(list) {
@@ -425,10 +424,8 @@
         const name = $("sigNewName").value;
         const html = $("sigNewHTML").value;
         if(!name || !html) { alert("Please provide a Name and HTML/Text."); return; }
-        
         signatures.push({ name, html });
         localStorage.setItem("esm_signatures", JSON.stringify(signatures));
-        
         $("sigNewName").value = ""; $("sigNewHTML").value = "";
         renderSigs();
         showToast("Signature Added!");
@@ -448,8 +445,6 @@
         exec('insertHTML', "<br><br>" + signatures[idx].html);
     }
 
-
-    // --- IMAGE GALLERY LOGIC ---
     function saveGlobalLink() { localStorage.setItem("esm_global_link", $("globalImgLink").value); }
     
     function renderGallery() {
@@ -493,11 +488,9 @@
     function insertGalleryImg(index = null) {
         const idx = index !== null ? index : $("imgGallerySelect").value;
         if(idx === "" || !gallery[idx]) { showToast("Select an image first!"); return; }
-        
         const img = gallery[idx];
         const globalLink = localStorage.getItem("esm_global_link") || "";
         const finalLink = img.link || globalLink;
-        
         let html = `<div style="text-align:center; margin:20px 0;">`;
         if(finalLink) {
             html += `<a href="${finalLink}" target="_blank"><img src="${img.url}" style="max-width:100%; border-radius:10px; border: 1px solid #ccc;"></a>`;
@@ -523,7 +516,7 @@
         $("hfKey").value = localStorage.getItem("esm_hf_key") || "";
         loadDraft();
         renderGallery(); 
-        renderSigs(); // Ensures signatures load on startup
+        renderSigs();
     };
 </script>
 </body>
