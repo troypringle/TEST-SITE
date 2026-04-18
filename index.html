@@ -89,7 +89,7 @@
 
 <div class="modal" id="promptModal"><div class="modalInner">
     <h2 id="promptTitle" style="color:var(--gold); margin-top:0;">Edit Prompt</h2>
-    <textarea id="promptArea" style="min-height:200px;"></textarea>
+    <textarea id="promptArea" style="min-height:200px;" oninput="savePromptLive()"></textarea>
     <div style="display:flex; gap:10px; margin-top:10px;">
         <button class="btn btnGreen" style="flex:1" onclick="closePrompt(true)">Save Changes</button>
         <button class="btn btnRed" style="flex:1" onclick="closePrompt(false)">Cancel</button>
@@ -152,9 +152,9 @@
             <input id="ctaText" value="Click here to see it" oninput="autoSave()">
 
             <div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;">
-                <button class="btn btnBlue" onclick="openPrompt('title')">Edit Title Prompt 📝</button>
-                <button class="btn btnBlue" onclick="openPrompt('body')">Edit Body Prompt 📝</button>
-                <button class="btn btnBlue" onclick="openPrompt('image')">Edit Image Prompt 📝</button>
+                <button class="btn btnBlue" onclick="openPrompt('title')">Edit Title Prompt ✏️</button>
+                <button class="btn btnBlue" onclick="openPrompt('body')">Edit Body Prompt ✏️</button>
+                <button class="btn btnBlue" onclick="openPrompt('image')">Edit Image Prompt ✏️</button>
             </div>
         </div>
     </div>
@@ -233,6 +233,7 @@
 <script>
     const $ = id => document.getElementById(id);
     let activePrompt = "";
+    let originalPromptValue = "";
     
     let prompts = JSON.parse(localStorage.getItem("esm_prompts")) || {
         title: "Return ONLY one string.",
@@ -300,15 +301,28 @@
     // PROMPTS
     function openPrompt(type) {
         activePrompt = type;
+        originalPromptValue = prompts[type];
         $("promptTitle").textContent = `Editing ${type.toUpperCase()} Prompt`;
         $("promptArea").value = prompts[type];
         $("promptModal").classList.add("show");
     }
-    function closePrompt(save) {
-        if(save) {
+
+    function savePromptLive() {
+        if(activePrompt) {
             prompts[activePrompt] = $("promptArea").value;
             localStorage.setItem("esm_prompts", JSON.stringify(prompts));
+        }
+    }
+
+    function closePrompt(save) {
+        if(save) {
+            savePromptLive();
             showToast("Prompt Saved to Browser Memory");
+        } else {
+            if(activePrompt) {
+                prompts[activePrompt] = originalPromptValue;
+                localStorage.setItem("esm_prompts", JSON.stringify(prompts));
+            }
         }
         $("promptModal").classList.remove("show");
     }
