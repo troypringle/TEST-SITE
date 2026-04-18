@@ -71,7 +71,6 @@
     </div>
 </div></div>
 
-<!-- Other modals unchanged -->
 <div class="modal" id="settingsModal"><div class="modalInner">
     <h2 style="color:var(--gold); margin-top:0;">UI Settings</h2>
     <button class="btn btnBlue" style="width:100%;" onclick="document.body.classList.toggle('theme-slate')">Toggle Dark/Light Mode</button>
@@ -143,7 +142,6 @@
            
             <label style="font-weight:800; font-size:12px; color:var(--muted)">CTA TEXT</label>
             <input id="ctaText" value="Click here to see it" oninput="autoSave()">
-            
             <div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;">
                 <button class="btn btnBlue" onclick="openPrompt('title')">Edit Title Prompt ✏️</button>
                 <button class="btn btnBlue" onclick="openPrompt('body')">Edit Body Prompt ✏️</button>
@@ -151,8 +149,6 @@
             </div>
         </div>
     </div>
-    
-    <!-- Rest of the HTML remains exactly the same -->
     <div class="card">
         <div class="tag-row">
             <button class="btn btnSmall" onclick="insertAtCaret('subject','{!firstname_fix}')">{!firstname_fix}</button>
@@ -186,228 +182,4 @@
             <button class="btn btnSmall" onclick="$('imgMgrModal').classList.add('show')" title="Manage Gallery">🖼️</button>
            
             <div style="flex:1"></div>
-            <button class="btn btnSmall" onclick="exec('undo')">Undo</button>
-        </div>
-        <div id="bodyEditor" contenteditable="true" oninput="update(); autoSave();"></div>
-        <textarea id="sourceEditor"></textarea>
-        <div style="margin-top:15px; display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-            <button class="btn btnGreen" onclick="generateBody()" style="flex:2">Generate Body</button>
-            <select id="sigSelect" style="width:140px; margin:0; font-size:12px;"><option value="">Signatures</option></select>
-            <button class="btn btnBlue btnSmall" onclick="insertSig()">Ins. Sig</button>
-            <button class="btn btnSmall" onclick="$('sigMgrModal').classList.add('show')" title="Manage Signatures">Manage Sigs</button>
-            <button class="btn btnRed btnSmall" onclick="clearBody()">Clear</button>
-        </div>
-    </div>
-    
-    <div class="card">
-        <div class="preview-subject-box">
-            <label style="font-weight:800; font-size:10px; color:var(--muted); display:block; margin-bottom:4px;">SUBJECT PREVIEW</label>
-            <span id="prevSub" style="font-weight:800; color:var(--blue);"></span>
-        </div>
-       
-        <div style="display:flex; gap:10px; margin-bottom:15px;">
-            <button class="btn btnBlue" style="flex:1" onclick="copyText($('subject').value)">Copy Title</button>
-            <button class="btn btnBlue" style="flex:1" onclick="copyText(getWrappedBody())">Copy HTML</button>
-        </div>
-        <div class="preview-body-frame" id="prevBody"></div>
-       
-        <div style="margin-top:15px;">
-            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:800; font-size:13px; margin-bottom:15px;">
-                <input type="checkbox" id="useWrapper" checked style="width:auto; margin:0; transform: scale(1.2);" onchange="update()"> Use 600px Wrapper
-            </label>
-            <button class="btn btnGreen" onclick="copyAll()" style="width:100%; height:70px; font-size:22px;">COPY FULL SWIPE</button>
-        </div>
-    </div>
-</div>
-
-<script>
-    const $ = id => document.getElementById(id);
-    let activePrompt = "";
-    let originalPromptValue = "";
-   
-    // FIXED: Proper loading and saving of prompts
-    let prompts = JSON.parse(localStorage.getItem("esm_prompts")) || {
-        title: "Return ONLY one string.",
-        body: "Write 2 short paragraphs.",
-        image: "Describe a high-converting image for this offer."
-    };
-
-    let gallery = JSON.parse(localStorage.getItem("esm_gallery") || "[]");
-    let signatures = JSON.parse(localStorage.getItem("esm_signatures") || "[]");
-
-    function showToast(m) { 
-        const t=$("toast"); 
-        t.textContent=m; 
-        t.style.display="block"; 
-        setTimeout(()=>t.style.display="none",2500); 
-    }
-
-    function toggleSidebar() {
-        $("mainGrid").classList.toggle("sidebar-closed");
-        $("tglBtn").textContent = $("mainGrid").classList.contains("sidebar-closed") ? "SHOW SIDEBAR" : "HIDE SIDEBAR";
-    }
-
-    function saveKeys() {
-        localStorage.setItem("esm_key", $("apiKey").value);
-        localStorage.setItem("esm_hf_key", $("hfKey").value);
-        $("apiModal").classList.remove("show");
-        showToast("Keys Saved Successfully");
-    }
-
-    async function callAI(p) { /* unchanged */ 
-        // ... (your existing callAI function remains exactly the same)
-        const groqKey = localStorage.getItem("esm_key");
-        const hfKey = localStorage.getItem("esm_hf_key");
-        const selectedModel = $("modelSelect").value;
-        const errorLog = $("apiErrorLog");
-       
-        try {
-            if (selectedModel === "puter-gemini") {
-                const response = await puter.ai.chat(p);
-                return response.toString();
-            }
-           
-            if (selectedModel === "hf-mistral") {
-                if(!hfKey) throw new Error("Missing HF Token in API Settings");
-                const res = await fetch("https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3", {
-                    method: "POST", headers: { "Authorization": `Bearer ${hfKey}`, "Content-Type": "application/json" },
-                    body: JSON.stringify({ inputs: p })
-                });
-                const d = await res.json();
-                if (d.error) throw new Error(d.error);
-                return d[0].generated_text.replace(p, "").trim();
-            }
-            if(!groqKey) throw new Error("Missing Groq API Key in API Settings");
-            const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                method:"POST", headers:{"Authorization":`Bearer ${groqKey}`,"Content-Type":"application/json"},
-                body: JSON.stringify({model:selectedModel, messages:[{role:"user",content:p}]})
-            });
-            const d = await res.json();
-            if (!res.ok) throw new Error(d.error ? d.error.message : "API Error");
-            return d.choices[0].message.content.trim();
-        } catch(e) {
-            errorLog.textContent += `[${new Date().toLocaleTimeString()}] ${e.message}\n\n`;
-            showToast("AI Failed - Check Debug Log");
-            return null;
-        }
-    }
-
-    function openPrompt(type) {
-        activePrompt = type;
-        originalPromptValue = prompts[type];
-        $("promptTitle").textContent = `Editing ${type.toUpperCase()} Prompt`;
-        $("promptArea").value = prompts[type] || "";
-        $("promptModal").classList.add("show");
-    }
-
-    function savePromptLive() {
-        if(activePrompt) {
-            prompts[activePrompt] = $("promptArea").value;
-        }
-    }
-
-    function closePrompt(save) {
-        if(save && activePrompt) {
-            prompts[activePrompt] = $("promptArea").value;
-            localStorage.setItem("esm_prompts", JSON.stringify(prompts));
-            showToast("Prompt Saved Successfully");
-        } else if (activePrompt) {
-            prompts[activePrompt] = originalPromptValue;
-        }
-        $("promptModal").classList.remove("show");
-        activePrompt = "";
-    }
-
-    // Rest of your script remains completely unchanged...
-    function insertAtCaret(id, text) { /* unchanged */ 
-        const el = $(id);
-        const start = el.selectionStart;
-        const end = el.selectionEnd;
-        el.value = el.value.substring(0, start) + text + el.value.substring(end);
-        el.focus();
-        el.selectionStart = el.selectionEnd = start + text.length;
-        update();
-    }
-
-    function exec(c, v=null) {
-        $("bodyEditor").focus();
-        document.execCommand(c, false, v);
-        update();
-    }
-
-    function insertImg() { /* unchanged */ 
-        const url = prompt("Image URL:");
-        if(!url) return;
-        const link = prompt("Link URL (optional):");
-        const html = link ? `<a href="${link}" target="_blank"><img src="${url}" style="max-width:100%;"></a>` : `<img src="${url}" style="max-width:100%;">`;
-        exec('insertHTML', html);
-    }
-
-    function toggleSource() { /* unchanged */ 
-        const isSrc = $("sourceEditor").style.display === "block";
-        if(isSrc) {
-            $("bodyEditor").innerHTML = $("sourceEditor").value;
-            $("sourceEditor").style.display = "none";
-            $("bodyEditor").style.display = "block";
-            $("srcBtn").textContent = "HTML Source";
-        } else {
-            $("sourceEditor").value = $("bodyEditor").innerHTML;
-            $("bodyEditor").style.display = "none";
-            $("sourceEditor").style.display = "block";
-            $("srcBtn").textContent = "Visual Editor";
-        }
-    }
-
-    async function generateTitle() {
-        const p = prompts.title + `\nOffer: ${$("offerName").value}\nBenefits: ${$("benefits").value}`;
-        const res = await callAI(p);
-        if(res) { $("subject").value = res.replace(/"/g,''); update(); autoSave(); }
-    }
-
-    async function generateBody() {
-        const p = prompts.body + `\nOffer: ${$("offerName").value}\nBenefits: ${$("benefits").value}\nCTA: ${$("ctaText").value}`;
-        const res = await callAI(p);
-        if(res) { exec('insertHTML', res.replace(/\n/g,"<br>")); autoSave(); }
-    }
-
-    function update() {
-        $("prevSub").textContent = $("subject").value;
-        $("prevBody").innerHTML = $("bodyEditor").innerHTML;
-    }
-
-    function getWrappedBody() {
-        const content = $("bodyEditor").innerHTML;
-        if(!$("useWrapper").checked) return content;
-        return `<table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:600px; margin:0 auto;"><tr><td style="font-family:Arial, sans-serif; font-size:16px; line-height:1.6; color:#111111;">${content}</td></tr></table>`;
-    }
-
-    function autoSave() {
-        const data = { sub: $("subject").value, body: $("bodyEditor").innerHTML, offer: $("offerName").value, benefits: $("benefits").value, cta: $("ctaText").value, model: $("modelSelect").value };
-        localStorage.setItem("esm_draft", JSON.stringify(data));
-    }
-
-    function loadDraft() {
-        const d = JSON.parse(localStorage.getItem("esm_draft"));
-        if(d) {
-            $("subject").value = d.sub || ""; 
-            $("bodyEditor").innerHTML = d.body || ""; 
-            $("offerName").value = d.offer || ""; 
-            $("benefits").value = d.benefits || ""; 
-            $("ctaText").value = d.cta || "";
-            if(d.model) $("modelSelect").value = d.model;
-            update();
-        }
-    }
-
-    // ... (all other functions like renderSigs, addSig, gallery functions, copy functions, etc. remain unchanged)
-
-    window.onload = () => {
-        $("apiKey").value = localStorage.getItem("esm_key") || "";
-        $("hfKey").value = localStorage.getItem("esm_hf_key") || "";
-        loadDraft();
-        renderGallery();
-        renderSigs();
-    };
-</script>
-</body>
-</html>
+            <button class="btn btnSmall"
