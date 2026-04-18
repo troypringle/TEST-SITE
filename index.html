@@ -140,7 +140,7 @@
             <label style="font-weight:800; font-size:12px; color:var(--muted)">CTA TEXT</label>
             <input id="ctaText" value="Click here to see it" oninput="autoSave()">
             <div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;">
-                <!-- DIFFERENT PENCIL so you know this is the new version -->
+                <!-- NEW PENCIL so you know this is the updated version -->
                 <button class="btn btnBlue" onclick="openPrompt('title')">Edit Title Prompt 📝</button>
                 <button class="btn btnBlue" onclick="openPrompt('body')">Edit Body Prompt 📝</button>
                 <button class="btn btnBlue" onclick="openPrompt('image')">Edit Image Prompt 📝</button>
@@ -216,15 +216,17 @@
 <script>
     const $ = id => document.getElementById(id);
     let activePrompt = "";
+
+    // ──────────────────────────────────────────────────────────────
+    // NEW PROMPT LOGIC — individual localStorage keys (same as title box / gallery / signatures)
+    // This bypasses any possible object-mutation or modal-timing issues
+    // ──────────────────────────────────────────────────────────────
+    let promptTitle = localStorage.getItem("esm_prompt_title") || "Return ONLY one string.";
+    let promptBody  = localStorage.getItem("esm_prompt_body")  || "Write 2 short paragraphs.";
+    let promptImage = localStorage.getItem("esm_prompt_image") || "Describe a high-converting image for this offer.";
+
     let originalPromptValue = "";
-   
-    let prompts = JSON.parse(localStorage.getItem("esm_prompts")) || {
-        title: "Return ONLY one string.",
-        body: "Write 2 short paragraphs.",
-        image: "Describe a high-converting image for this offer."
-    };
-    let gallery = JSON.parse(localStorage.getItem("esm_gallery") || "[]");
-    let signatures = JSON.parse(localStorage.getItem("esm_signatures") || "[]");
+
     function showToast(m) { const t=$("toast"); t.textContent=m; t.style.display="block"; setTimeout(()=>t.style.display="none",2500); }
    
     function toggleSidebar() {
@@ -274,35 +276,48 @@
         }
     }
 
-    // ──────── PROMPT BOXES NOW USE EXACT SAME LIVE-SAVE LOGIC AS TITLE BOX ────────
     function openPrompt(type) {
         activePrompt = type;
-        originalPromptValue = prompts[type];
+        if (type === "title") originalPromptValue = promptTitle;
+        else if (type === "body") originalPromptValue = promptBody;
+        else if (type === "image") originalPromptValue = promptImage;
+
         $("promptTitle").textContent = `Editing ${type.toUpperCase()} Prompt`;
-        $("promptArea").value = prompts[type] || "";
+        $("promptArea").value = originalPromptValue;
         $("promptModal").classList.add("show");
     }
 
     function savePromptLive() {
-        if(activePrompt) {
-            prompts[activePrompt] = $("promptArea").value;
-            localStorage.setItem("esm_prompts", JSON.stringify(prompts));   // ← same instant save as title box
+        if (!activePrompt) return;
+        const value = $("promptArea").value;
+
+        if (activePrompt === "title") {
+            promptTitle = value;
+            localStorage.setItem("esm_prompt_title", value);
+        } else if (activePrompt === "body") {
+            promptBody = value;
+            localStorage.setItem("esm_prompt_body", value);
+        } else if (activePrompt === "image") {
+            promptImage = value;
+            localStorage.setItem("esm_prompt_image", value);
         }
     }
 
     function closePrompt(save) {
-        if(save) {
-            prompts[activePrompt] = $("promptArea").value;
-            localStorage.setItem("esm_prompts", JSON.stringify(prompts));
+        if (save) {
+            // already saved live, just confirm
             showToast("Prompt Saved to Browser Memory");
         } else {
-            prompts[activePrompt] = originalPromptValue;
-            localStorage.setItem("esm_prompts", JSON.stringify(prompts));
+            // Cancel - restore original
+            if (activePrompt === "title") promptTitle = originalPromptValue;
+            else if (activePrompt === "body") promptBody = originalPromptValue;
+            else if (activePrompt === "image") promptImage = originalPromptValue;
+
+            localStorage.setItem("esm_prompt_" + activePrompt, originalPromptValue);
         }
         $("promptModal").classList.remove("show");
         activePrompt = "";
     }
-    // ─────────────────────────────────────────────────────────────────────────────
 
     function insertAtCaret(id, text) {
         const el = $(id);
@@ -341,12 +356,12 @@
         }
     }
     async function generateTitle() {
-        const p = prompts.title + `\nOffer: ${$("offerName").value}\nBenefits: ${$("benefits").value}`;
+        const p = promptTitle + `\nOffer: ${$("offerName").value}\nBenefits: ${$("benefits").value}`;
         const res = await callAI(p);
         if(res) { $("subject").value = res.replace(/"/g,''); update(); autoSave(); }
     }
     async function generateBody() {
-        const p = prompts.body + `\nOffer: ${$("offerName").value}\nBenefits: ${$("benefits").value}\nCTA: ${$("ctaText").value}`;
+        const p = promptBody + `\nOffer: ${$("offerName").value}\nBenefits: ${$("benefits").value}\nCTA: ${$("ctaText").value}`;
         const res = await callAI(p);
         if(res) { exec('insertHTML', res.replace(/\n/g,"<br>")); autoSave(); }
     }
@@ -471,10 +486,12 @@
     function copyText(t) { navigator.clipboard.writeText(t); showToast("Copied to Clipboard!"); }
     function copyAll() { copyText(`${$("subject").value}\n\n${getWrappedBody()}`); }
 
-    // extra safety layer (same as before)
+    // extra safety — forces save even if you refresh while modal is open
     window.addEventListener('beforeunload', () => {
         if (activePrompt) {
-            localStorage.setItem("esm_prompts", JSON.stringify(prompts));
+            if (activePrompt === "title") localStorage.setItem("esm_prompt_title", promptTitle);
+            else if (activePrompt === "body") localStorage.setItem("esm_prompt_body", promptBody);
+            else if (activePrompt === "image") localStorage.setItem("esm_prompt_image", promptImage);
         }
     });
 
@@ -485,6 +502,9 @@
         renderGallery();
         renderSigs();
     };
+
+    let gallery = JSON.parse(localStorage.getItem("esm_gallery") || "[]");
+    let signatures = JSON.parse(localStorage.getItem("esm_signatures") || "[]");
 </script>
 </body>
 </html>
