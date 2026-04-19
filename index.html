@@ -58,22 +58,20 @@
         
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; z-index: 10000; align-items: center; justify-content: center; padding: 20px; }
         .modal.show { display: flex; }
-        .modalInner { background: var(--panel); border: 4px solid var(--gold); border-radius: 12px; padding: 25px; width: 100%; max-width: 500px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .modalInner { background: var(--panel); border: 4px solid var(--gold); border-radius: 12px; padding: 25px; width: 100%; max-width: 500px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); overflow-y: auto; max-height: 90vh; }
         
         .preview-body-frame { background: #fff; border: 2px solid var(--border); padding: 25px; min-height: 450px; max-width: 600px; margin: 0 auto; color: #000; }
         .preview-subject-box { background: #fff; border: 2px solid var(--border); padding: 12px; border-radius: 8px; margin-bottom: 20px; min-height: 50px; color: #000; }
         .mlgs-label { font-weight: 900; font-size: 12px; color: #fff; background: var(--gold); padding: 2px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px; }
+        
+        /* New AI/GitHub Styles */
+        .gen-preview { width: 100%; border: 2px solid var(--gold); border-radius: 8px; margin: 10px 0; display: none; }
+        .loading-bar { height: 4px; background: var(--gold); width: 0%; transition: width 0.3s; margin-top: 5px; }
     </style>
 </head>
 <body>
 
 <div id="toast" style="position:fixed; bottom:20px; right:20px; background:#333; color:#fff; padding:12px 24px; display:none; border-radius:8px; z-index:99999; font-weight:bold;"></div>
-
-<div class="modal" id="settingsModal"><div class="modalInner">
-    <h2 style="color:var(--gold); margin-top:0;">UI Settings</h2>
-    <button class="btn btnBlue" style="width:100%;" onclick="document.body.classList.toggle('theme-slate')">Toggle Dark/Light Mode</button>
-    <button class="btn" style="width:100%; margin-top:15px;" onclick="$('settingsModal').classList.remove('show')">Close</button>
-</div></div>
 
 <div class="modal" id="apiModal"><div class="modalInner">
     <h2 style="color:var(--gold); margin-top:0;">API Keys</h2>
@@ -81,8 +79,49 @@
     <input id="apiKey" type="password" placeholder="Groq Key...">
     <label style="font-size:11px; font-weight:800;">HUGGING FACE TOKEN</label>
     <input id="hfKey" type="password" placeholder="HF Token...">
+    <label style="font-size:11px; font-weight:800;">GITHUB TOKEN (for image hosting)</label>
+    <input id="ghKey" type="password" placeholder="ghp_xxxxxxxxxxxx">
     <button class="btn btnGreen" style="width:100%" onclick="saveKeys()">Save Keys</button>
     <button class="btn" style="width:100%; margin-top:10px;" onclick="$('apiModal').classList.remove('show')">Cancel</button>
+</div></div>
+
+<div class="modal" id="imgMgrModal">
+    <div class="modalInner">
+        <h2 style="color:var(--gold); margin-top:0;">Image & AI Lab</h2>
+        
+        <div style="background:var(--panel2); padding:12px; border-radius:8px; border:1px solid var(--border); margin-bottom:15px;">
+            <label style="font-size:11px; font-weight:800;">1. AI IMAGE GENERATOR</label>
+            <textarea id="aiImgPrompt" placeholder="A futuristic car in the desert, photorealistic..." style="min-height:60px; margin-bottom:8px;"></textarea>
+            <button class="btn btnBlue btnSmall" style="width:100%" onclick="generateAIImage()">Create Image</button>
+            <div id="genPreviewContainer">
+                <img id="genPreviewImg" class="gen-preview">
+                <div id="genStatus" style="font-size:11px; font-weight:bold; margin-top:5px;"></div>
+                <div class="loading-bar" id="genBar"></div>
+            </div>
+            <div id="hostControls" style="display:none; margin-top:10px; gap:5px; flex-direction:column;">
+                <input id="genFileName" placeholder="filename.png (optional)">
+                <button class="btn btnGreen" style="width:100%" onclick="hostToGitHub()">Host to GitHub & Add to Gallery</button>
+            </div>
+        </div>
+
+        <label style="font-size:11px; font-weight:800;">2. GLOBAL AUTO-LINK</label>
+        <input id="globalImgLink" placeholder="https://your-main-offer.com" oninput="saveGlobalLink()">
+        
+        <label style="font-size:11px; font-weight:800;">3. GALLERY LIST</label>
+        <div id="imgList" style="max-height:150px; overflow-y:auto; margin:10px 0; border:2px solid var(--border); background:#fff; padding:5px; color:#000;"></div>
+        
+        <label style="font-size:11px; font-weight:800;">MANUAL ADD</label>
+        <input id="imgNewName" placeholder="Label">
+        <input id="imgNewUrl" placeholder="Image URL...">
+        <button class="btn btnGreen" style="width:100%" onclick="addImgToGallery()">Add to Gallery</button>
+        <button class="btn" style="width:100%; margin-top:10px;" onclick="$('imgMgrModal').classList.remove('show')">Close</button>
+    </div>
+</div>
+
+<div class="modal" id="settingsModal"><div class="modalInner">
+    <h2 style="color:var(--gold); margin-top:0;">UI Settings</h2>
+    <button class="btn btnBlue" style="width:100%;" onclick="document.body.classList.toggle('theme-slate')">Toggle Dark/Light Mode</button>
+    <button class="btn" style="width:100%; margin-top:15px;" onclick="$('settingsModal').classList.remove('show')">Close</button>
 </div></div>
 
 <div class="modal" id="errorModal"><div class="modalInner">
@@ -109,21 +148,6 @@
         <textarea id="sigNewHTML" placeholder="Paste HTML..." style="min-height:100px;"></textarea>
         <button class="btn btnGreen" style="width:100%" onclick="addSig()">Save Signature</button>
         <button class="btn" style="width:100%; margin-top:10px;" onclick="$('sigMgrModal').classList.remove('show')">Close</button>
-    </div>
-</div>
-
-<div class="modal" id="imgMgrModal">
-    <div class="modalInner">
-        <h2 style="color:var(--gold); margin-top:0;">Image Gallery</h2>
-        <label style="font-size:11px; font-weight:800;">GLOBAL AUTO-LINK</label>
-        <input id="globalImgLink" placeholder="https://your-main-offer.com" oninput="saveGlobalLink()">
-        <div id="imgList" style="max-height:150px; overflow-y:auto; margin:10px 0; border:2px solid var(--border); background:#fff; padding:5px; color:#000;"></div>
-        <label style="font-size:11px; font-weight:800;">ADD NEW IMAGE</label>
-        <input id="imgNewName" placeholder="Label">
-        <input id="imgNewUrl" placeholder="Image URL...">
-        <input id="imgNavLink" placeholder="Specific Link (Optional)...">
-        <button class="btn btnGreen" style="width:100%" onclick="addImgToGallery()">Add to Gallery</button>
-        <button class="btn" style="width:100%; margin-top:10px;" onclick="$('imgMgrModal').classList.remove('show')">Close</button>
     </div>
 </div>
 
@@ -209,11 +233,95 @@
     let promptTitle = localStorage.getItem("esm_prompt_title") || "Return ONLY one string. Vibe: High-energy, sarcastic funny humor. Logic: Pick ONE scenario (Pajamas, No Traffic, Beach, Naps, or Home) and use it for BOTH. Brag about the lifestyle, mock the office grind. Rules: BANNED WORDS: ditch, escape, freedom, wealth, massive, system, financial, boss. Title format: Start with ⭐, 7-9 words.";
     let promptBody  = localStorage.getItem("esm_prompt_body")  || "Write exactly 3 sentences max, start with ⭐. Vibe: High-energy, sarcastic humor. Brag about the lifestyle. BANNED: ditch, escape, freedom, wealth, massive, system, financial, boss.";
     let savedRange = null;
+    let currentBlob = null; // Stores generated image
 
     function showToast(m) { const t=$("toast"); t.textContent=m; t.style.display="block"; setTimeout(()=>t.style.display="none",2500); }
-    function toggleSidebar() { $("mainGrid").classList.toggle("sidebar-closed"); $("tglBtn").textContent = $("mainGrid").classList.contains("sidebar-closed") ? "SHOW" : "HIDE"; }
-    function saveKeys() { localStorage.setItem("esm_key", $("apiKey").value); localStorage.setItem("esm_hf_key", $("hfKey").value); $("apiModal").classList.remove("show"); showToast("Keys Saved"); }
+    function logErr(msg) { $("apiErrorLog").textContent += `\n[${new Date().toLocaleTimeString()}] ${msg}`; }
+    
+    function saveKeys() { 
+        localStorage.setItem("esm_key", $("apiKey").value); 
+        localStorage.setItem("esm_hf_key", $("hfKey").value); 
+        localStorage.setItem("esm_gh_key", $("ghKey").value); 
+        $("apiModal").classList.remove("show"); showToast("Keys Saved"); 
+    }
 
+    // AI IMAGE GENERATION
+    async function generateAIImage() {
+        const hfKey = localStorage.getItem("esm_hf_key");
+        const prompt = $("aiImgPrompt").value;
+        if(!hfKey || !prompt) return showToast("HF Key or Prompt Missing");
+        
+        $("genBar").style.width = "50%";
+        $("genStatus").textContent = "Dreaming...";
+        $("genPreviewImg").style.display = "none";
+        
+        try {
+            const response = await fetch("https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell", {
+                headers: { Authorization: `Bearer ${hfKey}` },
+                method: "POST",
+                body: JSON.stringify({ inputs: prompt }),
+            });
+            
+            if (!response.ok) throw new Error(await response.text());
+            
+            currentBlob = await response.blob();
+            const url = URL.createObjectURL(currentBlob);
+            $("genPreviewImg").src = url;
+            $("genPreviewImg").style.display = "block";
+            $("genBar").style.width = "100%";
+            $("genStatus").textContent = "Ready!";
+            $("hostControls").style.display = "flex";
+        } catch (e) {
+            logErr("HF Gen Error: " + e.message);
+            showToast("Gen Failed - Check Debug");
+            $("genBar").style.width = "0%";
+        }
+    }
+
+    // GITHUB HOSTING
+    async function hostToGitHub() {
+        const ghKey = localStorage.getItem("esm_gh_key");
+        if(!ghKey || !currentBlob) return showToast("GitHub Token Missing");
+
+        $("genStatus").textContent = "Uploading to GitHub...";
+        const reader = new FileReader();
+        reader.readAsDataURL(currentBlob);
+        reader.onloadend = async () => {
+            const base64Data = reader.result.split(',')[1];
+            const fileName = ($("genFileName").value || `img_${Date.now()}`).replace('.png','') + ".png";
+            const repo = "troypringle/images"; // Your specific repo
+            
+            try {
+                const res = await fetch(`https://api.github.com/repos/${repo}/contents/${fileName}`, {
+                    method: "PUT",
+                    headers: { "Authorization": `token ${ghKey}`, "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        message: `Upload ${fileName} via Machine`,
+                        content: base64Data
+                    })
+                });
+
+                if(!res.ok) throw new Error(await res.text());
+                
+                const rawUrl = `https://raw.githubusercontent.com/${repo}/main/${fileName}`;
+                
+                // Add to gallery automatically
+                gallery.push({ name: fileName, url: rawUrl, link: localStorage.getItem("esm_global_link") || "" });
+                localStorage.setItem("esm_gallery", JSON.stringify(gallery));
+                renderGallery();
+                
+                showToast("Hosted Successfully!");
+                $("genStatus").textContent = "Done! Linked in Gallery.";
+                $("hostControls").style.display = "none";
+            } catch (e) {
+                logErr("GitHub Upload Error: " + e.message);
+                showToast("GitHub Failed - Check Debug");
+            }
+        };
+    }
+
+    // Existing functions (Modified selection to keep original behavior)
+    function toggleSidebar() { $("mainGrid").classList.toggle("sidebar-closed"); $("tglBtn").textContent = $("mainGrid").classList.contains("sidebar-closed") ? "SHOW" : "HIDE"; }
     $("bodyEditor").addEventListener('focus', () => { document.execCommand('defaultParagraphSeparator', false, 'div'); });
     $("bodyEditor").addEventListener('blur', () => { const sel = window.getSelection(); if (sel.rangeCount > 0) savedRange = sel.getRangeAt(0); });
     function restoreSelection() { if (savedRange) { const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(savedRange); } else { $("bodyEditor").focus(); } }
@@ -226,7 +334,7 @@
                 body: JSON.stringify({model:"llama-3.3-70b-versatile", messages:[{role:"user",content:p}]})
             });
             const d = await res.json(); return d.choices[0].message.content.trim();
-        } catch(e) { showToast("Check API Key"); return null; }
+        } catch(e) { logErr("Groq Error: " + e.message); return null; }
     }
 
     async function generateFullSwipe() {
@@ -242,7 +350,7 @@
                 const bodyHtml = data.body.split('\n').filter(l => l.trim()).map(l => `<div>${l}</div>`).join('') + `<div><br></div>`;
                 document.execCommand('insertHTML', false, bodyHtml);
                 update(); autoSave(); showToast("Success! ✅");
-            } catch(e) { showToast("Formatting Error"); }
+            } catch(e) { logErr("Parse Error: " + e.message); }
         }
     }
 
@@ -258,19 +366,25 @@
     function update() { $("prevSub").textContent = $("subject").value; $("prevBody").innerHTML = $("bodyEditor").innerHTML; }
     function getWrappedBody() { const content = $("bodyEditor").innerHTML; if(!$("useWrapper").checked) return content; return `<table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:600px; margin:0 auto;"><tr><td style="font-family:Arial, sans-serif; font-size:16px; line-height:1.6; color:#111111;">${content}</td></tr></table>`; }
     function autoSave() { const data = { sub: $("subject").value, body: $("bodyEditor").innerHTML, offer: $("offerName").value, benefits: $("benefits").value }; localStorage.setItem("esm_draft", JSON.stringify(data)); }
-    function loadDraft() { const d = JSON.parse(localStorage.getItem("esm_draft")); if(d) { $("subject").value = d.sub || ""; $("bodyEditor").innerHTML = d.body || ""; $("offerName").value = d.offer || ""; $("benefits").value = d.benefits || ""; update(); } }
+    function loadDraft() { 
+        const d = JSON.parse(localStorage.getItem("esm_draft")); 
+        if(d) { $("subject").value = d.sub || ""; $("bodyEditor").innerHTML = d.body || ""; $("offerName").value = d.offer || ""; $("benefits").value = d.benefits || ""; update(); } 
+        $("apiKey").value = localStorage.getItem("esm_key") || "";
+        $("hfKey").value = localStorage.getItem("esm_hf_key") || "";
+        $("ghKey").value = localStorage.getItem("esm_gh_key") || "";
+    }
     function renderSigs() {
         const select = $("sigSelect"); if(select) select.innerHTML = '<option value="">Signatures</option>' + signatures.map((sig, i) => `<option value="${i}">${sig.name}</option>`).join('');
-        $("sigList").innerHTML = signatures.map((sig, i) => `<div style="display:flex; justify-content:space-between; padding:5px; background:#fff; margin-bottom:2px;"><span>${sig.name}</span><button onclick="delSig(${i})">X</button></div>`).join('');
+        $("sigList").innerHTML = signatures.map((sig, i) => `<div style="display:flex; justify-content:space-between; padding:5px; background:#fff; margin-bottom:2px; color:#000;"><span>${sig.name}</span><button onclick="delSig(${i})">X</button></div>`).join('');
     }
     function addSig() { signatures.push({ name: $("sigNewName").value, html: $("sigNewHTML").value }); localStorage.setItem("esm_signatures", JSON.stringify(signatures)); renderSigs(); showToast("Added!"); }
     window.delSig = function(i) { signatures.splice(i, 1); localStorage.setItem("esm_signatures", JSON.stringify(signatures)); renderSigs(); };
     function insertSig() { restoreSelection(); const idx = $("sigSelect").value; if(idx !== "") { document.execCommand('insertHTML', false, "<div><br>" + signatures[idx].html + "</div>"); update(); } }
     function renderGallery() {
         const select = $("imgGallerySelect"); if(select) select.innerHTML = '<option value="">Gallery...</option>' + gallery.map((img, i) => `<option value="${i}">${img.name}</option>`).join('');
-        $("imgList").innerHTML = gallery.map((img, i) => `<div style="display:flex; justify-content:space-between; padding:5px; background:#fff; margin-bottom:2px;"><span>${img.name}</span><button onclick="delImg(${i})">X</button></div>`).join('');
+        $("imgList").innerHTML = gallery.map((img, i) => `<div style="display:flex; justify-content:space-between; padding:5px; background:#fff; margin-bottom:2px; color:#000;"><span>${img.name}</span><button onclick="delImg(${i})">X</button></div>`).join('');
     }
-    function addImgToGallery() { gallery.push({ name: $("imgNewName").value, url: $("imgNewUrl").value, link: $("imgNavLink").value }); localStorage.setItem("esm_gallery", JSON.stringify(gallery)); renderGallery(); }
+    function addImgToGallery() { gallery.push({ name: $("imgNewName").value, url: $("imgNewUrl").value, link: localStorage.getItem("esm_global_link") || "" }); localStorage.setItem("esm_gallery", JSON.stringify(gallery)); renderGallery(); }
     window.delImg = function(i) { gallery.splice(i, 1); localStorage.setItem("esm_gallery", JSON.stringify(gallery)); renderGallery(); };
     function insertGalleryImg() {
         restoreSelection(); const idx = $("imgGallerySelect").value; if(idx === "") return;
