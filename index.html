@@ -34,7 +34,8 @@
             font-weight: 800; display: inline-flex; align-items: center; justify-content: center;
             white-space: nowrap; transition: all 0.1s ease;
             box-shadow: var(--shadow);
-            position: relative; top: 0;
+            position: relative;
+            top: 0;
         }
         .btn:hover { filter: brightness(1.05); top: -2px; box-shadow: 0 6px 0px rgba(0,0,0,0.15); }
         .btn:active { top: 3px; box-shadow: 0 1px 0px rgba(0,0,0,0.1); transform: scale(0.98); }
@@ -47,27 +48,31 @@
         
         input, textarea { width: 100%; padding: 10px; border: 2px solid var(--border); border-radius: 8px; margin-bottom: 12px; background: #fff; color: #000; }
         
+        /* Dropdown Visibility Fix */
         select { 
             width: 100%; padding: 10px; border: 2px solid var(--border); border-radius: 8px; 
             margin-bottom: 12px; background: #fff !important; color: #000 !important; font-weight: bold;
-            appearance: auto !important; cursor: pointer;
+            appearance: auto !important; /* Forces OS default dropdown arrow */
+            cursor: pointer;
         }
 
         .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; background: var(--panel2); padding: 8px; border: 2px solid var(--border); border-bottom: 0; border-radius: 8px 8px 0 0; }
+        
+        /* New Bottom Toolbar Style */
         .toolbar-bottom { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; background: var(--panel2); padding: 8px; border: 2px solid var(--border); border-top: 0; border-radius: 0 0 8px 8px; }
 
         #bodyEditor, #sourceEditor { width: 100%; max-width: 600px; min-height: 450px; background: #fff; color: #000; border: 2px solid var(--border); padding: 15px; outline: none; margin: 0 auto; overflow-y: auto; }
-        #sourceEditor { display: none; font-family: monospace; white-space: pre-wrap; }
+        #sourceEditor { display: none; font-family: monospace; }
         
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; z-index: 10000; align-items: center; justify-content: center; padding: 20px; }
         .modal.show { display: flex; }
         .modalInner { background: var(--panel); border: 4px solid var(--gold); border-radius: 12px; padding: 25px; width: 100%; max-width: 500px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
         
-        .preview-body-frame { background: #fff; border: 2px solid var(--border); padding: 25px; min-height: 450px; max-width: 600px; margin: 0 auto; color: #000; overflow-x: hidden; }
-        .preview-subject-box { background: #fff; border: 2px solid var(--border); padding: 12px; border-radius: 8px; margin-bottom: 20px; min-height: 50px; color: #000; }
+        .tag-row { display: flex; gap: 6px; margin-bottom: 12px; }
         
-        /* Selection Highlight */
-        #bodyEditor img.selected-img { outline: 4px solid var(--blue); outline-offset: 2px; filter: brightness(0.9); }
+        /* Cleaned Preview Styles */
+        .preview-body-frame { background: #fff; border: 2px solid var(--border); padding: 25px; min-height: 450px; max-width: 600px; margin: 0 auto; color: #000; }
+        .preview-subject-box { background: #fff; border: 2px solid var(--border); padding: 12px; border-radius: 8px; margin-bottom: 20px; min-height: 50px; color: #000; }
     </style>
 </head>
 <body>
@@ -105,34 +110,44 @@
     </div>
 </div></div>
 
-<div class="modal" id="sigMgrModal"><div class="modalInner">
-    <h2 style="color:var(--gold); margin-top:0;">Manage Signatures</h2>
-    <div id="sigList" style="max-height:150px; overflow-y:auto; margin:10px 0; border:2px solid var(--border); background:#fff; padding:5px; color:#000;"></div>
-    <label style="font-size:11px; font-weight:800;">ADD NEW SIGNATURE</label>
-    <input id="sigNewName" placeholder="Label">
-    <textarea id="sigNewHTML" placeholder="HTML..." style="min-height:100px;"></textarea>
-    <button class="btn btnGreen" style="width:100%" onclick="addSig()">Save Signature</button>
-    <button class="btn" style="width:100%; margin-top:10px;" onclick="$('sigMgrModal').classList.remove('show')">Close</button>
-</div></div>
+<div class="modal" id="sigMgrModal">
+    <div class="modalInner">
+        <h2 style="color:var(--gold); margin-top:0;">Manage Signatures</h2>
+        <div id="sigList" style="max-height:150px; overflow-y:auto; margin:10px 0; border:2px solid var(--border); background:#fff; padding:5px; color:#000;"></div>
+        
+        <label style="font-size:11px; font-weight:800;">ADD NEW SIGNATURE</label>
+        <input id="sigNewName" placeholder="Label (e.g. My Main Sig)">
+        <textarea id="sigNewHTML" placeholder="Paste HTML or text here..." style="min-height:100px;"></textarea>
+        
+        <button class="btn btnGreen" style="width:100%" onclick="addSig()">Save Signature</button>
+        <button class="btn" style="width:100%; margin-top:10px;" onclick="$('sigMgrModal').classList.remove('show')">Close</button>
+    </div>
+</div>
 
-<div class="modal" id="imgMgrModal"><div class="modalInner">
-    <h2 style="color:var(--gold); margin-top:0;">Image Gallery</h2>
-    <label style="font-size:11px; font-weight:800;">GLOBAL AUTO-LINK</label>
-    <input id="globalImgLink" placeholder="https://your-main-offer.com" oninput="saveGlobalLink()">
-    <div id="imgList" style="max-height:150px; overflow-y:auto; margin:10px 0; border:2px solid var(--border); background:#fff; padding:5px; color:#000;"></div>
-    <label style="font-size:11px; font-weight:800;">ADD NEW IMAGE</label>
-    <input id="imgNewName" placeholder="Label">
-    <input id="imgNewUrl" placeholder="URL...">
-    <input id="imgNavLink" placeholder="Specific Link (Optional)...">
-    <button class="btn btnGreen" style="width:100%" onclick="addImgToGallery()">Add to Gallery</button>
-    <button class="btn" style="width:100%; margin-top:10px;" onclick="$('imgMgrModal').classList.remove('show')">Close</button>
-</div></div>
+<div class="modal" id="imgMgrModal">
+    <div class="modalInner">
+        <h2 style="color:var(--gold); margin-top:0;">Image Gallery</h2>
+        <label style="font-size:11px; font-weight:800;">GLOBAL AUTO-LINK</label>
+        <input id="globalImgLink" placeholder="https://your-main-offer.com" oninput="saveGlobalLink()">
+        
+        <div id="imgList" style="max-height:150px; overflow-y:auto; margin:10px 0; border:2px solid var(--border); background:#fff; padding:5px; color:#000;"></div>
+        
+        <label style="font-size:11px; font-weight:800;">ADD NEW IMAGE</label>
+        <input id="imgNewName" placeholder="Label (e.g. Coffee Vibe)">
+        <input id="imgNewUrl" placeholder="Paste Image URL here...">
+        <input id="imgNavLink" placeholder="Specific Link (Optional)...">
+        
+        <button class="btn btnGreen" style="width:100%" onclick="addImgToGallery()">Add to Gallery</button>
+        <button class="btn" style="width:100%; margin-top:10px;" onclick="$('imgMgrModal').classList.remove('show')">Close</button>
+    </div>
+</div>
 
 <div class="topbar">
-    <div style="font-weight:900; color:var(--gold); font-size:24px;">Email Swipe Machine</div>
+    <div style="font-weight:900; color:var(--gold); font-size:24px; text-shadow: 1px 1px 0px rgba(0,0,0,0.1);">Email Swipe Machine</div>
     <div style="display:flex; gap:12px;">
         <button class="btn btnRed btnSmall" onclick="$('errorModal').classList.add('show')">🐞 Debug</button>
         <button class="btn btnSmall" onclick="$('apiModal').classList.add('show')">🔑 API Keys</button>
+        <button class="btn btnSmall" onclick="$('settingsModal').classList.add('show')">⚙️ Settings</button>
         <button class="btn btnBlue btnSmall" onclick="toggleSource()" id="srcBtn">HTML Source</button>
     </div>
 </div>
@@ -143,57 +158,88 @@
         <div class="sidebar-content">
             <label style="font-weight:800; font-size:12px; color:var(--muted)">OFFER NAME</label>
             <input id="offerName" type="text" oninput="autoSave()">
-            <label style="font-weight:800; font-size:12px; color:var(--muted)">BENEFITS</label>
+            
+            <label style="font-weight:800; font-size:12px; color:var(--muted)">BENEFITS (one per line)</label>
             <textarea id="benefits" style="min-height:100px;" oninput="autoSave()"></textarea>
-            <div style="display:flex; flex-direction:column; gap:10px;">
-                <button class="btn btnBlue" onclick="openPrompt('title')">Edit Title Prompt</button>
-                <button class="btn btnBlue" onclick="openPrompt('body')">Edit Body Prompt</button>
+            
+            <label style="font-weight:800; font-size:12px; color:var(--muted)">CTA TEXT</label>
+            <input id="ctaText" value="Click here to see it" oninput="autoSave()">
+            <div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;">
+                <button class="btn btnBlue" onclick="openPrompt('title')">Edit Title Prompt 📝</button>
+                <button class="btn btnBlue" onclick="openPrompt('body')">Edit Body Prompt 📝</button>
+                <button class="btn btnBlue" onclick="openPrompt('image')">Edit Image Prompt 📝</button>
             </div>
         </div>
     </div>
 
     <div class="card">
+        <div class="tag-row">
+            <button class="btn btnSmall" onclick="insertAtCaret('subject','{!firstname_fix}')">{!firstname_fix}</button>
+            <button class="btn btnSmall" onclick="insertAtCaret('subject','{!lastname_fix}')">{!lastname_fix}</button>
+            <button class="btn btnSmall" onclick="insertAtCaret('subject','⭐')">⭐</button>
+            <div style="flex:1"></div>
+            <select id="modelSelect" style="width:180px; margin:0; font-size:12px; font-weight:800;" onchange="autoSave()">
+                <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Groq)</option>
+                <option value="puter-gemini">Gemini (Puter - No Key)</option>
+                <option value="hf-mistral">Mistral 7B (HuggingFace)</option>
+                <option value="llama-3.1-8b-instant">Llama 3.1 8B (Groq)</option>
+            </select>
+        </div>
+        
         <div style="display:flex; gap:10px; margin-bottom:12px;">
-            <input id="subject" type="text" placeholder="Subject..." style="margin:0; flex:1; font-weight:bold;" oninput="update(); autoSave();">
-            <button class="btn btnGreen" onclick="generateFullSwipe()">🔥 AI GENERATE</button>
+            <input id="subject" type="text" placeholder="Enter Subject Line..." style="margin:0; flex:1; font-weight:bold; color:#000;" oninput="update(); autoSave();">
+            <button class="btn btnGreen" onclick="generateFullSwipe()" style="border: 2px solid var(--gold); box-shadow: 0 0 8px rgba(184,134,11,0.5);">🔥 AI GENERATE</button>
         </div>
 
         <div class="toolbar">
-            <button class="btn btnIcon btnSmall" onclick="exec('bold')">B</button>
-            <button class="btn btnIcon btnSmall" onclick="exec('italic')">I</button>
+            <button class="btn btnIcon btnSmall" onclick="exec('bold')"><b>B</b></button>
+            <button class="btn btnIcon btnSmall" onclick="exec('italic')"><i>I</i></button>
+            <button class="btn btnIcon btnSmall" onclick="exec('foreColor','#d32f2f')" style="color:#d32f2f">A</button>
+            <button class="btn btnIcon btnSmall" onclick="exec('foreColor','#111111')">A</button>
+            <button class="btn btnSmall" onclick="exec('createLink', prompt('Link URL:'))">Link</button>
+            <button class="btn btnSmall" onclick="insertTable()" title="MLGS Optimized">➕ 600px Table</button>
+            
             <span style="border-left:2px solid var(--border); margin:0 4px; height:24px;"></span>
             
-            <label style="font-size:10px; font-weight:bold;">IMG WIDTH:</label>
-            <input id="imgResizeVal" placeholder="px or %" style="width:70px; margin:0; height:32px; font-size:11px;">
-            <button class="btn btnBlue btnSmall" onclick="resizeSelectedImg()">Set</button>
-            
-            <span style="border-left:2px solid var(--border); margin:0 4px; height:24px;"></span>
-            <select id="imgGallerySelect" style="width:100px; margin:0; height:32px; font-size:11px;"><option value="">Gallery...</option></select>
+            <select id="imgGallerySelect" style="width:110px; margin:0; padding:0 8px; font-size:12px; height:32px;"><option value="">Gallery...</option></select>
             <button class="btn btnBlue btnSmall" onclick="insertGalleryImg()">Insert</button>
+            <button class="btn btnBlue btnSmall" onclick="insertRandomImg()" title="Surprise Me">🎲 Random</button>
+            <button class="btn btnSmall" onclick="$('imgMgrModal').classList.add('show')" title="Manage Gallery">🖼️</button>
         </div>
 
         <div id="bodyEditor" contenteditable="true" oninput="update(); autoSave();"></div>
         <textarea id="sourceEditor"></textarea>
 
         <div class="toolbar-bottom">
-            <button class="btn btnSmall" onclick="exec('undo')">Undo</button>
-            <select id="sigSelect" style="width:130px; margin:0; height:32px; font-size:11px;"><option value="">Signatures</option></select>
+            <button class="btn btnSmall" onclick="exec('undo')">Undo Last Move</button>
+            
+            <span style="border-left:2px solid var(--border); margin:0 4px; height:24px;"></span>
+            
+            <select id="sigSelect" style="width:140px; margin:0; padding:0 8px; font-size:12px; height:32px;"><option value="">Signatures</option></select>
             <button class="btn btnBlue btnSmall" onclick="insertSig()">Insert Sig</button>
+            <button class="btn btnSmall" onclick="$('sigMgrModal').classList.add('show')" title="Manage Signatures">Manage</button>
+            
             <div style="flex:1"></div>
-            <button class="btn btnRed btnSmall" onclick="clearBody()">Clear</button>
+            <button class="btn btnRed btnSmall" onclick="clearBody()">Clear Editor</button>
         </div>
     </div>
 
     <div class="card">
-        <div class="preview-subject-box"><span id="prevSub" style="font-weight:800;"></span></div>
+        <div class="preview-subject-box">
+            <label style="font-weight:800; font-size:10px; color:var(--muted); display:block; margin-bottom:4px;">SUBJECT PREVIEW</label>
+            <span id="prevSub" style="font-weight:800; color:#000;"></span>
+        </div>
+        
         <div style="display:flex; gap:10px; margin-bottom:15px;">
             <button class="btn btnBlue" style="flex:1" onclick="copyText($('subject').value)">Copy Title</button>
             <button class="btn btnBlue" style="flex:1" onclick="copyText(getWrappedBody())">Copy HTML</button>
         </div>
+
         <div class="preview-body-frame" id="prevBody"></div>
+        
         <div style="margin-top:15px;">
             <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:800; font-size:13px; margin-bottom:15px;">
-                <input type="checkbox" id="useWrapper" checked onchange="update()"> Use 600px Wrapper
+                <input type="checkbox" id="useWrapper" checked style="width:auto; margin:0; transform: scale(1.2);" onchange="update()"> Use 600px Wrapper
             </label>
             <button class="btn btnGreen" onclick="copyAll()" style="width:100%; height:70px; font-size:22px;">COPY FULL SWIPE</button>
         </div>
@@ -202,80 +248,361 @@
 
 <script>
     const $ = id => document.getElementById(id);
-    let lastSelectedImg = null;
+    let activePrompt = "";
+
+    let promptTitle = localStorage.getItem("esm_prompt_title") || "Return ONLY one string. Vibe: High-energy, sarcastic funny humor. Logic: Pick ONE scenario (Pajamas, No Traffic, Beach, Naps, or Home) and use it for BOTH. Brag about the lifestyle, mock the office grind. Rules: BANNED WORDS: ditch, escape, freedom, wealth, massive, system, financial, boss. Title format: Start with ⭐, 7-9 words.";
+    let promptBody  = localStorage.getItem("esm_prompt_body")  || "Write exactly 3 sentences max, start with ⭐. Vibe: High-energy, sarcastic humor. Brag about the lifestyle. BANNED: ditch, escape, freedom, wealth, massive, system, financial, boss.";
+    let promptImage = localStorage.getItem("esm_prompt_image") || "Describe a high-converting image for this offer.";
+
+    let originalPromptValue = "";
     let savedRange = null;
 
-    // --- Core Editor Functions ---
-    function update() { $("prevSub").textContent = $("subject").value; $("prevBody").innerHTML = $("bodyEditor").innerHTML; }
-    function exec(c, v=null) { $("bodyEditor").focus(); document.execCommand(c, false, v); update(); }
+    function showToast(m) { const t=$("toast"); t.textContent=m; t.style.display="block"; setTimeout(()=>t.style.display="none",2500); }
     
-    // --- SMART IMAGE SELECTION & RESIZING ---
-    $("bodyEditor").addEventListener('mousedown', (e) => {
-        // Find the image, even if user clicks deep inside a nested structure
-        const img = e.target.closest('img');
-        
-        // Remove selection from previous
-        const allImgs = $("bodyEditor").querySelectorAll('img');
-        allImgs.forEach(i => i.classList.remove('selected-img'));
+    function toggleSidebar() {
+        $("mainGrid").classList.toggle("sidebar-closed");
+        $("tglBtn").textContent = $("mainGrid").classList.contains("sidebar-closed") ? "SHOW SIDEBAR" : "HIDE SIDEBAR";
+    }
 
-        if(img) {
-            lastSelectedImg = img;
-            lastSelectedImg.classList.add('selected-img');
-            // Populate the resize box with current width
-            let currentWidth = img.style.width || img.getAttribute('width') || "";
-            $("imgResizeVal").value = currentWidth;
-            showToast("Image Selected");
-        } else {
-            lastSelectedImg = null;
+    function saveKeys() {
+        localStorage.setItem("esm_key", $("apiKey").value);
+        localStorage.setItem("esm_hf_key", $("hfKey").value);
+        $("apiModal").classList.remove("show");
+        showToast("Keys Saved Successfully");
+    }
+
+    // Force editor to use DIVs for natural MLGS spacing
+    $("bodyEditor").addEventListener('focus', function() {
+        document.execCommand('defaultParagraphSeparator', false, 'div');
+    });
+
+    // Save Selection state so AI appends at cursor
+    $("bodyEditor").addEventListener('blur', () => {
+        const sel = window.getSelection();
+        if (sel.rangeCount > 0) {
+            savedRange = sel.getRangeAt(0);
         }
     });
 
-    function resizeSelectedImg() {
-        if(!lastSelectedImg) {
-            showToast("Click an image in the editor first!");
-            return;
+    function restoreSelection() {
+        if (savedRange) {
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(savedRange);
+        } else {
+            $("bodyEditor").focus();
         }
-        let val = $("imgResizeVal").value.trim();
-        if(!val) return;
-
-        // Force pixel conversion if just a number
-        if(!isNaN(val)) val = val + "px";
-
-        // Apply to both Attribute (for Outlook) and Style (for Web)
-        lastSelectedImg.setAttribute('width', val.replace('px', ''));
-        lastSelectedImg.style.width = val;
-        
-        // IMPORTANT: Override the "max-width: 100%" that is often in pasted code
-        // If the user wants it at 800px, max-width needs to allow it.
-        lastSelectedImg.style.maxWidth = "none"; 
-        lastSelectedImg.style.height = "auto";
-
-        update(); autoSave();
-        showToast("Resized to " + val);
     }
 
-    // --- The rest of the engine logic (Persisted) ---
+    async function callAI(p) {
+        const groqKey = localStorage.getItem("esm_key");
+        const hfKey = localStorage.getItem("esm_hf_key");
+        const selectedModel = $("modelSelect").value;
+        const errorLog = $("apiErrorLog");
+        
+        try {
+            if (selectedModel === "puter-gemini") {
+                const response = await puter.ai.chat(p);
+                return response.toString();
+            }
+            if (selectedModel === "hf-mistral") {
+                if(!hfKey) throw new Error("Missing HF Token in API Settings");
+                const res = await fetch("https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3", {
+                    method: "POST", headers: { "Authorization": `Bearer ${hfKey}`, "Content-Type": "application/json" },
+                    body: JSON.stringify({ inputs: p })
+                });
+                const d = await res.json();
+                if (d.error) throw new Error(d.error);
+                return d[0].generated_text.replace(p, "").trim();
+            }
+            if(!groqKey) throw new Error("Missing Groq API Key in API Settings");
+            const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method:"POST", headers:{"Authorization":`Bearer ${groqKey}`,"Content-Type":"application/json"},
+                body: JSON.stringify({model:selectedModel, messages:[{role:"user",content:p}]})
+            });
+            const d = await res.json();
+            if (!res.ok) throw new Error(d.error ? d.error.message : "API Error");
+            return d.choices[0].message.content.trim();
+        } catch(e) {
+            errorLog.textContent += `[${new Date().toLocaleTimeString()}] ${e.message}\n\n`;
+            showToast("AI Failed - Check Debug Log");
+            return null;
+        }
+    }
+
+    // New Merged AI GENERATOR
+    async function generateFullSwipe() {
+        showToast("Generating AI Swipe...");
+        
+        // Combine custom logic so it honors user edits
+        const masterPrompt = `Return ONLY a JSON object with keys "title" and "body". 
+        TITLE LOGIC: ${promptTitle}
+        BODY LOGIC: ${promptBody}
+        Offer: ${$("offerName").value}
+        Benefits: ${$("benefits").value}`;
+
+        const res = await callAI(masterPrompt);
+        
+        if(res) {
+            try {
+                const cleanRes = res.replace(/```json|```/g, "").trim();
+                const data = JSON.parse(cleanRes);
+                
+                $("subject").value = data.title.replace(/"/g,'');
+                
+                restoreSelection();
+                
+                // Format nicely into Divs for MLGS editor
+                const bodyHtml = data.body.split('\n').filter(l => l.trim()).map(l => `<div>${l}</div>`).join('') + `<div><br></div>`;
+                
+                document.execCommand('insertHTML', false, bodyHtml);
+                
+                update(); 
+                autoSave();
+                showToast("Swipe Injected Safely! ✅");
+            } catch(e) {
+                console.error(e);
+                showToast("AI didn't format correctly. Try again.");
+            }
+        }
+    }
+
+    function openPrompt(type) {
+        activePrompt = type;
+        if (type === "title") originalPromptValue = promptTitle;
+        else if (type === "body") originalPromptValue = promptBody;
+        else if (type === "image") originalPromptValue = promptImage;
+
+        $("promptTitle").textContent = `Editing ${type.toUpperCase()} Prompt`;
+        $("promptArea").value = originalPromptValue;
+        $("promptModal").classList.add("show");
+    }
+
+    function savePromptLive() {
+        if (!activePrompt) return;
+        const value = $("promptArea").value;
+        if (activePrompt === "title") { promptTitle = value; localStorage.setItem("esm_prompt_title", value); }
+        else if (activePrompt === "body") { promptBody = value; localStorage.setItem("esm_prompt_body", value); }
+        else if (activePrompt === "image") { promptImage = value; localStorage.setItem("esm_prompt_image", value); }
+    }
+
+    function closePrompt(save) {
+        if (save) {
+            showToast("Prompt Saved to Browser Memory");
+        } else {
+            if (activePrompt === "title") promptTitle = originalPromptValue;
+            else if (activePrompt === "body") promptBody = originalPromptValue;
+            else if (activePrompt === "image") promptImage = originalPromptValue;
+            localStorage.setItem("esm_prompt_" + activePrompt, originalPromptValue);
+        }
+        $("promptModal").classList.remove("show");
+        activePrompt = "";
+    }
+
+    function insertAtCaret(id, text) {
+        const el = $(id);
+        const start = el.selectionStart;
+        const end = el.selectionEnd;
+        el.value = el.value.substring(0, start) + text + el.value.substring(end);
+        el.focus();
+        el.selectionStart = el.selectionEnd = start + text.length;
+        update();
+    }
+    
+    function exec(c, v=null) {
+        $("bodyEditor").focus();
+        document.execCommand(c, false, v);
+        update();
+    }
+
+    function insertTable() {
+        restoreSelection();
+        const html = `<table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 0 auto; border: 1px dashed #cccccc;"><tr><td style="font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6; padding: 10px;">[Insert Content Here]</td></tr></table><div><br></div>`;
+        document.execCommand('insertHTML', false, html);
+        update();
+        autoSave();
+    }
+    
+    function insertImg() {
+        const url = prompt("Image URL:");
+        if(!url) return;
+        const link = prompt("Link URL (optional):");
+        const html = link ? `<a href="${link}" target="_blank"><img src="${url}" style="max-width:100%;"></a>` : `<img src="${url}" style="max-width:100%;">`;
+        exec('insertHTML', html);
+    }
+    
     function toggleSource() {
         const isSrc = $("sourceEditor").style.display === "block";
-        if(isSrc) { $("bodyEditor").innerHTML = $("sourceEditor").value; $("sourceEditor").style.display = "none"; $("bodyEditor").style.display = "block"; $("srcBtn").textContent = "HTML Source"; }
-        else { $("sourceEditor").value = $("bodyEditor").innerHTML; $("bodyEditor").style.display = "none"; $("sourceEditor").style.display = "block"; $("srcBtn").textContent = "Visual Editor"; }
+        if(isSrc) {
+            $("bodyEditor").innerHTML = $("sourceEditor").value;
+            $("sourceEditor").style.display = "none";
+            $("bodyEditor").style.display = "block";
+            $("srcBtn").textContent = "HTML Source";
+        } else {
+            $("sourceEditor").value = $("bodyEditor").innerHTML;
+            $("bodyEditor").style.display = "none";
+            $("sourceEditor").style.display = "block";
+            $("srcBtn").textContent = "Visual Editor";
+        }
     }
 
+    function update() {
+        $("prevSub").textContent = $("subject").value;
+        $("prevBody").innerHTML = $("bodyEditor").innerHTML;
+    }
+    
     function getWrappedBody() {
         const content = $("bodyEditor").innerHTML;
         if(!$("useWrapper").checked) return content;
         return `<table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:600px; margin:0 auto;"><tr><td style="font-family:Arial, sans-serif; font-size:16px; line-height:1.6; color:#111111;">${content}</td></tr></table>`;
     }
-
-    function showToast(m) { const t=$("toast"); t.textContent=m; t.style.display="block"; setTimeout(()=>t.style.display="none",2500); }
-    function autoSave() { const data = { sub: $("subject").value, body: $("bodyEditor").innerHTML, offer: $("offerName").value, benefits: $("benefits").value, model: $("modelSelect") ? $("modelSelect").value : "" }; localStorage.setItem("esm_draft", JSON.stringify(data)); }
-    function loadDraft() { const d = JSON.parse(localStorage.getItem("esm_draft")); if(d) { $("subject").value = d.sub || ""; $("bodyEditor").innerHTML = d.body || ""; $("offerName").value = d.offer || ""; $("benefits").value = d.benefits || ""; update(); } }
-    function copyText(t) { navigator.clipboard.writeText(t); showToast("Copied!"); }
+    
+    function autoSave() {
+        const data = { sub: $("subject").value, body: $("bodyEditor").innerHTML, offer: $("offerName").value, benefits: $("benefits").value, cta: $("ctaText").value, model: $("modelSelect").value };
+        localStorage.setItem("esm_draft", JSON.stringify(data));
+    }
+    
+    function loadDraft() {
+        const d = JSON.parse(localStorage.getItem("esm_draft"));
+        if(d) {
+            $("subject").value = d.sub || ""; $("bodyEditor").innerHTML = d.body || ""; $("offerName").value = d.offer || ""; $("benefits").value = d.benefits || ""; $("ctaText").value = d.cta || "";
+            if(d.model) $("modelSelect").value = d.model;
+            update();
+        }
+    }
+    
+    function renderSigs() {
+        const list = $("sigList");
+        if(list) {
+            list.innerHTML = signatures.map((sig, i) => `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; border-bottom:1px solid #eee; background: white; margin-bottom: 2px;">
+                    <span style="font-size:12px; font-weight:bold; color: #333;">${sig.name}</span>
+                    <button class="btn btnRed btnSmall" style="height:22px; padding:0 8px; font-size:10px;" onclick="delSig(${i})">Del</button>
+                </div>
+            `).join('');
+        }
+        const select = $("sigSelect");
+        if(select) {
+            select.innerHTML = '<option value="">Signatures</option>' +
+                signatures.map((sig, i) => `<option value="${i}">${sig.name}</option>`).join('');
+        }
+    }
+    
+    function addSig() {
+        const name = $("sigNewName").value;
+        const html = $("sigNewHTML").value;
+        if(!name || !html) { alert("Please provide a Name and HTML/Text."); return; }
+        signatures.push({ name, html });
+        localStorage.setItem("esm_signatures", JSON.stringify(signatures));
+        $("sigNewName").value = ""; $("sigNewHTML").value = "";
+        renderSigs();
+        showToast("Signature Added!");
+    }
+    
+    window.delSig = function(i) {
+        if(confirm("Delete this signature?")) {
+            signatures.splice(i, 1);
+            localStorage.setItem("esm_signatures", JSON.stringify(signatures));
+            renderSigs();
+        }
+    };
+    
+    function insertSig() {
+        restoreSelection();
+        const idx = $("sigSelect").value;
+        if(idx === "" || !signatures[idx]) { showToast("Select a signature first!"); return; }
+        document.execCommand('insertHTML', false, "<div><br><br>" + signatures[idx].html + "</div>");
+        update();
+        autoSave();
+    }
+    
+    function saveGlobalLink() { localStorage.setItem("esm_global_link", $("globalImgLink").value); }
+    
+    function renderGallery() {
+        $("globalImgLink").value = localStorage.getItem("esm_global_link") || "";
+        const list = $("imgList");
+        if(list) {
+            list.innerHTML = gallery.map((img, i) => `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; border-bottom:1px solid #eee; background: white; margin-bottom: 2px;">
+                    <span style="font-size:12px; font-weight:bold; color: #333;">${img.name}</span>
+                    <button class="btn btnRed btnSmall" style="height:22px; padding:0 8px; font-size:10px;" onclick="delImg(${i})">Del</button>
+                </div>
+            `).join('');
+        }
+        const select = $("imgGallerySelect");
+        if(select) {
+            select.innerHTML = '<option value="">Gallery...</option>' +
+                gallery.map((img, i) => `<option value="${i}">${img.name}</option>`).join('');
+        }
+    }
+    
+    function addImgToGallery() {
+        const name = $("imgNewName").value;
+        const url = $("imgNewUrl").value;
+        const link = $("imgNavLink").value;
+        if(!name || !url) { alert("Please provide at least a Name and Image URL."); return; }
+        gallery.push({ name, url, link });
+        localStorage.setItem("esm_gallery", JSON.stringify(gallery));
+        $("imgNewName").value = ""; $("imgNewUrl").value = ""; $("imgNavLink").value = "";
+        renderGallery();
+        showToast("Image Added!");
+    }
+    
+    window.delImg = function(i) {
+        if(confirm("Delete this image from gallery?")) {
+            gallery.splice(i, 1);
+            localStorage.setItem("esm_gallery", JSON.stringify(gallery));
+            renderGallery();
+        }
+    };
+    
+    function insertGalleryImg(index = null) {
+        restoreSelection();
+        const idx = index !== null ? index : $("imgGallerySelect").value;
+        if(idx === "" || !gallery[idx]) { showToast("Select an image first!"); return; }
+        const img = gallery[idx];
+        const globalLink = localStorage.getItem("esm_global_link") || "";
+        const finalLink = img.link || globalLink;
+        let html = `<div style="text-align:center; margin:20px 0;">`;
+        if(finalLink) {
+            html += `<a href="${finalLink}" target="_blank"><img src="${img.url}" style="max-width:100%; border-radius:10px; border: 1px solid #ccc;"></a>`;
+        } else {
+            html += `<img src="${img.url}" style="max-width:100%; border-radius:10px;">`;
+        }
+        html += `</div><div><br></div>`;
+        document.execCommand('insertHTML', false, html);
+        update();
+        autoSave();
+    }
+    
+    function insertRandomImg() {
+        if(gallery.length === 0) { showToast("Your gallery is empty!"); return; }
+        insertGalleryImg(Math.floor(Math.random() * gallery.length));
+        showToast("Random Image Inserted!");
+    }
+    
+    function clearBody() { if(confirm("This will wipe your current work. Proceed?")) { $("bodyEditor").innerHTML = ""; $("subject").value = ""; update(); autoSave(); } }
+    function copyText(t) { navigator.clipboard.writeText(t); showToast("Copied to Clipboard!"); }
     function copyAll() { copyText(`${$("subject").value}\n\n${getWrappedBody()}`); }
-    function toggleSidebar() { $("mainGrid").classList.toggle("sidebar-closed"); $("tglBtn").textContent = $("mainGrid").classList.contains("sidebar-closed") ? "SHOW" : "HIDE"; }
-    function clearBody() { if(confirm("Clear?")) { $("bodyEditor").innerHTML = ""; $("subject").value = ""; update(); autoSave(); } }
 
-    window.onload = () => { loadDraft(); };
+    window.addEventListener('beforeunload', () => {
+        if (activePrompt) {
+            if (activePrompt === "title") localStorage.setItem("esm_prompt_title", promptTitle);
+            else if (activePrompt === "body") localStorage.setItem("esm_prompt_body", promptBody);
+            else if (activePrompt === "image") localStorage.setItem("esm_prompt_image", promptImage);
+        }
+    });
+
+    window.onload = () => {
+        $("apiKey").value = localStorage.getItem("esm_key") || "";
+        $("hfKey").value = localStorage.getItem("esm_hf_key") || "";
+        loadDraft();
+        renderGallery();
+        renderSigs();
+    };
+
+    let gallery = JSON.parse(localStorage.getItem("esm_gallery") || "[]");
+    let signatures = JSON.parse(localStorage.getItem("esm_signatures") || "[]");
 </script>
 </body>
 </html>
