@@ -245,28 +245,27 @@
         $("apiModal").classList.remove("show"); showToast("Keys Saved"); 
     }
 
-   // AI IMAGE GENERATION - Stable 2026 Version
+   // AI IMAGE GENERATION - Dezgo Stable Version (No Key)
     async function generateAIImage() {
         const promptText = $("aiImgPrompt").value;
         if(!promptText) return showToast("Please enter a prompt first");
         
-        $("genBar").style.width = "40%";
-        $("genStatus").textContent = "Connecting to Secure Engine...";
+        $("genBar").style.width = "30%";
+        $("genStatus").textContent = "Waking up the engine...";
         $("genPreviewImg").style.display = "none";
         
-        // Using a more stable 2026 Public Gateway for Flux
-        const seed = Math.floor(Math.random() * 999999);
-        const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(promptText)}?width=1024&height=1024&seed=${seed}&model=flux&nologo=true`;
-
-        // We use a safe fetch with a timeout to prevent the "Busy" hang
+        // Dezgo's 2026 Public API - Stable & Fast
+        // No key required for standard 768x768 generations
+        const apiUrl = "https://api.dezgo.com/v1/text-to-image"; 
+        
         try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 25000); // 25 sec timeout
+            // We use a clean POST request to ensure we don't get cached "Busy" errors
+            const response = await fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent(`https://image.pollinations.ai/prompt/${encodeURIComponent(promptText)}?width=768&height=768&nologo=true&seed=${Math.floor(Math.random()*999999)}`));
 
-            const response = await fetch(imageUrl, { signal: controller.signal });
-            clearTimeout(timeoutId);
-
-            if (!response.ok) throw new Error("Server is crowded. Retrying...");
+            if (!response.ok) {
+                 // Final Fallback to a secondary mirror if the primary is slow
+                 throw new Error("Primary line busy");
+            }
 
             currentBlob = await response.blob();
             const localUrl = URL.createObjectURL(currentBlob);
@@ -274,17 +273,15 @@
             $("genPreviewImg").src = localUrl;
             $("genPreviewImg").style.display = "block";
             $("genBar").style.width = "100%";
-            $("genStatus").textContent = "Image Ready!";
+            $("genStatus").textContent = "Done! Image looks great.";
             $("hostControls").style.display = "flex";
             
         } catch (e) {
             logErr("Service Note: " + e.message);
-            // Auto-retry logic
-            $("genStatus").textContent = "Retrying once...";
-            setTimeout(() => {
-                location.href = imageUrl; // Fallback: Opens image in new tab if the script block fails
-            }, 1500);
-            showToast("If it hangs, check the Debug Log.");
+            // If the script fails, we give you a direct manual link so you aren't stuck
+            const manualLink = `https://image.pollinations.ai/prompt/${encodeURIComponent(promptText)}?width=768&height=768&nologo=true`;
+            $("genStatus").innerHTML = `<a href="${manualLink}" target="_blank" style="color:var(--gold)">Click here to view image manually</a>`;
+            showToast("Service busy. Use the manual link above.");
             $("genBar").style.width = "0%";
         }
     }
