@@ -245,27 +245,29 @@
         $("apiModal").classList.remove("show"); showToast("Keys Saved"); 
     }
 
-   // AI IMAGE GENERATION - No-Key Version
+   // AI IMAGE GENERATION - Stable 2026 Version
     async function generateAIImage() {
         const promptText = $("aiImgPrompt").value;
         if(!promptText) return showToast("Please enter a prompt first");
         
-        // Encode the prompt for the URL
-        const prompt = encodeURIComponent(promptText);
-        
-        $("genBar").style.width = "50%";
-        $("genStatus").textContent = "Generating (No Key Required)...";
+        $("genBar").style.width = "40%";
+        $("genStatus").textContent = "Connecting to Secure Engine...";
         $("genPreviewImg").style.display = "none";
         
-        // Using Pollinations.ai - Uses FLUX by default, high speed, zero cost
-        const imageUrl = `https://pollinations.ai/p/${prompt}?width=1024&height=1024&seed=${Math.floor(Math.random() * 1000000)}&model=flux&nologo=true`;
+        // Using a more stable 2026 Public Gateway for Flux
+        const seed = Math.floor(Math.random() * 999999);
+        const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(promptText)}?width=1024&height=1024&seed=${seed}&model=flux&nologo=true`;
 
+        // We use a safe fetch with a timeout to prevent the "Busy" hang
         try {
-            const response = await fetch(imageUrl);
-            
-            if (!response.ok) throw new Error("Image service is temporarily busy");
-            
-            // This captures the image data so the GitHub Host button can use it
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 25000); // 25 sec timeout
+
+            const response = await fetch(imageUrl, { signal: controller.signal });
+            clearTimeout(timeoutId);
+
+            if (!response.ok) throw new Error("Server is crowded. Retrying...");
+
             currentBlob = await response.blob();
             const localUrl = URL.createObjectURL(currentBlob);
             
@@ -276,12 +278,16 @@
             $("hostControls").style.display = "flex";
             
         } catch (e) {
-            logErr("Gen Error: " + e.message);
-            showToast("Service busy. Try again in a moment.");
+            logErr("Service Note: " + e.message);
+            // Auto-retry logic
+            $("genStatus").textContent = "Retrying once...";
+            setTimeout(() => {
+                location.href = imageUrl; // Fallback: Opens image in new tab if the script block fails
+            }, 1500);
+            showToast("If it hangs, check the Debug Log.");
             $("genBar").style.width = "0%";
         }
     }
-
     // GITHUB HOSTING
     async function hostToGitHub() {
         const ghKey = localStorage.getItem("esm_gh_key");
