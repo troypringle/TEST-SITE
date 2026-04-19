@@ -1,514 +1,608 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Email Swipe Machine v2.0</title>
-  <script src="https://js.puter.com/v2/"></script>
-  <style>
-    :root {
-      --bg: #d4c4a8; --panel: #f5f0e6; --panel2: #efe6d8; --border: #c9b896;
-      --muted: #5c4d3a; --gold: #b8860b; --green: #2e7d32; --blue: #1976d2; --red: #d32f2f;
-      --shadow: 0 4px 0px rgba(0,0,0,0.2);
-      --btn-h: 40px;
-    }
-    body.theme-slate {
-      --bg: #111827; --panel: #1f2937; --panel2: #243244; --border: #374151;
-      --muted: #cbd5e1; --gold: #fbbf24; --green: #22c55e; --red: #ef4444;
-    }
-    * { box-sizing: border-box; font-size: 14px; }
-    body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); color: #111; line-height: 1.4; }
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Email Swipe Machine</title>
+    <script src="https://js.puter.com/v2/"></script>
+    <style>
+        :root {
+            --bg: #d4c4a8; --panel: #f5f0e6; --panel2: #efe6d8; --border: #c9b896;
+            --muted: #5c4d3a; --gold: #b8860b; --green: #2e7d32; --blue: #1976d2; --red: #d32f2f;
+            --shadow: 0 4px 0px rgba(0,0,0,0.2);
+            --btn-h: 40px;
+        }
+        body.theme-slate {
+            --bg: #111827; --panel: #1f2937; --panel2: #243244; --border: #374151;
+            --muted: #cbd5e1; --gold: #fbbf24; --green: #22c55e; --red: #ef4444;
+        }
+        * { box-sizing: border-box; font-size: 16px; }
+        body { margin: 0; font-family: Arial, sans-serif; background: var(--bg); color: #111; line-height: 1.6; }
+        
+        .topbar { background: var(--panel); border-bottom: 3px solid var(--gold); padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .grid { display: grid; grid-template-columns: 240px 1fr 1fr; gap: 16px; padding: 16px; transition: all 0.3s ease; }
+        .grid.sidebar-closed { grid-template-columns: 60px 1fr 1fr; }
+        
+        .card { background: var(--panel); border: 2px solid var(--border); border-radius: 10px; padding: 16px; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        
+        .sidebar-content { transition: opacity 0.2s; }
+        .sidebar-closed .sidebar-content { opacity: 0; visibility: hidden; height: 0; overflow: hidden; }
+        
+        .btn {
+            border: 2px solid rgba(0,0,0,0.1); background: var(--panel2); color: #111;
+            height: var(--btn-h); padding: 0 15px; border-radius: 8px; cursor: pointer;
+            font-weight: 800; display: inline-flex; align-items: center; justify-content: center;
+            white-space: nowrap; transition: all 0.1s ease;
+            box-shadow: var(--shadow);
+            position: relative;
+            top: 0;
+        }
+        .btn:hover { filter: brightness(1.05); top: -2px; box-shadow: 0 6px 0px rgba(0,0,0,0.15); }
+        .btn:active { top: 3px; box-shadow: 0 1px 0px rgba(0,0,0,0.1); transform: scale(0.98); }
+        
+        .btnGreen { background: var(--green); color: #fff; }
+        .btnBlue { background: var(--blue); color: #fff; }
+        .btnRed { background: var(--red); color: #fff; }
+        .btnIcon { padding: 0 10px; font-size: 18px; }
+        .btnSmall { height: 32px; font-size: 13px; }
+        
+        input, textarea { width: 100%; padding: 10px; border: 2px solid var(--border); border-radius: 8px; margin-bottom: 12px; background: #fff; color: #000; }
+        
+        /* Dropdown Visibility Fix */
+        select { 
+            width: 100%; padding: 10px; border: 2px solid var(--border); border-radius: 8px; 
+            margin-bottom: 12px; background: #fff !important; color: #000 !important; font-weight: bold;
+            appearance: auto !important; /* Forces OS default dropdown arrow */
+            cursor: pointer;
+        }
 
-    .topbar { background: var(--panel); border-bottom: 3px solid var(--gold); padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
-    .grid { display: grid; grid-template-columns: 260px 1.2fr 1fr; gap: 16px; padding: 16px; transition: all 0.3s ease; height: calc(100vh - 70px); overflow: hidden; }
-    .grid.sidebar-closed { grid-template-columns: 60px 1.2fr 1fr; }
+        .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; background: var(--panel2); padding: 8px; border: 2px solid var(--border); border-bottom: 0; border-radius: 8px 8px 0 0; }
+        
+        /* New Bottom Toolbar Style */
+        .toolbar-bottom { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; background: var(--panel2); padding: 8px; border: 2px solid var(--border); border-top: 0; border-radius: 0 0 8px 8px; }
 
-    .card { background: var(--panel); border: 2px solid var(--border); border-radius: 10px; padding: 16px; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; flex-direction: column; overflow: hidden; }
-    .scroll-area { overflow-y: auto; flex: 1; padding-right: 5px; }
-
-    .sidebar-content { transition: opacity 0.2s; }
-    .sidebar-closed .sidebar-content { display: none; }
-
-    .btn {
-      border: 2px solid rgba(0,0,0,0.1); background: var(--panel2); color: #111;
-      height: var(--btn-h); padding: 0 12px; border-radius: 8px; cursor: pointer;
-      font-weight: 800; display: inline-flex; align-items: center; justify-content: center;
-      white-space: nowrap; transition: all 0.1s ease;
-      box-shadow: var(--shadow);
-      position: relative; top: 0;
-    }
-    .btn:hover { filter: brightness(1.05); top: -2px; box-shadow: 0 6px 0px rgba(0,0,0,0.15); }
-    .btn:active { top: 3px; box-shadow: 0 1px 0px rgba(0,0,0,0.1); transform: scale(0.98); }
-
-    .btnGreen { background: var(--green); color: #fff; }
-    .btnBlue { background: var(--blue); color: #fff; }
-    .btnRed { background: var(--red); color: #fff; }
-    .btnIcon { padding: 0 10px; font-size: 16px; }
-    .btnSmall { height: 32px; font-size: 12px; }
-
-    input, select, textarea { width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px; margin-bottom: 10px; background: #fff; font-family: inherit; }
-    
-    /* Improved Dropdown visibility */
-    select { 
-      background-color: #ffffff !important; 
-      border: 2px solid var(--gold) !important; 
-      color: #000 !important; 
-      font-weight: bold !important;
-    }
-
-    .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; background: var(--panel2); padding: 6px; border: 2px solid var(--border); border-bottom: 0; border-radius: 8px 8px 0 0; }
-
-    /* Cleaned Backgrounds */
-    #bodyEditor, #sourceEditor, .preview-body-frame { width: 100%; flex: 1; background: #ffffff !important; border: 2px solid var(--border); padding: 15px; outline: none; overflow-y: auto; min-height: 300px; }
-    #sourceEditor { display: none; font-family: monospace; white-space: pre-wrap; }
-
-    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 10000; align-items: center; justify-content: center; padding: 20px; }
-    .modal.show { display: flex; }
-    .modalInner { background: var(--panel); border: 4px solid var(--gold); border-radius: 12px; padding: 20px; width: 100%; max-width: 500px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); max-height: 90vh; overflow-y: auto; }
-
-    .preview-header { background: #fff; border: 2px solid var(--border); border-bottom: 0; padding: 10px; border-radius: 8px 8px 0 0; font-size: 12px; }
-    
-    .tag-row { display: flex; gap: 4px; margin-bottom: 8px; overflow-x: auto; padding-bottom: 5px; }
-    .list-item { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 5px 10px; border: 1px solid var(--border); margin-bottom: 5px; border-radius: 4px; }
-    
-    #loadingOverlay { position: fixed; inset: 0; background: rgba(255,255,255,0.7); z-index: 10001; display: none; flex-direction: column; align-items: center; justify-content: center; font-weight: 800; }
-    .spinner { width: 40px; height: 40px; border: 4px solid var(--gold); border-top: 4px solid transparent; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 10px; }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-  </style>
+        #bodyEditor, #sourceEditor { width: 100%; max-width: 600px; min-height: 450px; background: #fff; color: #000; border: 2px solid var(--border); padding: 15px; outline: none; margin: 0 auto; overflow-y: auto; }
+        #sourceEditor { display: none; font-family: monospace; }
+        
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; z-index: 10000; align-items: center; justify-content: center; padding: 20px; }
+        .modal.show { display: flex; }
+        .modalInner { background: var(--panel); border: 4px solid var(--gold); border-radius: 12px; padding: 25px; width: 100%; max-width: 500px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        
+        .tag-row { display: flex; gap: 6px; margin-bottom: 12px; }
+        
+        /* Cleaned Preview Styles */
+        .preview-body-frame { background: #fff; border: 2px solid var(--border); padding: 25px; min-height: 450px; max-width: 600px; margin: 0 auto; color: #000; }
+        .preview-subject-box { background: #fff; border: 2px solid var(--border); padding: 12px; border-radius: 8px; margin-bottom: 20px; min-height: 50px; color: #000; }
+    </style>
 </head>
 <body>
 
-<div id="loadingOverlay"><div class="spinner"></div><div id="loadingText">Thinking...</div></div>
+<div id="toast" style="position:fixed; bottom:20px; right:20px; background:#333; color:#fff; padding:12px 24px; display:none; border-radius:8px; z-index:99999; font-weight:bold;"></div>
 
-<!-- Modals -->
 <div class="modal" id="settingsModal"><div class="modalInner">
-  <h2 style="color:var(--gold); margin-top:0;">UI Settings</h2>
-  <button class="btn btnBlue" style="width:100%;" onclick="document.body.classList.toggle('theme-slate')">Toggle Dark/Light Mode</button>
-  <button class="btn" style="width:100%; margin-top:15px;" onclick="closeModal('settingsModal')">Close</button>
+    <h2 style="color:var(--gold); margin-top:0;">UI Settings</h2>
+    <button class="btn btnBlue" style="width:100%;" onclick="document.body.classList.toggle('theme-slate')">Toggle Dark/Light Mode</button>
+    <button class="btn" style="width:100%; margin-top:15px;" onclick="$('settingsModal').classList.remove('show')">Close</button>
 </div></div>
 
 <div class="modal" id="apiModal"><div class="modalInner">
-  <h2 style="color:var(--gold); margin-top:0;">API Keys</h2>
-  <label style="font-size:11px; font-weight:800;">GROQ KEY</label>
-  <input id="apiKey" type="password" placeholder="gsk_...">
-  <label style="font-size:11px; font-weight:800;">HUGGING FACE TOKEN</label>
-  <input id="hfKey" type="password" placeholder="hf_...">
-  <p style="font-size: 11px;">Puter Gemini works without a key.</p>
-  <button class="btn btnGreen" style="width:100%" onclick="saveKeys()">Save Keys</button>
-  <button class="btn" style="width:100%; margin-top:10px;" onclick="closeModal('apiModal')">Cancel</button>
+    <h2 style="color:var(--gold); margin-top:0;">API Keys</h2>
+    <label style="font-size:11px; font-weight:800;">GROQ KEY</label>
+    <input id="apiKey" type="password" placeholder="Groq Key...">
+    <label style="font-size:11px; font-weight:800;">HUGGING FACE TOKEN</label>
+    <input id="hfKey" type="password" placeholder="HF Token...">
+    <button class="btn btnGreen" style="width:100%" onclick="saveKeys()">Save Keys</button>
+    <button class="btn" style="width:100%; margin-top:10px;" onclick="$('apiModal').classList.remove('show')">Cancel</button>
 </div></div>
 
 <div class="modal" id="errorModal"><div class="modalInner">
-  <h2 style="color:var(--red); margin-top:0;">🐞 Debug Log</h2>
-  <div id="apiErrorLog" style="font-size:11px; background:#fff; border:2px solid var(--border); padding:10px; min-height:150px; margin-bottom:15px; color:#d32f2f; white-space:pre-wrap; overflow-y:auto; max-height:300px; font-family:monospace;">No errors recorded.</div>
-  <button class="btn btnBlue" style="width:100%" onclick="closeModal('errorModal')">Close Log</button>
+    <h2 style="color:var(--red); margin-top:0;">🐞 Debug Log</h2>
+    <div id="apiErrorLog" style="font-size:12px; background:#fff; border:2px solid var(--border); padding:12px; min-height:150px; margin-bottom:15px; color:#d32f2f; white-space:pre-wrap; overflow-y:auto; max-height:300px; font-family:monospace;">No errors recorded.</div>
+    <button class="btn btnBlue" style="width:100%" onclick="$('errorModal').classList.remove('show')">Close Log</button>
 </div></div>
 
 <div class="modal" id="promptModal"><div class="modalInner">
-  <h2 id="promptTitle" style="color:var(--gold); margin-top:0;">Edit Prompt</h2>
-  <textarea id="promptArea" style="min-height:250px; font-size: 12px;"></textarea>
-  <div style="display:flex; gap:10px; margin-top:10px;">
-    <button class="btn btnGreen" style="flex:1" onclick="savePrompt()">Save Prompt</button>
-    <button class="btn btnRed" style="flex:1" onclick="closeModal('promptModal')">Cancel</button>
-  </div>
+    <h2 id="promptTitle" style="color:var(--gold); margin-top:0;">Edit Prompt</h2>
+    <textarea id="promptArea" style="min-height:200px;" oninput="savePromptLive()"></textarea>
+    <div style="display:flex; gap:10px; margin-top:10px;">
+        <button class="btn btnGreen" style="flex:1" onclick="closePrompt(true)">Save Changes</button>
+        <button class="btn btnRed" style="flex:1" onclick="closePrompt(false)">Cancel</button>
+    </div>
 </div></div>
 
-<div class="modal" id="sigMgrModal"><div class="modalInner">
-  <h2 style="color:var(--gold); margin-top:0;">Signatures</h2>
-  <div id="sigList" style="max-height:150px; overflow-y:auto; margin-bottom:10px;"></div>
-  <input id="sigNewName" placeholder="Label (e.g. Default)">
-  <textarea id="sigNewHTML" placeholder="HTML or Text..." style="min-height:80px;"></textarea>
-  <button class="btn btnGreen" style="width:100%" onclick="addSig()">Add Signature</button>
-  <button class="btn" style="width:100%; margin-top:10px;" onclick="closeModal('sigMgrModal')">Close</button>
-</div></div>
+<div class="modal" id="sigMgrModal">
+    <div class="modalInner">
+        <h2 style="color:var(--gold); margin-top:0;">Manage Signatures</h2>
+        <div id="sigList" style="max-height:150px; overflow-y:auto; margin:10px 0; border:2px solid var(--border); background:#fff; padding:5px; color:#000;"></div>
+        
+        <label style="font-size:11px; font-weight:800;">ADD NEW SIGNATURE</label>
+        <input id="sigNewName" placeholder="Label (e.g. My Main Sig)">
+        <textarea id="sigNewHTML" placeholder="Paste HTML or text here..." style="min-height:100px;"></textarea>
+        
+        <button class="btn btnGreen" style="width:100%" onclick="addSig()">Save Signature</button>
+        <button class="btn" style="width:100%; margin-top:10px;" onclick="$('sigMgrModal').classList.remove('show')">Close</button>
+    </div>
+</div>
 
-<div class="modal" id="imgMgrModal"><div class="modalInner">
-  <h2 style="color:var(--gold); margin-top:0;">Image Gallery</h2>
-  <label style="font-size:11px; font-weight:800;">GLOBAL REDIRECT LINK</label>
-  <input id="globalImgLink" placeholder="https://..." oninput="autoSave()">
-  <div id="imgList" style="max-height:150px; overflow-y:auto; margin-bottom:10px;"></div>
-  <input id="imgNewName" placeholder="Image Name">
-  <input id="imgNewUrl" placeholder="Image URL">
-  <button class="btn btnGreen" style="width:100%" onclick="addImg()">Add to Gallery</button>
-  <button class="btn" style="width:100%; margin-top:10px;" onclick="closeModal('imgMgrModal')">Close</button>
-</div></div>
+<div class="modal" id="imgMgrModal">
+    <div class="modalInner">
+        <h2 style="color:var(--gold); margin-top:0;">Image Gallery</h2>
+        <label style="font-size:11px; font-weight:800;">GLOBAL AUTO-LINK</label>
+        <input id="globalImgLink" placeholder="https://your-main-offer.com" oninput="saveGlobalLink()">
+        
+        <div id="imgList" style="max-height:150px; overflow-y:auto; margin:10px 0; border:2px solid var(--border); background:#fff; padding:5px; color:#000;"></div>
+        
+        <label style="font-size:11px; font-weight:800;">ADD NEW IMAGE</label>
+        <input id="imgNewName" placeholder="Label (e.g. Coffee Vibe)">
+        <input id="imgNewUrl" placeholder="Paste Image URL here...">
+        <input id="imgNavLink" placeholder="Specific Link (Optional)...">
+        
+        <button class="btn btnGreen" style="width:100%" onclick="addImgToGallery()">Add to Gallery</button>
+        <button class="btn" style="width:100%; margin-top:10px;" onclick="$('imgMgrModal').classList.remove('show')">Close</button>
+    </div>
+</div>
 
 <div class="topbar">
-  <div style="font-weight:900; color:var(--gold); font-size:20px;">EMAIL SWIPE MACHINE</div>
-  <div style="display:flex; gap:8px;">
-    <button class="btn btnRed btnSmall" onclick="showModal('errorModal')">🐞 Debug</button>
-    <button class="btn btnSmall" onclick="showModal('apiModal')">🔑 Keys</button>
-    <button class="btn btnSmall" onclick="showModal('settingsModal')">⚙️ Settings</button>
-    <button class="btn btnBlue btnSmall" onclick="toggleSource()" id="srcBtn">View Source</button>
-  </div>
+    <div style="font-weight:900; color:var(--gold); font-size:24px; text-shadow: 1px 1px 0px rgba(0,0,0,0.1);">Email Swipe Machine</div>
+    <div style="display:flex; gap:12px;">
+        <button class="btn btnRed btnSmall" onclick="$('errorModal').classList.add('show')">🐞 Debug</button>
+        <button class="btn btnSmall" onclick="$('apiModal').classList.add('show')">🔑 API Keys</button>
+        <button class="btn btnSmall" onclick="$('settingsModal').classList.add('show')">⚙️ Settings</button>
+        <button class="btn btnBlue btnSmall" onclick="toggleSource()" id="srcBtn">HTML Source</button>
+    </div>
 </div>
 
 <div class="grid" id="mainGrid">
-  <!-- Sidebar -->
-  <div class="card">
-    <button class="btn btnSmall btnBlue" style="width:100%; margin-bottom:10px;" onclick="toggleSidebar()">TGL SIDEBAR</button>
-    <div class="sidebar-content scroll-area">
-      <label style="font-weight:800; font-size:11px; color:var(--muted)">OFFER NAME</label>
-      <input id="offerName" placeholder="Product XYZ" oninput="autoSave()">
-      
-      <label style="font-weight:800; font-size:11px; color:var(--muted)">KEY BENEFITS</label>
-      <textarea id="benefits" style="min-height:120px;" placeholder="Benefit 1&#10;Benefit 2" oninput="autoSave()"></textarea>
-
-      <label style="font-weight:800; font-size:11px; color:var(--muted)">CTA TEXT</label>
-      <input id="ctaText" value="Click here to start" oninput="autoSave()">
-
-      <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
-        <button class="btn btnSmall" onclick="openPromptEditor('title')">Subject Prompt 📝</button>
-        <button class="btn btnSmall" onclick="openPromptEditor('body')">Body Prompt 📝</button>
-        <button class="btn btnRed btnSmall" onclick="clearAllData()">Reset Everything</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Main Editor -->
-  <div class="card">
-    <div class="tag-row">
-      <button class="btn btnSmall" onclick="insertText('{!firstname_fix}')">{!fn}</button>
-      <button class="btn btnSmall" onclick="insertText('{!lastname_fix}')">{!ln}</button>
-      <button class="btn btnSmall" onclick="insertText('⭐')">⭐</button>
-      <div style="flex:1"></div>
-      <select id="modelSelect" style="width:160px; margin:0;" onchange="autoSave()">
-        <option value="puter-gemini">Gemini (Puter)</option>
-        <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Groq)</option>
-        <option value="llama-3.1-8b-instant">Llama 3.1 8B (Groq)</option>
-        <option value="hf-mistral">Mistral 7B (HF)</option>
-      </select>
+    <div class="card" style="padding: 10px;">
+        <button class="btn btnSmall btnBlue" style="width:100%; margin-bottom:15px;" onclick="toggleSidebar()" id="tglBtn">HIDE SIDEBAR</button>
+        <div class="sidebar-content">
+            <label style="font-weight:800; font-size:12px; color:var(--muted)">OFFER NAME</label>
+            <input id="offerName" type="text" oninput="autoSave()">
+            
+            <label style="font-weight:800; font-size:12px; color:var(--muted)">BENEFITS (one per line)</label>
+            <textarea id="benefits" style="min-height:100px;" oninput="autoSave()"></textarea>
+            
+            <label style="font-weight:800; font-size:12px; color:var(--muted)">CTA TEXT</label>
+            <input id="ctaText" value="Click here to see it" oninput="autoSave()">
+            <div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;">
+                <button class="btn btnBlue" onclick="openPrompt('title')">Edit Title Prompt 📝</button>
+                <button class="btn btnBlue" onclick="openPrompt('body')">Edit Body Prompt 📝</button>
+                <button class="btn btnBlue" onclick="openPrompt('image')">Edit Image Prompt 📝</button>
+            </div>
+        </div>
     </div>
 
-    <div style="display:flex; gap:5px; margin-bottom:10px;">
-      <input id="subject" placeholder="Subject Line..." style="margin:0; flex:1; font-weight:bold;" oninput="updatePreview(); autoSave();">
-      <button class="btn btnGreen" onclick="generateSwipe()">AI GENERATE</button>
+    <div class="card">
+        <div class="tag-row">
+            <button class="btn btnSmall" onclick="insertAtCaret('subject','{!firstname_fix}')">{!firstname_fix}</button>
+            <button class="btn btnSmall" onclick="insertAtCaret('subject','{!lastname_fix}')">{!lastname_fix}</button>
+            <button class="btn btnSmall" onclick="insertAtCaret('subject','⭐')">⭐</button>
+            <div style="flex:1"></div>
+            <select id="modelSelect" style="width:180px; margin:0; font-size:12px; font-weight:800;" onchange="autoSave()">
+                <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Groq)</option>
+                <option value="puter-gemini">Gemini (Puter - No Key)</option>
+                <option value="hf-mistral">Mistral 7B (HuggingFace)</option>
+                <option value="llama-3.1-8b-instant">Llama 3.1 8B (Groq)</option>
+            </select>
+        </div>
+        
+        <div style="display:flex; gap:10px; margin-bottom:12px;">
+            <input id="subject" type="text" placeholder="Enter Subject Line..." style="margin:0; flex:1; font-weight:bold; color:#000;" oninput="update(); autoSave();">
+            <button class="btn btnGreen" onclick="generateFullSwipe()" style="border: 2px solid var(--gold); box-shadow: 0 0 8px rgba(184,134,11,0.5);">🔥 AI GENERATE</button>
+        </div>
+
+        <div class="toolbar">
+            <button class="btn btnIcon btnSmall" onclick="exec('bold')"><b>B</b></button>
+            <button class="btn btnIcon btnSmall" onclick="exec('italic')"><i>I</i></button>
+            <button class="btn btnIcon btnSmall" onclick="exec('foreColor','#d32f2f')" style="color:#d32f2f">A</button>
+            <button class="btn btnIcon btnSmall" onclick="exec('foreColor','#111111')">A</button>
+            <button class="btn btnSmall" onclick="exec('createLink', prompt('Link URL:'))">Link</button>
+            <button class="btn btnSmall" onclick="insertTable()" title="MLGS Optimized">➕ 600px Table</button>
+            
+            <span style="border-left:2px solid var(--border); margin:0 4px; height:24px;"></span>
+            
+            <select id="imgGallerySelect" style="width:110px; margin:0; padding:0 8px; font-size:12px; height:32px;"><option value="">Gallery...</option></select>
+            <button class="btn btnBlue btnSmall" onclick="insertGalleryImg()">Insert</button>
+            <button class="btn btnBlue btnSmall" onclick="insertRandomImg()" title="Surprise Me">🎲 Random</button>
+            <button class="btn btnSmall" onclick="$('imgMgrModal').classList.add('show')" title="Manage Gallery">🖼️</button>
+        </div>
+
+        <div id="bodyEditor" contenteditable="true" oninput="update(); autoSave();"></div>
+        <textarea id="sourceEditor"></textarea>
+
+        <div class="toolbar-bottom">
+            <button class="btn btnSmall" onclick="exec('undo')">Undo Last Move</button>
+            
+            <span style="border-left:2px solid var(--border); margin:0 4px; height:24px;"></span>
+            
+            <select id="sigSelect" style="width:140px; margin:0; padding:0 8px; font-size:12px; height:32px;"><option value="">Signatures</option></select>
+            <button class="btn btnBlue btnSmall" onclick="insertSig()">Insert Sig</button>
+            <button class="btn btnSmall" onclick="$('sigMgrModal').classList.add('show')" title="Manage Signatures">Manage</button>
+            
+            <div style="flex:1"></div>
+            <button class="btn btnRed btnSmall" onclick="clearBody()">Clear Editor</button>
+        </div>
     </div>
 
-    <div class="toolbar">
-      <button class="btn btnIcon btnSmall" onclick="exec('bold')"><b>B</b></button>
-      <button class="btn btnIcon btnSmall" onclick="exec('italic')"><i>I</i></button>
-      <button class="btn btnIcon btnSmall" onclick="exec('foreColor','#d32f2f')" style="color:#d32f2f">A</button>
-      <button class="btn btnIcon btnSmall" onclick="exec('foreColor','#111111')">A</button>
-      <button class="btn btnSmall" onclick="exec('createLink', prompt('URL:'))">Link</button>
-      <button class="btn btnSmall" onclick="insertTable600()">+ 600px Table</button>
-      
-      <span style="border-left:1px solid var(--border); margin:0 4px; height:20px;"></span>
-      
-      <select id="imgGallerySelect" style="width:160px; margin:0; height:32px;"><option value="">Images...</option></select>
-      <button class="btn btnBlue btnSmall" onclick="insertGalleryImg()">Add Image</button>
-      <button class="btn btnSmall" onclick="showModal('imgMgrModal')">🖼️</button>
-    </div>
+    <div class="card">
+        <div class="preview-subject-box">
+            <label style="font-weight:800; font-size:10px; color:var(--muted); display:block; margin-bottom:4px;">SUBJECT PREVIEW</label>
+            <span id="prevSub" style="font-weight:800; color:#000;"></span>
+        </div>
+        
+        <div style="display:flex; gap:10px; margin-bottom:15px;">
+            <button class="btn btnBlue" style="flex:1" onclick="copyText($('subject').value)">Copy Title</button>
+            <button class="btn btnBlue" style="flex:1" onclick="copyText(getWrappedBody())">Copy HTML</button>
+        </div>
 
-    <div id="bodyEditor" contenteditable="true" oninput="updatePreview(); autoSave();"></div>
-    <textarea id="sourceEditor" oninput="syncFromSource()"></textarea>
-    
-    <div style="padding: 10px 0; display:flex; gap:10px; align-items: center; border-top: 1px solid var(--border); margin-top: 5px; background: var(--panel2);">
-        <button class="btn btnSmall" onclick="exec('undo')">Undo Last Move</button>
-        <div style="flex:1"></div>
-        <select id="sigSelect" style="width:180px; margin:0; height:32px;"><option value="">Signatures...</option></select>
-        <button class="btn btnBlue btnSmall" onclick="insertSig()">Add Signature</button>
-        <button class="btn btnSmall" onclick="showModal('sigMgrModal')">🖋️</button>
+        <div class="preview-body-frame" id="prevBody"></div>
+        
+        <div style="margin-top:15px;">
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:800; font-size:13px; margin-bottom:15px;">
+                <input type="checkbox" id="useWrapper" checked style="width:auto; margin:0; transform: scale(1.2);" onchange="update()"> Use 600px Wrapper
+            </label>
+            <button class="btn btnGreen" onclick="copyAll()" style="width:100%; height:70px; font-size:22px;">COPY FULL SWIPE</button>
+        </div>
     </div>
-  </div>
-
-  <!-- Preview -->
-  <div class="card">
-    <div class="preview-header">
-      <div style="font-weight:bold; color:#555;">To: {!firstname_fix}</div>
-      <div id="prevSub" style="margin-top:5px; font-weight:800; font-size:15px; color:#000;">(No Subject)</div>
-    </div>
-    <div class="scroll-area" style="background:#fff; border: 2px solid var(--border); border-top:0;">
-       <div id="previewBody" class="preview-body-frame"></div>
-    </div>
-    <button class="btn btnBlue" style="margin-top:10px;" onclick="copyToClipboard()">Copy Full HTML Swipe</button>
-  </div>
 </div>
 
 <script>
-const $ = id => document.getElementById(id);
-let activePromptType = 'body';
+    const $ = id => document.getElementById(id);
+    let activePrompt = "";
 
-const defaultPrompts = {
-  title: "Write 5 catchy, high-CTR email subject lines for an offer called [OFFER]. Benefits: [BENEFITS]. Reply with ONLY the best one.",
-  body: "Write a short, punchy, professional email for [OFFER]. \nBenefits: [BENEFITS]. \nCTA: [CTA]. \nUse a storytelling tone. Output ONLY the HTML body content. No <html> tags, no head tags. Use <p> and <br>."
-};
+    let promptTitle = localStorage.getItem("esm_prompt_title") || "Return ONLY one string. Vibe: High-energy, sarcastic funny humor. Logic: Pick ONE scenario (Pajamas, No Traffic, Beach, Naps, or Home) and use it for BOTH. Brag about the lifestyle, mock the office grind. Rules: BANNED WORDS: ditch, escape, freedom, wealth, massive, system, financial, boss. Title format: Start with ⭐, 7-9 words.";
+    let promptBody  = localStorage.getItem("esm_prompt_body")  || "Write exactly 3 sentences max, start with ⭐. Vibe: High-energy, sarcastic humor. Brag about the lifestyle. BANNED: ditch, escape, freedom, wealth, massive, system, financial, boss.";
+    let promptImage = localStorage.getItem("esm_prompt_image") || "Describe a high-converting image for this offer.";
 
-let signatures = JSON.parse(localStorage.getItem('esm_sigs') || '[]');
-let gallery = JSON.parse(localStorage.getItem('esm_imgs') || '[]');
+    let originalPromptValue = "";
+    let savedRange = null;
 
-window.onload = () => {
-  loadData();
-  renderSigList();
-  renderImgList();
-  updatePreview();
-  // MLGS Logic: Force <p> tags on enter
-  document.execCommand('defaultParagraphSeparator', false, 'p');
-};
-
-function showModal(id) { $(id).classList.add('show'); }
-function closeModal(id) { $(id).classList.remove('show'); }
-
-function toggleSidebar() {
-  const grid = $('mainGrid');
-  grid.classList.toggle('sidebar-closed');
-}
-
-function toggleSource() {
-  const isSrc = $('sourceEditor').style.display === 'block';
-  if(isSrc) {
-    $('bodyEditor').innerHTML = $('sourceEditor').value;
-    $('sourceEditor').style.display = 'none';
-    $('bodyEditor').style.display = 'block';
-    $('srcBtn').innerText = "View Source";
-  } else {
-    $('sourceEditor').value = $('bodyEditor').innerHTML;
-    $('bodyEditor').style.display = 'none';
-    $('sourceEditor').style.display = 'block';
-    $('srcBtn').innerText = "View Rich Text";
-  }
-}
-
-function syncFromSource() {
-    $('bodyEditor').innerHTML = $('sourceEditor').value;
-    updatePreview();
-}
-
-function exec(cmd, val = null) {
-  document.execCommand(cmd, false, val);
-  $('bodyEditor').focus();
-  updatePreview();
-  autoSave();
-}
-
-function insertText(txt) {
-  const sel = window.getSelection();
-  if (sel.rangeCount) {
-    const range = sel.getRangeAt(0);
-    range.deleteContents();
-    range.insertNode(document.createTextNode(txt));
-  } else {
-    $('bodyEditor').innerHTML += txt;
-  }
-  updatePreview();
-}
-
-function insertTable600() {
-    const tableHTML = `<table width="600" align="center" border="0" cellpadding="0" cellspacing="0" style="width:600px; margin:0 auto;"><tr><td><p>Insert content here...</p></td></tr></table>`;
-    exec('insertHTML', tableHTML);
-}
-
-// AI Integration - SYNCED
-async function generateSwipe() {
-  const model = $('modelSelect').value;
-  const apiKey = $('apiKey').value;
-  const hfKey = $('hfKey').value;
-
-  if (model.includes('llama') && !apiKey) return alert("Enter Groq API Key");
-  if (model.includes('hf') && !hfKey) return alert("Enter HuggingFace Token");
-
-  $('loadingOverlay').style.display = 'flex';
-  logError("Started AI generation...");
-
-  const offer = $('offerName').value || "this product";
-  const benefits = $('benefits').value || "improved results";
-  const cta = $('ctaText').value || "Click Here";
-
-  const titlePromptRaw = (localStorage.getItem('esm_p_title') || defaultPrompts.title);
-  const bodyPromptRaw = (localStorage.getItem('esm_p_body') || defaultPrompts.body);
-
-  const titlePrompt = titlePromptRaw.replace(/\[OFFER\]/g, offer).replace(/\[BENEFITS\]/g, benefits).replace(/\[CTA\]/g, cta);
-  const bodyPrompt = bodyPromptRaw.replace(/\[OFFER\]/g, offer).replace(/\[BENEFITS\]/g, benefits).replace(/\[CTA\]/g, cta);
-
-  try {
-    const subject = await callAI(model, "You are an expert copywriter.", titlePrompt);
-    const body = await callAI(model, "You are an expert email marketer. Output HTML only.", bodyPrompt);
-
-    $('subject').value = subject.replace(/"/g, '').trim();
-    $('bodyEditor').innerHTML = body.trim();
-    updatePreview();
-    autoSave();
-  } catch (e) {
-    logError("AI Error: " + e.message);
-    alert("Generation failed. Check Debug Log.");
-  } finally {
-    $('loadingOverlay').style.display = 'none';
-  }
-}
-
-async function callAI(model, system, prompt) {
-  if (model === 'puter-gemini') {
-    const res = await puter.ai.chat(system + "\n\n" + prompt);
-    return res.toString();
-  }
-  if (model.includes('llama')) {
-    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${$('apiKey').value}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: model,
-        messages: [{role: "system", content: system}, {role: "user", content: prompt}]
-      })
-    });
-    const json = await res.json();
-    return json.choices[0].message.content;
-  }
-  if (model === 'hf-mistral') {
-    const res = await fetch("https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2", {
-      headers: { Authorization: `Bearer ${$('hfKey').value}`, "Content-Type": "application/json" },
-      method: "POST",
-      body: JSON.stringify({ inputs: `<s>[INST] ${system} ${prompt} [/INST]` }),
-    });
-    const json = await res.json();
-    return json[0].generated_text.split('[/INST]').pop();
-  }
-}
-
-function autoSave() {
-  const data = {
-    offer: $('offerName').value,
-    benefits: $('benefits').value,
-    cta: $('ctaText').value,
-    subject: $('subject').value,
-    body: $('bodyEditor').innerHTML,
-    model: $('modelSelect').value,
-    globalLink: $('globalImgLink').value
-  };
-  localStorage.setItem('esm_draft', JSON.stringify(data));
-}
-
-function loadData() {
-  const raw = localStorage.getItem('esm_draft');
-  if (!raw) return;
-  const data = JSON.parse(raw);
-  $('offerName').value = data.offer || '';
-  $('benefits').value = data.benefits || '';
-  $('ctaText').value = data.cta || 'Click here';
-  $('subject').value = data.subject || '';
-  $('bodyEditor').innerHTML = data.body || '';
-  $('modelSelect').value = data.model || 'puter-gemini';
-  $('globalImgLink').value = data.globalLink || '';
-  $('apiKey').value = localStorage.getItem('esm_key_groq') || '';
-  $('hfKey').value = localStorage.getItem('esm_key_hf') || '';
-}
-
-function saveKeys() {
-  localStorage.setItem('esm_key_groq', $('apiKey').value);
-  localStorage.setItem('esm_key_hf', $('hfKey').value);
-  closeModal('apiModal');
-}
-
-function openPromptEditor(type) {
-  activePromptType = type;
-  $('promptTitle').innerText = "Edit " + type.toUpperCase() + " Prompt";
-  $('promptArea').value = localStorage.getItem('esm_p_' + type) || defaultPrompts[type];
-  showModal('promptModal');
-}
-
-function savePrompt() {
-  localStorage.setItem('esm_p_' + activePromptType, $('promptArea').value);
-  closeModal('promptModal');
-}
-
-function updatePreview() {
-  $('prevSub').innerText = $('subject').value || '(No Subject)';
-  $('previewBody').innerHTML = $('bodyEditor').innerHTML;
-}
-
-function logError(msg) {
-  const log = $('apiErrorLog');
-  log.innerText += `\n[${new Date().toLocaleTimeString()}] ${msg}`;
-}
-
-function clearAllData() {
-    if(confirm("Delete all drafts and keys?")) {
-        localStorage.clear();
-        location.reload();
+    function showToast(m) { const t=$("toast"); t.textContent=m; t.style.display="block"; setTimeout(()=>t.style.display="none",2500); }
+    
+    function toggleSidebar() {
+        $("mainGrid").classList.toggle("sidebar-closed");
+        $("tglBtn").textContent = $("mainGrid").classList.contains("sidebar-closed") ? "SHOW SIDEBAR" : "HIDE SIDEBAR";
     }
-}
 
-function renderSigList() {
-  $('sigList').innerHTML = '';
-  $('sigSelect').innerHTML = '<option value="">Signatures...</option>';
-  signatures.forEach((s, i) => {
-    const div = document.createElement('div');
-    div.className = 'list-item';
-    div.innerHTML = `<span>${s.name}</span><button class="btn btnRed btnSmall" onclick="deleteSig(${i})">X</button>`;
-    $('sigList').appendChild(div);
-    $('sigSelect').innerHTML += `<option value="${i}">${s.name}</option>`;
-  });
-}
+    function saveKeys() {
+        localStorage.setItem("esm_key", $("apiKey").value);
+        localStorage.setItem("esm_hf_key", $("hfKey").value);
+        $("apiModal").classList.remove("show");
+        showToast("Keys Saved Successfully");
+    }
 
-function addSig() {
-  const name = $('sigNewName').value;
-  const html = $('sigNewHTML').value;
-  if (!name || !html) return;
-  signatures.push({name, html});
-  localStorage.setItem('esm_sigs', JSON.stringify(signatures));
-  renderSigList();
-  $('sigNewName').value = ''; $('sigNewHTML').value = '';
-}
-
-function deleteSig(i) {
-  signatures.splice(i, 1);
-  localStorage.setItem('esm_sigs', JSON.stringify(signatures));
-  renderSigList();
-}
-
-function insertSig() {
-  const idx = $('sigSelect').value;
-  if (idx === "") return;
-  const html = signatures[idx].html;
-  $('bodyEditor').innerHTML += `<br>${html}`;
-  updatePreview();
-}
-
-function renderImgList() {
-  $('imgList').innerHTML = '';
-  $('imgGallerySelect').innerHTML = '<option value="">Images...</option>';
-  gallery.forEach((img, i) => {
-    const div = document.createElement('div');
-    div.className = 'list-item';
-    div.innerHTML = `<span>${img.name}</span><button class="btn btnRed btnSmall" onclick="deleteImg(${i})">X</button>`;
-    $('imgList').appendChild(div);
-    $('imgGallerySelect').innerHTML += `<option value="${i}">${img.name}</option>`;
-  });
-}
-
-function addImg() {
-  const name = $('imgNewName').value;
-  const url = $('imgNewUrl').value;
-  if (!name || !url) return;
-  gallery.push({name, url});
-  localStorage.setItem('esm_imgs', JSON.stringify(gallery));
-  renderImgList();
-  $('imgNewName').value = ''; $('imgNewUrl').value = '';
-}
-
-function deleteImg(i) {
-  gallery.splice(i, 1);
-  localStorage.setItem('esm_imgs', JSON.stringify(gallery));
-  renderImgList();
-}
-
-function insertGalleryImg() {
-  const idx = $('imgGallerySelect').value;
-  if (idx === "") return;
-  const img = gallery[idx];
-  const redirect = $('globalImgLink').value;
-  let html = `<img src="${img.url}" style="max-width:100%; height:auto; margin:10px 0;">`;
-  if (redirect) html = `<a href="${redirect}">${html}</a>`;
-  exec('insertHTML', html);
-}
-
-function copyToClipboard() {
-    const sub = $('subject').value;
-    const body = $('bodyEditor').innerHTML;
-    const fullSwipe = `SUBJECT: ${sub}\n\n${body}`;
-    navigator.clipboard.writeText(fullSwipe).then(() => {
-        alert("Full Swipe (Subject + Body) copied to clipboard!");
+    // Force editor to use DIVs for natural MLGS spacing
+    $("bodyEditor").addEventListener('focus', function() {
+        document.execCommand('defaultParagraphSeparator', false, 'div');
     });
-}
+
+    // Save Selection state so AI appends at cursor
+    $("bodyEditor").addEventListener('blur', () => {
+        const sel = window.getSelection();
+        if (sel.rangeCount > 0) {
+            savedRange = sel.getRangeAt(0);
+        }
+    });
+
+    function restoreSelection() {
+        if (savedRange) {
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(savedRange);
+        } else {
+            $("bodyEditor").focus();
+        }
+    }
+
+    async function callAI(p) {
+        const groqKey = localStorage.getItem("esm_key");
+        const hfKey = localStorage.getItem("esm_hf_key");
+        const selectedModel = $("modelSelect").value;
+        const errorLog = $("apiErrorLog");
+        
+        try {
+            if (selectedModel === "puter-gemini") {
+                const response = await puter.ai.chat(p);
+                return response.toString();
+            }
+            if (selectedModel === "hf-mistral") {
+                if(!hfKey) throw new Error("Missing HF Token in API Settings");
+                const res = await fetch("https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3", {
+                    method: "POST", headers: { "Authorization": `Bearer ${hfKey}`, "Content-Type": "application/json" },
+                    body: JSON.stringify({ inputs: p })
+                });
+                const d = await res.json();
+                if (d.error) throw new Error(d.error);
+                return d[0].generated_text.replace(p, "").trim();
+            }
+            if(!groqKey) throw new Error("Missing Groq API Key in API Settings");
+            const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method:"POST", headers:{"Authorization":`Bearer ${groqKey}`,"Content-Type":"application/json"},
+                body: JSON.stringify({model:selectedModel, messages:[{role:"user",content:p}]})
+            });
+            const d = await res.json();
+            if (!res.ok) throw new Error(d.error ? d.error.message : "API Error");
+            return d.choices[0].message.content.trim();
+        } catch(e) {
+            errorLog.textContent += `[${new Date().toLocaleTimeString()}] ${e.message}\n\n`;
+            showToast("AI Failed - Check Debug Log");
+            return null;
+        }
+    }
+
+    // New Merged AI GENERATOR
+    async function generateFullSwipe() {
+        showToast("Generating AI Swipe...");
+        
+        // Combine custom logic so it honors user edits
+        const masterPrompt = `Return ONLY a JSON object with keys "title" and "body". 
+        TITLE LOGIC: ${promptTitle}
+        BODY LOGIC: ${promptBody}
+        Offer: ${$("offerName").value}
+        Benefits: ${$("benefits").value}`;
+
+        const res = await callAI(masterPrompt);
+        
+        if(res) {
+            try {
+                const cleanRes = res.replace(/```json|```/g, "").trim();
+                const data = JSON.parse(cleanRes);
+                
+                $("subject").value = data.title.replace(/"/g,'');
+                
+                restoreSelection();
+                
+                // Format nicely into Divs for MLGS editor
+                const bodyHtml = data.body.split('\n').filter(l => l.trim()).map(l => `<div>${l}</div>`).join('') + `<div><br></div>`;
+                
+                document.execCommand('insertHTML', false, bodyHtml);
+                
+                update(); 
+                autoSave();
+                showToast("Swipe Injected Safely! ✅");
+            } catch(e) {
+                console.error(e);
+                showToast("AI didn't format correctly. Try again.");
+            }
+        }
+    }
+
+    function openPrompt(type) {
+        activePrompt = type;
+        if (type === "title") originalPromptValue = promptTitle;
+        else if (type === "body") originalPromptValue = promptBody;
+        else if (type === "image") originalPromptValue = promptImage;
+
+        $("promptTitle").textContent = `Editing ${type.toUpperCase()} Prompt`;
+        $("promptArea").value = originalPromptValue;
+        $("promptModal").classList.add("show");
+    }
+
+    function savePromptLive() {
+        if (!activePrompt) return;
+        const value = $("promptArea").value;
+        if (activePrompt === "title") { promptTitle = value; localStorage.setItem("esm_prompt_title", value); }
+        else if (activePrompt === "body") { promptBody = value; localStorage.setItem("esm_prompt_body", value); }
+        else if (activePrompt === "image") { promptImage = value; localStorage.setItem("esm_prompt_image", value); }
+    }
+
+    function closePrompt(save) {
+        if (save) {
+            showToast("Prompt Saved to Browser Memory");
+        } else {
+            if (activePrompt === "title") promptTitle = originalPromptValue;
+            else if (activePrompt === "body") promptBody = originalPromptValue;
+            else if (activePrompt === "image") promptImage = originalPromptValue;
+            localStorage.setItem("esm_prompt_" + activePrompt, originalPromptValue);
+        }
+        $("promptModal").classList.remove("show");
+        activePrompt = "";
+    }
+
+    function insertAtCaret(id, text) {
+        const el = $(id);
+        const start = el.selectionStart;
+        const end = el.selectionEnd;
+        el.value = el.value.substring(0, start) + text + el.value.substring(end);
+        el.focus();
+        el.selectionStart = el.selectionEnd = start + text.length;
+        update();
+    }
+    
+    function exec(c, v=null) {
+        $("bodyEditor").focus();
+        document.execCommand(c, false, v);
+        update();
+    }
+
+    function insertTable() {
+        restoreSelection();
+        const html = `<table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 0 auto; border: 1px dashed #cccccc;"><tr><td style="font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6; padding: 10px;">[Insert Content Here]</td></tr></table><div><br></div>`;
+        document.execCommand('insertHTML', false, html);
+        update();
+        autoSave();
+    }
+    
+    function insertImg() {
+        const url = prompt("Image URL:");
+        if(!url) return;
+        const link = prompt("Link URL (optional):");
+        const html = link ? `<a href="${link}" target="_blank"><img src="${url}" style="max-width:100%;"></a>` : `<img src="${url}" style="max-width:100%;">`;
+        exec('insertHTML', html);
+    }
+    
+    function toggleSource() {
+        const isSrc = $("sourceEditor").style.display === "block";
+        if(isSrc) {
+            $("bodyEditor").innerHTML = $("sourceEditor").value;
+            $("sourceEditor").style.display = "none";
+            $("bodyEditor").style.display = "block";
+            $("srcBtn").textContent = "HTML Source";
+        } else {
+            $("sourceEditor").value = $("bodyEditor").innerHTML;
+            $("bodyEditor").style.display = "none";
+            $("sourceEditor").style.display = "block";
+            $("srcBtn").textContent = "Visual Editor";
+        }
+    }
+
+    function update() {
+        $("prevSub").textContent = $("subject").value;
+        $("prevBody").innerHTML = $("bodyEditor").innerHTML;
+    }
+    
+    function getWrappedBody() {
+        const content = $("bodyEditor").innerHTML;
+        if(!$("useWrapper").checked) return content;
+        return `<table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:600px; margin:0 auto;"><tr><td style="font-family:Arial, sans-serif; font-size:16px; line-height:1.6; color:#111111;">${content}</td></tr></table>`;
+    }
+    
+    function autoSave() {
+        const data = { sub: $("subject").value, body: $("bodyEditor").innerHTML, offer: $("offerName").value, benefits: $("benefits").value, cta: $("ctaText").value, model: $("modelSelect").value };
+        localStorage.setItem("esm_draft", JSON.stringify(data));
+    }
+    
+    function loadDraft() {
+        const d = JSON.parse(localStorage.getItem("esm_draft"));
+        if(d) {
+            $("subject").value = d.sub || ""; $("bodyEditor").innerHTML = d.body || ""; $("offerName").value = d.offer || ""; $("benefits").value = d.benefits || ""; $("ctaText").value = d.cta || "";
+            if(d.model) $("modelSelect").value = d.model;
+            update();
+        }
+    }
+    
+    function renderSigs() {
+        const list = $("sigList");
+        if(list) {
+            list.innerHTML = signatures.map((sig, i) => `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; border-bottom:1px solid #eee; background: white; margin-bottom: 2px;">
+                    <span style="font-size:12px; font-weight:bold; color: #333;">${sig.name}</span>
+                    <button class="btn btnRed btnSmall" style="height:22px; padding:0 8px; font-size:10px;" onclick="delSig(${i})">Del</button>
+                </div>
+            `).join('');
+        }
+        const select = $("sigSelect");
+        if(select) {
+            select.innerHTML = '<option value="">Signatures</option>' +
+                signatures.map((sig, i) => `<option value="${i}">${sig.name}</option>`).join('');
+        }
+    }
+    
+    function addSig() {
+        const name = $("sigNewName").value;
+        const html = $("sigNewHTML").value;
+        if(!name || !html) { alert("Please provide a Name and HTML/Text."); return; }
+        signatures.push({ name, html });
+        localStorage.setItem("esm_signatures", JSON.stringify(signatures));
+        $("sigNewName").value = ""; $("sigNewHTML").value = "";
+        renderSigs();
+        showToast("Signature Added!");
+    }
+    
+    window.delSig = function(i) {
+        if(confirm("Delete this signature?")) {
+            signatures.splice(i, 1);
+            localStorage.setItem("esm_signatures", JSON.stringify(signatures));
+            renderSigs();
+        }
+    };
+    
+    function insertSig() {
+        restoreSelection();
+        const idx = $("sigSelect").value;
+        if(idx === "" || !signatures[idx]) { showToast("Select a signature first!"); return; }
+        document.execCommand('insertHTML', false, "<div><br><br>" + signatures[idx].html + "</div>");
+        update();
+        autoSave();
+    }
+    
+    function saveGlobalLink() { localStorage.setItem("esm_global_link", $("globalImgLink").value); }
+    
+    function renderGallery() {
+        $("globalImgLink").value = localStorage.getItem("esm_global_link") || "";
+        const list = $("imgList");
+        if(list) {
+            list.innerHTML = gallery.map((img, i) => `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; border-bottom:1px solid #eee; background: white; margin-bottom: 2px;">
+                    <span style="font-size:12px; font-weight:bold; color: #333;">${img.name}</span>
+                    <button class="btn btnRed btnSmall" style="height:22px; padding:0 8px; font-size:10px;" onclick="delImg(${i})">Del</button>
+                </div>
+            `).join('');
+        }
+        const select = $("imgGallerySelect");
+        if(select) {
+            select.innerHTML = '<option value="">Gallery...</option>' +
+                gallery.map((img, i) => `<option value="${i}">${img.name}</option>`).join('');
+        }
+    }
+    
+    function addImgToGallery() {
+        const name = $("imgNewName").value;
+        const url = $("imgNewUrl").value;
+        const link = $("imgNavLink").value;
+        if(!name || !url) { alert("Please provide at least a Name and Image URL."); return; }
+        gallery.push({ name, url, link });
+        localStorage.setItem("esm_gallery", JSON.stringify(gallery));
+        $("imgNewName").value = ""; $("imgNewUrl").value = ""; $("imgNavLink").value = "";
+        renderGallery();
+        showToast("Image Added!");
+    }
+    
+    window.delImg = function(i) {
+        if(confirm("Delete this image from gallery?")) {
+            gallery.splice(i, 1);
+            localStorage.setItem("esm_gallery", JSON.stringify(gallery));
+            renderGallery();
+        }
+    };
+    
+    function insertGalleryImg(index = null) {
+        restoreSelection();
+        const idx = index !== null ? index : $("imgGallerySelect").value;
+        if(idx === "" || !gallery[idx]) { showToast("Select an image first!"); return; }
+        const img = gallery[idx];
+        const globalLink = localStorage.getItem("esm_global_link") || "";
+        const finalLink = img.link || globalLink;
+        let html = `<div style="text-align:center; margin:20px 0;">`;
+        if(finalLink) {
+            html += `<a href="${finalLink}" target="_blank"><img src="${img.url}" style="max-width:100%; border-radius:10px; border: 1px solid #ccc;"></a>`;
+        } else {
+            html += `<img src="${img.url}" style="max-width:100%; border-radius:10px;">`;
+        }
+        html += `</div><div><br></div>`;
+        document.execCommand('insertHTML', false, html);
+        update();
+        autoSave();
+    }
+    
+    function insertRandomImg() {
+        if(gallery.length === 0) { showToast("Your gallery is empty!"); return; }
+        insertGalleryImg(Math.floor(Math.random() * gallery.length));
+        showToast("Random Image Inserted!");
+    }
+    
+    function clearBody() { if(confirm("This will wipe your current work. Proceed?")) { $("bodyEditor").innerHTML = ""; $("subject").value = ""; update(); autoSave(); } }
+    function copyText(t) { navigator.clipboard.writeText(t); showToast("Copied to Clipboard!"); }
+    function copyAll() { copyText(`${$("subject").value}\n\n${getWrappedBody()}`); }
+
+    window.addEventListener('beforeunload', () => {
+        if (activePrompt) {
+            if (activePrompt === "title") localStorage.setItem("esm_prompt_title", promptTitle);
+            else if (activePrompt === "body") localStorage.setItem("esm_prompt_body", promptBody);
+            else if (activePrompt === "image") localStorage.setItem("esm_prompt_image", promptImage);
+        }
+    });
+
+    window.onload = () => {
+        $("apiKey").value = localStorage.getItem("esm_key") || "";
+        $("hfKey").value = localStorage.getItem("esm_hf_key") || "";
+        loadDraft();
+        renderGallery();
+        renderSigs();
+    };
+
+    let gallery = JSON.parse(localStorage.getItem("esm_gallery") || "[]");
+    let signatures = JSON.parse(localStorage.getItem("esm_signatures") || "[]");
 </script>
 </body>
 </html>
