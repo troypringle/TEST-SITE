@@ -47,17 +47,26 @@
     .btnSmall { height: 32px; font-size: 12px; }
 
     input, select, textarea { width: 100%; padding: 8px; border: 2px solid var(--border); border-radius: 8px; margin-bottom: 10px; background: #fff; font-family: inherit; }
+    
+    /* Improved Dropdown visibility */
+    select { 
+      background-color: #ffffff !important; 
+      border: 2px solid var(--gold) !important; 
+      color: #000 !important; 
+      font-weight: bold !important;
+    }
+
     .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; background: var(--panel2); padding: 6px; border: 2px solid var(--border); border-bottom: 0; border-radius: 8px 8px 0 0; }
 
-    #bodyEditor, #sourceEditor { width: 100%; flex: 1; background: #fff; border: 2px solid var(--border); padding: 15px; outline: none; overflow-y: auto; min-height: 300px; }
+    /* Cleaned Backgrounds */
+    #bodyEditor, #sourceEditor, .preview-body-frame { width: 100%; flex: 1; background: #ffffff !important; border: 2px solid var(--border); padding: 15px; outline: none; overflow-y: auto; min-height: 300px; }
     #sourceEditor { display: none; font-family: monospace; white-space: pre-wrap; }
 
     .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 10000; align-items: center; justify-content: center; padding: 20px; }
     .modal.show { display: flex; }
     .modalInner { background: var(--panel); border: 4px solid var(--gold); border-radius: 12px; padding: 20px; width: 100%; max-width: 500px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); max-height: 90vh; overflow-y: auto; }
 
-    .preview-body-frame { background: #fff; border: 2px solid var(--border); padding: 20px; min-height: 400px; border-radius: 0 0 8px 8px; }
-    .preview-header { background: #f1f1f1; border: 2px solid var(--border); border-bottom: 0; padding: 10px; border-radius: 8px 8px 0 0; font-size: 12px; }
+    .preview-header { background: #fff; border: 2px solid var(--border); border-bottom: 0; padding: 10px; border-radius: 8px 8px 0 0; font-size: 12px; }
     
     .tag-row { display: flex; gap: 4px; margin-bottom: 8px; overflow-x: auto; padding-bottom: 5px; }
     .list-item { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 5px 10px; border: 1px solid var(--border); margin-bottom: 5px; border-radius: 4px; }
@@ -163,7 +172,7 @@
       <button class="btn btnSmall" onclick="insertText('{!lastname_fix}')">{!ln}</button>
       <button class="btn btnSmall" onclick="insertText('⭐')">⭐</button>
       <div style="flex:1"></div>
-      <select id="modelSelect" style="width:150px; margin:0;" onchange="autoSave()">
+      <select id="modelSelect" style="width:160px; margin:0;" onchange="autoSave()">
         <option value="puter-gemini">Gemini (Puter)</option>
         <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Groq)</option>
         <option value="llama-3.1-8b-instant">Llama 3.1 8B (Groq)</option>
@@ -182,24 +191,24 @@
       <button class="btn btnIcon btnSmall" onclick="exec('foreColor','#d32f2f')" style="color:#d32f2f">A</button>
       <button class="btn btnIcon btnSmall" onclick="exec('foreColor','#111111')">A</button>
       <button class="btn btnSmall" onclick="exec('createLink', prompt('URL:'))">Link</button>
+      <button class="btn btnSmall" onclick="insertTable600()">+ 600px Table</button>
       
       <span style="border-left:1px solid var(--border); margin:0 4px; height:20px;"></span>
       
-      <select id="imgGallerySelect" style="width:130px; margin:0; height:32px;"><option value="">Images...</option></select>
-      <button class="btn btnBlue btnSmall" onclick="insertGalleryImg()">Add</button>
+      <select id="imgGallerySelect" style="width:160px; margin:0; height:32px;"><option value="">Images...</option></select>
+      <button class="btn btnBlue btnSmall" onclick="insertGalleryImg()">Add Image</button>
       <button class="btn btnSmall" onclick="showModal('imgMgrModal')">🖼️</button>
-
-      <div style="flex:1"></div>
-      <select id="sigSelect" style="width:130px; margin:0; height:32px;"><option value="">Sigs...</option></select>
-      <button class="btn btnBlue btnSmall" onclick="insertSig()">Add</button>
-      <button class="btn btnSmall" onclick="showModal('sigMgrModal')">🖋️</button>
     </div>
 
     <div id="bodyEditor" contenteditable="true" oninput="updatePreview(); autoSave();"></div>
     <textarea id="sourceEditor" oninput="syncFromSource()"></textarea>
     
-    <div style="padding: 10px 0; display:flex; gap:10px;">
+    <div style="padding: 10px 0; display:flex; gap:10px; align-items: center; border-top: 1px solid var(--border); margin-top: 5px; background: var(--panel2);">
         <button class="btn btnSmall" onclick="exec('undo')">Undo Last Move</button>
+        <div style="flex:1"></div>
+        <select id="sigSelect" style="width:180px; margin:0; height:32px;"><option value="">Signatures...</option></select>
+        <button class="btn btnBlue btnSmall" onclick="insertSig()">Add Signature</button>
+        <button class="btn btnSmall" onclick="showModal('sigMgrModal')">🖋️</button>
     </div>
   </div>
 
@@ -233,6 +242,8 @@ window.onload = () => {
   renderSigList();
   renderImgList();
   updatePreview();
+  // MLGS Logic: Force <p> tags on enter
+  document.execCommand('defaultParagraphSeparator', false, 'p');
 };
 
 function showModal(id) { $(id).classList.add('show'); }
@@ -282,6 +293,11 @@ function insertText(txt) {
   updatePreview();
 }
 
+function insertTable600() {
+    const tableHTML = `<table width="600" align="center" border="0" cellpadding="0" cellspacing="0" style="width:600px; margin:0 auto;"><tr><td><p>Insert content here...</p></td></tr></table>`;
+    exec('insertHTML', tableHTML);
+}
+
 // AI Integration - SYNCED
 async function generateSwipe() {
   const model = $('modelSelect').value;
@@ -298,7 +314,6 @@ async function generateSwipe() {
   const benefits = $('benefits').value || "improved results";
   const cta = $('ctaText').value || "Click Here";
 
-  // Replacement logic for [OFFER], [BENEFITS], [CTA]
   const titlePromptRaw = (localStorage.getItem('esm_p_title') || defaultPrompts.title);
   const bodyPromptRaw = (localStorage.getItem('esm_p_body') || defaultPrompts.body);
 
@@ -414,7 +429,7 @@ function clearAllData() {
 
 function renderSigList() {
   $('sigList').innerHTML = '';
-  $('sigSelect').innerHTML = '<option value="">Sigs...</option>';
+  $('sigSelect').innerHTML = '<option value="">Signatures...</option>';
   signatures.forEach((s, i) => {
     const div = document.createElement('div');
     div.className = 'list-item';
