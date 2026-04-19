@@ -245,35 +245,39 @@
         $("apiModal").classList.remove("show"); showToast("Keys Saved"); 
     }
 
-    // AI IMAGE GENERATION
+   // AI IMAGE GENERATION - No-Key Version
     async function generateAIImage() {
-        const hfKey = localStorage.getItem("esm_hf_key");
-        const prompt = $("aiImgPrompt").value;
-        if(!hfKey || !prompt) return showToast("HF Key or Prompt Missing");
+        const promptText = $("aiImgPrompt").value;
+        if(!promptText) return showToast("Please enter a prompt first");
+        
+        // Encode the prompt for the URL
+        const prompt = encodeURIComponent(promptText);
         
         $("genBar").style.width = "50%";
-        $("genStatus").textContent = "Dreaming...";
+        $("genStatus").textContent = "Generating (No Key Required)...";
         $("genPreviewImg").style.display = "none";
         
+        // Using Pollinations.ai - Uses FLUX by default, high speed, zero cost
+        const imageUrl = `https://pollinations.ai/p/${prompt}?width=1024&height=1024&seed=${Math.floor(Math.random() * 1000000)}&model=flux&nologo=true`;
+
         try {
-            const response = await fetch("https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell", {
-                headers: { Authorization: `Bearer ${hfKey}` },
-                method: "POST",
-                body: JSON.stringify({ inputs: prompt }),
-            });
+            const response = await fetch(imageUrl);
             
-            if (!response.ok) throw new Error(await response.text());
+            if (!response.ok) throw new Error("Image service is temporarily busy");
             
+            // This captures the image data so the GitHub Host button can use it
             currentBlob = await response.blob();
-            const url = URL.createObjectURL(currentBlob);
-            $("genPreviewImg").src = url;
+            const localUrl = URL.createObjectURL(currentBlob);
+            
+            $("genPreviewImg").src = localUrl;
             $("genPreviewImg").style.display = "block";
             $("genBar").style.width = "100%";
-            $("genStatus").textContent = "Ready!";
+            $("genStatus").textContent = "Image Ready!";
             $("hostControls").style.display = "flex";
+            
         } catch (e) {
-            logErr("HF Gen Error: " + e.message);
-            showToast("Gen Failed - Check Debug");
+            logErr("Gen Error: " + e.message);
+            showToast("Service busy. Try again in a moment.");
             $("genBar").style.width = "0%";
         }
     }
