@@ -1,178 +1,168 @@
-**Understood. Let's get this right.**
-
-I’ve built a new version that incorporates **your video code**, adds a proper **X close button** on the popup, keeps the BeMob tracking, and gets us much closer to the style of Jeff’s page.
-
----
-
-### Final Version – Ready for GitHub
-
-Copy **all** of this code and save it as `index.html`:
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Easy Commission Funnel</title>
-  <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { 
-      font-family: 'Arial', sans-serif; 
-      background: linear-gradient(135deg, #1f0000, #000000); 
-      color: #fff; 
-      text-align: center; 
-      min-height: 100vh;
-      padding: 30px 15px;
-    }
-    .container { max-width: 720px; margin: 40px auto; }
-    h1 { font-size: 3.2em; color: #fff; text-shadow: 0 0 20px #e74c3c; margin-bottom: 10px; }
-    .subtitle { font-size: 1.45em; color: #ffdddd; margin-bottom: 30px; }
-
-    /* Video Section - Your Code */
-    .video-container-box {
-      position: relative; width: 98%; max-width: 780px; margin: 30px auto 20px auto;
-    }
-    .video-wrapper {
-      position: relative; width: 100%; padding-bottom: 56.25%; height: 0; 
-      border: 2px solid #004d26; box-shadow: 0 0 20px rgba(0, 255, 136, 0.5); 
-      background: #000; overflow: hidden; border-radius: 8px;
-    }
-    .video-wrapper iframe {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    }
-    .touch-shield { position: absolute; top: 0; left: 0; right: 0; height: 38%; z-index: 10; }
-    .video-cta-overlay {
-      position: absolute; bottom: 0; left: 0; right: 0; height: 58px;
-      background: rgba(255,255,0,0.55); backdrop-filter: blur(6px);
-      display: flex; align-items: center; justify-content: center; z-index: 20;
-      border-top: 1px solid rgba(0,77,38,0.4);
-    }
-    .video-cta-overlay a {
-      color: #FF0000; font-size: 19px; font-weight: 900; text-decoration: none;
-      text-shadow: 2px 2px 4px #000; width: 98%;
-    }
-    .yoda-quote { font-size: 15px; color: #888; margin-top: 25px; text-transform: uppercase; }
-
-    /* Popup */
-    .overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:999; }
-    .popup { 
-      display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%);
-      background:#fff; color:#111; width:90%; max-width:460px; border-radius:12px; 
-      box-shadow:0 0 40px rgba(231,76,60,0.9); z-index:1000; overflow:hidden;
-    }
-    .popup.show, .overlay.show { display:block; }
-    .popup-header { 
-      background:#e74c3c; color:white; padding:18px 20px; font-size:1.4em; 
-      position:relative;
-    }
-    .close-btn {
-      position:absolute; right:15px; top:12px; font-size:28px; cursor:pointer; 
-      color:white; line-height:1;
-    }
-    .popup-body { padding:25px; }
-    input[type="text"], input[type="email"] { 
-      width:100%; padding:14px; margin:10px 0; border:2px solid #ccc; border-radius:6px; font-size:16px;
-    }
-    input[type="submit"] { 
-      background:#e74c3c; color:white; padding:16px; font-size:1.3em; border:none; 
-      border-radius:6px; cursor:pointer; width:100%; margin-top:15px; font-weight:bold;
-    }
-  </style>
+    <script 
+  id="counterscale-script" 
+  data-site-id="troysmartai.com" 
+  src="https://counterscale.pringle-troy.workers.dev/tracker.js" 
+  defer>
+</script> 
+    <title>Watch NEW Youtube Video Huge Updates</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container">
-  <h1>Easy Commission Funnel</h1>
-  <p class="subtitle">Get Paid To Build Your List & Create Passive Income</p>
+<div class="float-container" id="profBox"></div>
 
-  <!-- Your Video Section -->
-  <div class="video-container-box">
-    <div class="video-wrapper">
-      <iframe src="https://www.youtube.com/embed/JcgHf3QjmtQ?rel=0&modestbranding=1&controls=1&showinfo=0&iv_load_policy=3&playsinline=1" 
+<div class="page-border">
+    <div class="streak-container">
+        <p class="streak-text">🚨 See LIVE in Real Time 🚨</p>
+    </div>
+
+      <a href="https://o2s4n.bemobtrcks.com/click" class="banner-img-container">
+        <img src="https://linkpod.s3.us-east-1.amazonaws.com/uploads/block_images/2635024737b92bb05b71e8c4a98a9751.png"
+             class="banner-img" alt="Secure Your Spot">
+    </a>
+
+    <div class="spacer-between"></div>
+
+    <span class="headline">
+        <span class="red-arrow">➤</span>“ Most Funnel Builders Are Just Selling ” ❌
+    </span>
+
+    <div class="video-container-box">
+        <div class="video-wrapper">
+            <iframe src="https://www.youtube.com/embed/JcgHf3QjmtQ?rel=0&modestbranding=1&controls=1&showinfo=0&iv_load_policy=3&playsinline=1"
         frameborder="0" allowfullscreen></iframe>
-    </div>
-    <div class="touch-shield"></div>
-    <div class="video-cta-overlay">
-      <a href="https://o2s4n.bemobtrk.com/click" target="_blank">CLICK TO SECURE FREE FUNNEL SYSTEM ✔️</a>
-    </div>
-  </div>
+        </div>
+        
+        <div class="touch-shield"></div>
 
-  <div class="yoda-quote">"do or do not there is no try" - yoda</div>
+        <div class="video-cta-overlay">
+            <a href="https://o2s4n.bemobtrcks.com/click" target="_blank"> CLICK TO SECURE FREE FUNNEL SYSTEM ✔️</a>
+        </div>
+    </div>
 
-  <button onclick="showPopup()" style="margin-top:35px; background:#e74c3c; color:white; padding:18px 50px; font-size:1.4em; border:none; border-radius:8px; cursor:pointer;">
-    GET INSTANT ACCESS NOW
-  </button>
+    <div class="yoda-quote">"do or do not there is no try" - yoda</div> 
 </div>
 
-<!-- Popup -->
-<div class="overlay" id="overlay" onclick="closePopup()"></div>
-<div class="popup" id="popup">
-  <div class="popup-header">
-    Claim Your Free Access Now
-    <span class="close-btn" onclick="closePopup()">&times;</span>
-  </div>
-  <div class="popup-body">
-    <form id="leadForm" method="POST" action="https://gogvo.com/subscribe.php">
-      <input type="hidden" name="AffiliateName" value="troypringle1NLS">
-      <input type="hidden" name="CampaignCode" value="m4FqY1oJQZPO">
-      <input type="hidden" name="FormId" value="25212813">
-      <input type="hidden" name="PassFormData" value="1">
-      <input type="hidden" name="TrackParam" value="new_form">
-
-      <input type="text" name="FirstName" placeholder="First Name" required>
-      <input type="email" name="Email" placeholder="Please enter your email" required>
-      <input type="submit" value="SUBMIT & GET ACCESS">
-    </form>
-  </div>
+<div id="ecf-popup-overlay">
+    <div class="ecf-popup-content">
+        <span class="ecf-popup-close" id="ecf-popup-close">&times;</span>
+        <h2>Wait! Before You Go...</h2>
+        <p>Enter your details below to get on the list and secure your system.</p>
+        
+        <form method="POST" action="https://gogvo.com/subscribe.php" class="ecf-optin-form">
+            <input type="hidden" name="AffiliateName" value="troypringle1NLS">
+            <input type="hidden" name="CampaignCode" value="m4FqY1oJQZPO">
+            <input type="hidden" name="TrackParam" value="new_form">
+            <input type="hidden" name="FormId" value="25212813">
+            <input type="hidden" name="PassFormData" value="1">
+            <input type="hidden" name="TrackerName" value="ad tracking?">
+            
+            <div>
+                <label for="FirstName">First Name:</label>
+                <input type="text" name="FirstName" id="FirstName" required>
+            </div>
+            
+            <div>
+                <label for="Email">Please enter your email:</label>
+                <input type="email" name="Email" id="Email" required>
+            </div>
+            
+            <button type="submit" class="ecf-submit-btn">Click to Continue</button>
+            <img src="https://gogvo.com/show_form.php?id=25212813&TrackParam=new_form" style="display:none;" alt="">
+        </form>
+    </div>
 </div>
-
 <script>
-// Popup Controls
-let popupShown = false;
-function showPopup() {
-  if (popupShown) return;
-  popupShown = true;
-  document.getElementById('popup').classList.add('show');
-  document.getElementById('overlay').classList.add('show');
-}
-function closePopup() {
-  document.getElementById('popup').classList.remove('show');
-  document.getElementById('overlay').classList.remove('show');
-}
+    // 1. URL PARAMETER LOGIC (Existing)
+    (function() {
+        var params = window.location.search;
+        if (params) {
+            var links = document.getElementsByTagName('a');
+            for (var i = 0; i < links.length; i++) {
+                if(links[i].href.indexOf('aimatrixspillover') !== -1) {
+                    var sep = links[i].href.indexOf('?') !== -1 ? '&' : '?';
+                    links[i].href += sep + params.substring(1);
+                }
+            }
+        }
+    })();
 
-// Auto show after 2.5 seconds
-setTimeout(() => { if (!popupShown) showPopup(); }, 2500);
+    // 2. IMAGE ROTATION + TRANSITION BOOST (Existing)
+    (function() {
+        const profBox = document.getElementById('profBox');
+        let count = 1;
+        
+        setInterval(() => {
+            count = (count % 7) + 1;
+            
+            // Apply a quick scale effect to "boost" the transition
+            profBox.style.transform += " scale(1.15)";
+            
+            setTimeout(() => {
+                profBox.style.backgroundImage = `var(--prof-${count})`;
+                // Reset scale after the image swaps
+                profBox.style.transform = profBox.style.transform.replace(" scale(1.15)", "");
+            }, 150); 
 
-// Scroll trigger (near top)
-let lastScroll = 0;
-window.addEventListener('scroll', () => {
-  const current = window.scrollY;
-  if (current < lastScroll && current < 200) {
-    if (!popupShown) showPopup();
-  }
-  lastScroll = current;
-});
+        }, 10000); 
+    })();
 
-// BeMob Postback
-document.getElementById('leadForm').addEventListener('submit', function() {
-  const email = this.querySelector('input[name="Email"]').value;
-  if (email) {
-    fetch(`https://o2s4n.bemobtrk.com/postback?cid=${encodeURIComponent(email)}&status=new`, { mode: 'no-cors' });
-  }
-});
+    // 3. POPUP LOGIC (New Addition)
+    (function() {
+        const popup = document.getElementById('ecf-popup-overlay');
+        const closeBtn = document.getElementById('ecf-popup-close');
+        const ctaButtons = document.querySelectorAll('a[href="https://o2s4n.bemobtrcks.com/click"]');
+        let exitIntentTriggered = false;
+
+        // Function to show the popup
+        function showPopup() {
+            if (!exitIntentTriggered) {
+                popup.style.display = 'flex';
+                exitIntentTriggered = true; // Ensures it only auto-pops once
+            }
+        }
+
+        // TRIGGER 1: Mouse leaves the top of the browser window (Exit Intent)
+        document.addEventListener('mouseleave', function(e) {
+            if (e.clientY < 10) {
+                showPopup();
+            }
+        });
+
+        // TRIGGER 2: User scrolls near the bottom of the page
+        window.addEventListener('scroll', function() {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50) {
+                showPopup();
+            }
+        });
+
+        // TRIGGER 3: User clicks ANY of your BeMob buttons on the page
+        ctaButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault(); // Stops them from leaving the page instantly
+                popup.style.display = 'flex'; // Force popup open
+                exitIntentTriggered = true; 
+            });
+        });
+
+        // CLOSE: User clicks the 'X'
+        closeBtn.addEventListener('click', function() {
+            popup.style.display = 'none';
+        });
+
+        // CLOSE: User clicks the dark background outside the form
+        window.addEventListener('click', function(e) {
+            if (e.target === popup) {
+                popup.style.display = 'none';
+            }
+        });
+    })();
 </script>
 
 </body>
 </html>
-```
-
----
-
-**Next Step:**
-
-Go create the GitHub repository and paste this code into `index.html`. Once it's live, send me the link and I’ll review it and help you tweak it further (colors, spacing, video size, etc.).
-
-Would you like me to walk you through the exact GitHub Pages setup again, or do you have it from before?
-
-Let me know when it's live.
