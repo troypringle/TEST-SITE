@@ -205,8 +205,8 @@ body {
     position: absolute;
     bottom: 0; left: 0; right: 0;
     height: 53px;
-    background: rgba(0, 30, 15, 0.3);
-    backdrop-filter: blur(8px);
+    background: rgba(255,255,0,0.5);
+    backdrop-filter: blur(6px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -216,8 +216,8 @@ body {
 }
 
 .video-cta-overlay a {
-    color: #ffffff;
-    font-size: 19px;
+    color: #FF0000;
+    font-size: 20px;
     font-weight: 900;
     text-decoration: none;
     width: 99%;
@@ -268,4 +268,90 @@ body {
             filter: drop-shadow(0 0 25px #ff0000); 
         }
     }
+}
+/* --- NEW EXIT INTENT POPUP STYLES --- */
+#ecf-popup-overlay {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.85); /* Dark transparent background */
+    z-index: 9999; /* Keeps it on top of the video */
+    justify-content: center;
+    align-items: center;
+}
+
+.ecf-popup-content {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 450px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    font-family: sans-serif;
+    color: #000;
+}
+
+.ecf-popup-close {
+    position: absolute;
+    top: 10px; right: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #666;
+}
+
+.ecf-popup-close:hover {
+    color: #cc0000;
+}
+
+.ecf-popup-content h2 {
+    margin-top: 0;
+    color: #cc0000;
+    font-size: 24px;
+}
+
+.ecf-popup-content p {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.ecf-optin-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    text-align: left;
+}
+
+.ecf-optin-form label {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.ecf-optin-form input[type="text"], 
+.ecf-optin-form input[type="email"] {
+    width: 100%; 
+    padding: 12px; 
+    border: 1px solid #ccc; 
+    border-radius: 4px; 
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+.ecf-submit-btn {
+    background-color: #cc0000; 
+    color: white; 
+    padding: 15px; 
+    border: none; 
+    border-radius: 4px;
+    font-size: 18px; 
+    font-weight: bold; 
+    cursor: pointer; 
+    transition: background 0.3s;
+    margin-top: 10px;
+}
+
+.ecf-submit-btn:hover {
+    background-color: #aa0000; 
 }
