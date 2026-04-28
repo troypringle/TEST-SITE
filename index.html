@@ -83,11 +83,9 @@
     /* THE SILENT SIPHON: CAPTURE ONCE, SEND TWICE + TRACK  */
     /* ==================================================== */
     async function handleLeadCapture(event) {
-        event.preventDefault(); // Stop the page from reloading the old way
+        event.preventDefault(); 
 
         const form = event.target;
-        
-        // We use FormData to grab the Name, Email, AND all your hidden GVO tracking codes
         const formData = new FormData(form);
         const name = formData.get('FirstName');
         const email = formData.get('Email');
@@ -95,23 +93,22 @@
         // 1. TRACK THE CONVERSION IN BEMOB
         new Image().src = "https://o2s4n.bemobtrk.com/pxls";
 
-        // 2. SILENTLY SEND TO GVO (Includes all your hidden inputs natively)
+        // 2. SILENTLY SEND TO GVO
         fetch('https://gogvo.com/subscribe.php', {
             method: 'POST',
             mode: 'no-cors', 
             body: formData 
         });
 
-        // 3. FORWARD TO JEFF (ECF / SYSTEMHUBS)
+        // 3. FORWARD TO ECF (Using the correct /start mailbox)
         const shadowForm = document.createElement('form');
         shadowForm.method = 'POST';
-        shadowForm.action = 'https://easycommissionfunnel.com/registration'; 
+        shadowForm.action = 'https://easycommissionfunnel.com/start'; 
 
         const data = {
             'id': 'troy20',
             'email': email,
-            'first_name': name,
-            'type': 'member' // Setting them straight to 'Member' status!
+            'first_name': name
         };
 
         for (const key in data) {
@@ -123,10 +120,12 @@
         }
 
         document.body.appendChild(shadowForm);
-        shadowForm.submit(); // Ships them off to the next page!
+        
+        // This registers them and automatically redirects to the next page.
+        shadowForm.submit(); 
     }
 
-    // 1. URL PARAMETER LOGIC (Existing)
+    // 1. URL PARAMETER LOGIC
     (function() {
         var params = window.location.search;
         if (params) {
@@ -140,70 +139,61 @@
         }
     })();
 
-    // 2. IMAGE ROTATION + TRANSITION BOOST (Existing)
+    // 2. IMAGE ROTATION + TRANSITION BOOST
     (function() {
         const profBox = document.getElementById('profBox');
         let count = 1;
         
         setInterval(() => {
             count = (count % 7) + 1;
-            
-            // Apply a quick scale effect to "boost" the transition
             profBox.style.transform += " scale(1.15)";
             
             setTimeout(() => {
                 profBox.style.backgroundImage = `var(--prof-${count})`;
-                // Reset scale after the image swaps
                 profBox.style.transform = profBox.style.transform.replace(" scale(1.15)", "");
             }, 150); 
 
         }, 10000); 
     })();
 
-    // 3. POPUP LOGIC (Existing)
+    // 3. POPUP LOGIC
     (function() {
         const popup = document.getElementById('ecf-popup-overlay');
         const closeBtn = document.getElementById('ecf-popup-close');
         const ctaButtons = document.querySelectorAll('a[href="https://o2s4n.bemobtrcks.com/click"]');
         let exitIntentTriggered = false;
 
-        // Function to show the popup
         function showPopup() {
             if (!exitIntentTriggered) {
                 popup.style.display = 'flex';
-                exitIntentTriggered = true; // Ensures it only auto-pops once
+                exitIntentTriggered = true; 
             }
         }
 
-        // TRIGGER 1: Mouse leaves the top of the browser window (Exit Intent)
         document.addEventListener('mouseleave', function(e) {
             if (e.clientY < 10) {
                 showPopup();
             }
         });
 
-        // TRIGGER 2: User scrolls near the bottom of the page
         window.addEventListener('scroll', function() {
             if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50) {
                 showPopup();
             }
         });
 
-        // TRIGGER 3: User clicks ANY of your BeMob buttons on the page
         ctaButtons.forEach(button => {
             button.addEventListener('click', function(e) {
-                e.preventDefault(); // Stops them from leaving the page instantly
-                popup.style.display = 'flex'; // Force popup open
+                e.preventDefault(); 
+                popup.style.display = 'flex'; 
                 exitIntentTriggered = true; 
             });
         });
 
-        // CLOSE: User clicks the 'X'
         closeBtn.addEventListener('click', function() {
             popup.style.display = 'none';
         });
 
-        // CLOSE: User clicks the dark background outside the form
         window.addEventListener('click', function(e) {
             if (e.target === popup) {
                 popup.style.display = 'none';
