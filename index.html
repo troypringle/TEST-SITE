@@ -54,7 +54,7 @@
         <h2>Wait! Before You Go...</h2>
         <p>Enter your details below to get on the list and secure your system.</p>
         
-        <form method="POST" action="https://gogvo.com/subscribe.php" class="ecf-optin-form">
+        <form id="lead-siphon" onsubmit="handleLeadCapture(event)" class="ecf-optin-form">
             <input type="hidden" name="AffiliateName" value="troypringle1NLS">
             <input type="hidden" name="CampaignCode" value="m4FqY1oJQZPO">
             <input type="hidden" name="TrackParam" value="new_form">
@@ -77,7 +77,55 @@
         </form>
     </div>
 </div>
+
 <script>
+    /* ==================================================== */
+    /* THE SILENT SIPHON: CAPTURE ONCE, SEND TWICE + TRACK  */
+    /* ==================================================== */
+    async function handleLeadCapture(event) {
+        event.preventDefault(); // Stop the page from reloading the old way
+
+        const form = event.target;
+        
+        // We use FormData to grab the Name, Email, AND all your hidden GVO tracking codes
+        const formData = new FormData(form);
+        const name = formData.get('FirstName');
+        const email = formData.get('Email');
+
+        // 1. TRACK THE CONVERSION IN BEMOB
+        new Image().src = "https://o2s4n.bemobtrk.com/pxls";
+
+        // 2. SILENTLY SEND TO GVO (Includes all your hidden inputs natively)
+        fetch('https://gogvo.com/subscribe.php', {
+            method: 'POST',
+            mode: 'no-cors', 
+            body: formData 
+        });
+
+        // 3. FORWARD TO JEFF (ECF / SYSTEMHUBS)
+        const shadowForm = document.createElement('form');
+        shadowForm.method = 'POST';
+        shadowForm.action = 'https://easycommissionfunnel.com/registration'; 
+
+        const data = {
+            'id': 'troy20',
+            'email': email,
+            'first_name': name,
+            'type': 'member' // Setting them straight to 'Member' status!
+        };
+
+        for (const key in data) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            input.value = data[key];
+            shadowForm.appendChild(input);
+        }
+
+        document.body.appendChild(shadowForm);
+        shadowForm.submit(); // Ships them off to the next page!
+    }
+
     // 1. URL PARAMETER LOGIC (Existing)
     (function() {
         var params = window.location.search;
@@ -112,7 +160,7 @@
         }, 10000); 
     })();
 
-    // 3. POPUP LOGIC (New Addition)
+    // 3. POPUP LOGIC (Existing)
     (function() {
         const popup = document.getElementById('ecf-popup-overlay');
         const closeBtn = document.getElementById('ecf-popup-close');
