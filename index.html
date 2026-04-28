@@ -80,49 +80,28 @@
 
 <script>
     /* ==================================================== */
-    /* THE SILENT SIPHON: CAPTURE ONCE, SEND TWICE + TRACK  */
+    /* THE CLEAN CAPTURE: ONE CLICK, NO SECURITY ERRORS    */
     /* ==================================================== */
     async function handleLeadCapture(event) {
         event.preventDefault(); 
 
         const form = event.target;
         const formData = new FormData(form);
-        const name = formData.get('FirstName');
-        const email = formData.get('Email');
 
         // 1. TRACK THE CONVERSION IN BEMOB
         new Image().src = "https://o2s4n.bemobtrk.com/pxls";
 
-        // 2. SILENTLY SEND TO GVO
+        // 2. SILENTLY SEND TO YOUR GVO LIST
+        // This triggers the API integration you set up in SendShark
         fetch('https://gogvo.com/subscribe.php', {
             method: 'POST',
             mode: 'no-cors', 
             body: formData 
         });
 
-        // 3. FORWARD TO ECF (Using the correct /start mailbox)
-        const shadowForm = document.createElement('form');
-        shadowForm.method = 'POST';
-        shadowForm.action = 'https://easycommissionfunnel.com/start'; 
-
-        const data = {
-            'id': 'troy20',
-            'email': email,
-            'first_name': name
-        };
-
-        for (const key in data) {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = key;
-            input.value = data[key];
-            shadowForm.appendChild(input);
-        }
-
-        document.body.appendChild(shadowForm);
-        
-        // This registers them and automatically redirects to the next page.
-        shadowForm.submit(); 
+        // 3. CLEAN REDIRECT
+        // Bypasses the 419 Page Expired bouncer completely
+        window.location.href = "https://easycommissionfunnel.com/start?id=troy20"; 
     }
 
     // 1. URL PARAMETER LOGIC
