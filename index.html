@@ -1,12 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script 
-  id="counterscale-script" 
-  data-site-id="troysmartai.com" 
-  src="https://counterscale.pringle-troy.workers.dev/tracker.js" 
-  defer>
-</script> 
+    <script id="counterscale-script" data-site-id="troysmartai.com" src="https://counterscale.pringle-troy.workers.dev/tracker.js" defer></script> 
     <title>Watch NEW Youtube Video Huge Updates</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
@@ -21,9 +16,8 @@
         <p class="streak-text">🚨 See LIVE in Real Time 🚨</p>
     </div>
 
-      <a href="https://o2s4n.bemobtrcks.com/click" class="banner-img-container">
-        <img src="https://linkpod.s3.us-east-1.amazonaws.com/uploads/block_images/2635024737b92bb05b71e8c4a98a9751.png"
-             class="banner-img" alt="Secure Your Spot">
+    <a href="https://o2s4n.bemobtrcks.com/click" class="banner-img-container">
+        <img src="https://linkpod.s3.us-east-1.amazonaws.com/uploads/block_images/2635024737b92bb05b71e8c4a98a9751.png" class="banner-img" alt="Secure Your Spot">
     </a>
 
     <div class="spacer-between"></div>
@@ -34,12 +28,9 @@
 
     <div class="video-container-box">
         <div class="video-wrapper">
-            <iframe src="https://www.youtube.com/embed/JcgHf3QjmtQ?rel=0&modestbranding=1&controls=1&showinfo=0&iv_load_policy=3&playsinline=1"
-        frameborder="0" allowfullscreen></iframe>
+            <iframe src="https://www.youtube.com/embed/JcgHf3QjmtQ?rel=0&modestbranding=1&controls=1&showinfo=0&iv_load_policy=3&playsinline=1" frameborder="0" allowfullscreen></iframe>
         </div>
-        
         <div class="touch-shield"></div>
-
         <div class="video-cta-overlay">
             <a href="https://o2s4n.bemobtrcks.com/click" target="_blank"> CLICK TO SECURE FREE FUNNEL SYSTEM ✔️</a>
         </div>
@@ -48,68 +39,71 @@
     <div class="yoda-quote">"do or do not there is no try" - yoda</div> 
 </div>
 
-<div id="ecf-popup-overlay" style="display:none;">
-    <div class="ecf-popup-content-v2">
-        <span class="ecf-popup-close" id="ecf-popup-close">&times;</span>
+<div id="ecf-popup-overlay">
+    <div class="ecf-popup-content">
+        <span class="popup-close" id="close-pop">&times;</span>
+        <h1 class="popup-h1">WAIT!</h1>
+        <h3 class="popup-h3">I'VE MADE <span style="color:green; text-decoration:underline;">$188,210.49</span> WITH JUST ONE STREAM INSIDE!</h3>
+        <p style="color:#cc0000; font-weight:bold; margin-bottom:10px;">CLONE MY 6-FIGURE FUNNEL 100% FREE.</p>
         
-        <h1 class="popup-headline-red">WAIT!</h1>
-        <h3 class="popup-subheadline">JUST ONE OF THE INCOME STREAMS INSIDE THIS FUNNEL HAS MADE ME <span class="highlight-green">$188,210.49!</span></h3>
-        
-        <div class="popup-divider"></div>
-
-        <p class="popup-urgency">DON'T LEAVE WITHOUT CLONING MY 6-FIGURE FUNNEL 100% FREE IN LESS THAN 30 SECONDS.</p>
-        <p class="popup-promise">THIS NEW FUNNEL TURNS NEWBIES INTO SUPER AFFILIATES OVERNIGHT.</p>
-        
-        <form id="lead-siphon" onsubmit="handleLeadCapture(event)" class="ecf-optin-form-v2">
+        <form onsubmit="handleSiphon(event)" class="popup-form">
             <input type="hidden" name="AffiliateName" value="troypringle1NLS">
             <input type="hidden" name="CampaignCode" value="m4FqY1oJQZPO">
-            <input type="hidden" name="TrackParam" value="new_form">
             <input type="hidden" name="FormId" value="25212813">
-            <input type="hidden" name="PassFormData" value="1">
-            <input type="hidden" name="TrackerName" value="ad tracking?">
-            
-            <input type="text" name="FirstName" id="FirstName" placeholder="Enter Your First Name..." required>
-            <input type="email" name="Email" id="Email" placeholder="Enter Your Best Email..." required>
-            <button type="submit" class="ecf-submit-btn-v2" id="submitBtn">TAP HERE TO CONTINUE &raquo;</button>
+            <input type="text" name="FirstName" placeholder="First Name..." required>
+            <input type="email" name="Email" placeholder="Best Email..." required>
+            <button type="submit" class="popup-btn" id="sub-btn">CONTINUE &raquo;</button>
         </form>
     </div>
 </div>
 
 <script>
-    /* ==================================================== */
-    /* FINAL FINAL: SILENT SIPHON (NO 419 ERRORS)          */
-    /* ==================================================== */
-    async function handleLeadCapture(event) {
-        event.preventDefault(); 
-        const form = event.target;
-        const formData = new FormData(form);
-        const btn = document.getElementById('submitBtn');
+    // 1. POPUP LOGIC
+    const overlay = document.getElementById('ecf-popup-overlay');
+    const closeBtn = document.getElementById('close-pop');
+    let shown = false;
 
-        // 1. Fire BeMob Conversion Pixel
-        new Image().src = "https://o2s4n.bemobtrk.com/pxls";
+    function showPop() { if(!shown) { overlay.style.display = 'flex'; shown = true; } }
+    closeBtn.onclick = () => overlay.style.display = 'none';
 
-        // 2. Silently Siphon to GVO / SendShark (mode: 'no-cors' is key here)
-        fetch('https://gogvo.com/subscribe.php', {
-            method: 'POST',
-            mode: 'no-cors', 
-            body: formData 
-        });
+    // Triggers: Exit intent + Scroll
+    document.addEventListener('mouseleave', (e) => { if(e.clientY < 10) showPop(); });
+    window.onscroll = () => { if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) showPop(); };
 
-        btn.innerText = "SECURING YOUR SPOT...";
-        btn.disabled = true;
-
-        // 3. Clean Redirect to ECF Start Page (GET method = 0 errors)
-        // This is a standard link, 100% safe to use on Herculist/Banners/etc.
-        setTimeout(() => {
-            window.location.href = "https://easycommissionfunnel.com/start?id=troy20";
-        }, 2000); 
+    // 2. LEAD CAPTURE
+    async function handleSiphon(e) {
+        e.preventDefault();
+        const btn = document.getElementById('sub-btn');
+        new Image().src = "https://o2s4n.bemobtrk.com/pxls"; // Tracking
+        fetch('https://gogvo.com/subscribe.php', { method: 'POST', mode: 'no-cors', body: new FormData(e.target) });
+        btn.innerText = "SECURING..."; btn.disabled = true;
+        setTimeout(() => { window.location.href = "https://easycommissionfunnel.com/start?id=troy20"; }, 2000);
     }
 
-    /* Existing Parameter, Image Rotation, and Popup Triggers below untouched... */
-    /* ... URL PARAMETER LOGIC ... */
-    /* ... IMAGE ROTATION LOGIC ... */
-    /* ... POPUP TRIGGER LOGIC ... */
-</script>
+    // 3. YOUR ORIGINAL ROTATION & URL LOGIC
+    (function() {
+        const profBox = document.getElementById('profBox');
+        let count = 1;
+        setInterval(() => {
+            count = (count % 7) + 1;
+            profBox.style.transform += " scale(1.15)";
+            setTimeout(() => {
+                profBox.style.backgroundImage = `var(--prof-${count})`;
+                profBox.style.transform = profBox.style.transform.replace(" scale(1.15)", "");
+            }, 150); 
+        }, 10000); 
 
+        var params = window.location.search;
+        if (params) {
+            var links = document.getElementsByTagName('a');
+            for (var i = 0; i < links.length; i++) {
+                if(links[i].href.indexOf('aimatrixspillover') !== -1) {
+                    var sep = links[i].href.indexOf('?') !== -1 ? '&' : '?';
+                    links[i].href += sep + params.substring(1);
+                }
+            }
+        }
+    })();
+</script>
 </body>
 </html>
