@@ -1,6 +1,3 @@
-/* ==================================================== */
-/* 1. YOUR ORIGINAL CORE LAYOUT (UNTOUCHED)             */
-/* ==================================================== */
 :root {
     --prof-1: url('https://raw.githubusercontent.com/troypringle/images/main/1.png');
     --prof-2: url('https://raw.githubusercontent.com/troypringle/images/main/2.png');
@@ -22,7 +19,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow-x: hidden;
+    overflow-x: hidden; 
     min-height: 100vh;
 }
 
@@ -43,9 +40,6 @@ body {
     will-change: transform, filter;
 }
 
-/* ==================================================== */
-/* 2. TWEAKED ANIMATION (TOP CORRIDOR ONLY)             */
-/* ==================================================== */
 @keyframes professor-pill-cycle {
     0% { transform: scale(1) translate(0, 0); filter: drop-shadow(0 0 20px #00ff88); opacity: 1; }
     1% { transform: scale(1.3) translate(-9px, -3px) rotate(-3deg); }
@@ -53,11 +47,11 @@ body {
     6% { transform: scale(1.17) translate(-9px, 3px) rotate(-4deg); }
     12% { transform: scale(1) translate(0, 0); filter: drop-shadow(0 0 36px #00ff88) brightness(1.2); }
 
-    /* FLY RIGHT - STAYED AT TOP (-12vh instead of -9) */
+    /* FLY RIGHT - STAYED AT TOP */
     26% { transform: translate(36vw, -12vh) rotate(13deg); filter: drop-shadow(0 0 40px #bc13fe); }
 
-    /* SWOOP DOWN - LIMITED TO 5vh (STAYS NEAR BANNER) */
-    55% { transform: translate(6vw, 5vh) rotate(-10deg); filter: drop-shadow(0 0 45px #ff0000) brightness(1.5); } 
+    /* SWOOP DOWN - LIMITED TO PREVENT LEAVING TOP AREA */
+    55% { transform: translate(6vw, 4vh) rotate(-10deg); filter: drop-shadow(0 0 45px #ff0000) brightness(1.5); } 
 
     /* SWOOP UP - BACK TO TOP EDGE */
     75% { transform: translate(35vw, -10vh) rotate(8deg); filter: drop-shadow(0 0 45px #0066ff) contrast(1.6); }
@@ -65,7 +59,6 @@ body {
     92%, 99% { transform: translate(0, 0) scale(1); filter: drop-shadow(0 0 20px #00ff88); }
 }
 
-/* YOUR ORIGINAL PAGE UI CLASSES (UNTOUCHED) */
 .page-border { width: 100%; max-width: 800px; border: 2px solid #1a1a1a; border-radius: 13px; padding: 12px; background: #020202; text-align: center; z-index: 5; position: relative; }
 .streak-container { display: inline-block; width: 100%; max-width: 900px; height: 99px; background: url('https://linkpod.s3.us-east-1.amazonaws.com/uploads/block_images/f3511efd5936e0986b6fb7034cecc2c7.png') center / 100% 100% no-repeat; position: relative; margin-bottom: 11px; border-radius: 4px; }
 .streak-text { font-size: 29px; color: #ff0000; font-weight: 900; text-transform: uppercase; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 93%; margin: 0; }
@@ -82,28 +75,18 @@ body {
 .video-cta-overlay a { color: #FF0000; font-size: 20px; font-weight: 900; text-decoration: none; width: 99%; text-shadow: 2px 2px 4px #000000; }
 .yoda-quote { font-size: 16px; color: #888; margin-top: 20px; text-transform: uppercase; }
 
-/* ==================================================== */
-/* 3. NEW POPUP (SMALL BOX / BIG TEXT)                  */
-/* ==================================================== */
+/* --- POPUP STYLES --- */
 #ecf-popup-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.9); z-index: 20000;
+    background: rgba(0,0,0,0.9); z-index: 20000;
     display: none; justify-content: center; align-items: center;
 }
 .ecf-popup-content {
     background: #fff; padding: 20px; border-radius: 8px; border: 6px solid #cc0000;
     width: 90%; max-width: 420px; text-align: center; position: relative;
 }
-.popup-h1 { color: #cc0000; font-size: 70px; font-weight: 900; margin: 0; line-height: 0.8; }
+.popup-h1 { color: #cc0000; font-size: 75px; font-weight: 900; margin: 0; line-height: 0.8; }
 .popup-h3 { color: #111; font-size: 24px; font-weight: 800; margin: 10px 0; line-height: 1.1; }
-.popup-form input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; text-align: center; font-size: 16px; }
+.popup-form input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; text-align: center; font-size: 16px; color: #000; }
 .popup-btn { background: #ff6600; color: #fff; width: 100%; padding: 15px; font-size: 22px; font-weight: 900; border: none; cursor: pointer; text-transform: uppercase; }
-.popup-close { position: absolute; top: 0; right: 10px; font-size: 30px; color: #aaa; cursor: pointer; }
-
-@media (max-width: 600px) {
-    .float-container { width: 170px; height: 170px; left: calc(50vw - 175px); top: 85px; } 
-    @keyframes professor-pill-cycle {
-        0%, 100% { transform: translate(0,0); filter: drop-shadow(0 0 15px #00ff88); }
-        50% { transform: translate(40px, -60px); filter: drop-shadow(0 0 25px #ff0000); }
-    }
-}
+.popup-close { position: absolute; top: 0; right: 10px; font-size: 35px; color: #aaa; cursor: pointer; }
