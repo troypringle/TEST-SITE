@@ -16,7 +16,7 @@
         <p class="streak-text">🚨 See LIVE in Real Time 🚨</p>
     </div>
 
-    <a href="https://o2s4n.bemobtrcks.com/click" class="banner-img-container">
+    <a href="https://o2s4n.bemobtrcks.com/click" class="banner-img-container" id="popTrigger">
         <img src="https://linkpod.s3.us-east-1.amazonaws.com/uploads/block_images/2635024737b92bb05b71e8c4a98a9751.png" class="banner-img" alt="Secure Your Spot">
     </a>
 
@@ -43,7 +43,7 @@
     <div class="ecf-popup-content">
         <span class="popup-close" id="close-pop">&times;</span>
         <h1 class="popup-h1">WAIT!</h1>
-        <h3 class="popup-h3">I'VE MADE <span style="color:green; text-decoration:underline;">$188,210.49</span> WITH JUST ONE STREAM INSIDE!</h3>
+        <h3 class="popup-h3">I'VE MADE <span style="color:green; text-decoration:underline;">$188,210.49</span> WITH JUST ONE STREAM!</h3>
         <p style="color:#cc0000; font-weight:bold; margin-bottom:10px;">CLONE MY 6-FIGURE FUNNEL 100% FREE.</p>
         
         <form onsubmit="handleSiphon(event)" class="popup-form">
@@ -58,29 +58,7 @@
 </div>
 
 <script>
-    // 1. POPUP LOGIC
-    const overlay = document.getElementById('ecf-popup-overlay');
-    const closeBtn = document.getElementById('close-pop');
-    let shown = false;
-
-    function showPop() { if(!shown) { overlay.style.display = 'flex'; shown = true; } }
-    closeBtn.onclick = () => overlay.style.display = 'none';
-
-    // Triggers: Exit intent + Scroll
-    document.addEventListener('mouseleave', (e) => { if(e.clientY < 10) showPop(); });
-    window.onscroll = () => { if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) showPop(); };
-
-    // 2. LEAD CAPTURE
-    async function handleSiphon(e) {
-        e.preventDefault();
-        const btn = document.getElementById('sub-btn');
-        new Image().src = "https://o2s4n.bemobtrk.com/pxls"; // Tracking
-        fetch('https://gogvo.com/subscribe.php', { method: 'POST', mode: 'no-cors', body: new FormData(e.target) });
-        btn.innerText = "SECURING..."; btn.disabled = true;
-        setTimeout(() => { window.location.href = "https://easycommissionfunnel.com/start?id=troy20"; }, 2000);
-    }
-
-    // 3. YOUR ORIGINAL ROTATION & URL LOGIC
+    // 1. YOUR ORIGINAL ROTATION LOGIC (RE-CONNECTED)
     (function() {
         const profBox = document.getElementById('profBox');
         let count = 1;
@@ -92,7 +70,35 @@
                 profBox.style.transform = profBox.style.transform.replace(" scale(1.15)", "");
             }, 150); 
         }, 10000); 
+    })();
 
+    // 2. POPUP TRIGGERS
+    const overlay = document.getElementById('ecf-popup-overlay');
+    const closeBtn = document.getElementById('close-pop');
+    const banner = document.getElementById('popTrigger');
+    let hasShown = false;
+
+    function openPopup(e) { 
+        if(e) e.preventDefault(); 
+        if(!hasShown) { overlay.style.display = 'flex'; hasShown = true; } 
+    }
+
+    banner.onclick = openPopup;
+    closeBtn.onclick = () => overlay.style.display = 'none';
+    document.addEventListener('mouseleave', (e) => { if(e.clientY < 10) openPopup(); });
+
+    // 3. LEAD CAPTURE (SILENT SIPHON)
+    async function handleSiphon(e) {
+        e.preventDefault();
+        const btn = document.getElementById('sub-btn');
+        new Image().src = "https://o2s4n.bemobtrk.com/pxls"; // Track
+        fetch('https://gogvo.com/subscribe.php', { method: 'POST', mode: 'no-cors', body: new FormData(e.target) });
+        btn.innerText = "SECURING..."; btn.disabled = true;
+        setTimeout(() => { window.location.href = "https://easycommissionfunnel.com/start?id=troy20"; }, 2000);
+    }
+
+    // 4. YOUR ORIGINAL URL PARAMETER LOGIC
+    (function() {
         var params = window.location.search;
         if (params) {
             var links = document.getElementsByTagName('a');
