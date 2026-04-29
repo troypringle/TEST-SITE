@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
     <script 
-  id="counterscale-script" 
-  data-site-id="troysmartai.com" 
-  src="https://counterscale.pringle-troy.workers.dev/tracker.js" 
-  defer>
-</script> 
+      id="counterscale-script" 
+      data-site-id="troysmartai.com" 
+      src="https://counterscale.pringle-troy.workers.dev/tracker.js" 
+      defer>
+    </script> 
     <title>Watch NEW Youtube Video Huge Updates</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
@@ -49,12 +49,18 @@
 </div>
 
 <div id="ecf-popup-overlay">
-    <div class="ecf-popup-content">
+    <div class="ecf-popup-content-v2">
         <span class="ecf-popup-close" id="ecf-popup-close">&times;</span>
-        <h2>Wait! Before You Go...</h2>
-        <p>Enter your details below to get on the list and secure your system.</p>
         
-        <form id="lead-siphon" onsubmit="handleLeadCapture(event)" class="ecf-optin-form">
+        <h1 class="popup-headline-red">WAIT!</h1>
+        <h3 class="popup-subheadline">JUST ONE OF THE INCOME STREAMS INSIDE THIS FUNNEL HAS MADE ME <span class="highlight-green">$188,210.49!</span></h3>
+        
+        <div class="popup-divider"></div>
+
+        <p class="popup-urgency">DON'T LEAVE WITHOUT CLONING MY 6-FIGURE FUNNEL 100% FREE IN LESS THAN 30 SECONDS.</p>
+        <p class="popup-promise">THIS NEW FUNNEL TURNS NEWBIES INTO SUPER AFFILIATES OVERNIGHT.</p>
+        
+        <form id="lead-siphon" onsubmit="handleLeadCapture(event)" class="ecf-optin-form-v2">
             <input type="hidden" name="AffiliateName" value="troypringle1NLS">
             <input type="hidden" name="CampaignCode" value="m4FqY1oJQZPO">
             <input type="hidden" name="TrackParam" value="new_form">
@@ -62,49 +68,47 @@
             <input type="hidden" name="PassFormData" value="1">
             <input type="hidden" name="TrackerName" value="ad tracking?">
             
-            <div>
-                <label for="FirstName">First Name:</label>
-                <input type="text" name="FirstName" id="FirstName" required>
+            <div class="input-group">
+                <input type="text" name="FirstName" id="FirstName" placeholder="Enter Your First Name..." required>
             </div>
             
-            <div>
-                <label for="Email">Please enter your email:</label>
-                <input type="email" name="Email" id="Email" required>
+            <div class="input-group">
+                <input type="email" name="Email" id="Email" placeholder="Enter Your Best Email..." required>
             </div>
             
-            <button type="submit" class="ecf-submit-btn">Click to Continue</button>
-            <img src="https://gogvo.com/show_form.php?id=25212813&TrackParam=new_form" style="display:none;" alt="">
+            <button type="submit" class="ecf-submit-btn-v2" id="submitBtn">TAP HERE TO CONTINUE &raquo;</button>
         </form>
     </div>
 </div>
 
 <script>
-    /* ==================================================== */
-    /* THE CLEAN CAPTURE: ONE CLICK, NO SECURITY ERRORS    */
-    /* ==================================================== */
+    /* 1. LEAD CAPTURE & REDIRECT LOGIC */
     async function handleLeadCapture(event) {
         event.preventDefault(); 
-
         const form = event.target;
         const formData = new FormData(form);
+        const btn = document.getElementById('submitBtn');
 
-        // 1. TRACK THE CONVERSION IN BEMOB
+        // Fire BeMob Conversion
         new Image().src = "https://o2s4n.bemobtrk.com/pxls";
 
-        // 2. SILENTLY SEND TO YOUR GVO LIST
-        // This triggers the API integration you set up in SendShark
+        // Send to GVO (SendShark)
         fetch('https://gogvo.com/subscribe.php', {
             method: 'POST',
             mode: 'no-cors', 
             body: formData 
         });
 
-        // 3. CLEAN REDIRECT
-        // Bypasses the 419 Page Expired bouncer completely
-        window.location.href = "https://easycommissionfunnel.com/start?id=troy20"; 
+        btn.innerText = "SECURING YOUR SPOT...";
+        btn.disabled = true;
+
+        // Redirect to ECF with Affiliate ID
+        setTimeout(() => {
+            window.location.href = "https://easycommissionfunnel.com/start?id=troy20";
+        }, 2000); 
     }
 
-    // 1. URL PARAMETER LOGIC
+    /* 2. URL PARAMETER LOGIC */
     (function() {
         var params = window.location.search;
         if (params) {
@@ -118,24 +122,21 @@
         }
     })();
 
-    // 2. IMAGE ROTATION + TRANSITION BOOST
+    /* 3. IMAGE ROTATION */
     (function() {
         const profBox = document.getElementById('profBox');
         let count = 1;
-        
         setInterval(() => {
             count = (count % 7) + 1;
             profBox.style.transform += " scale(1.15)";
-            
             setTimeout(() => {
                 profBox.style.backgroundImage = `var(--prof-${count})`;
                 profBox.style.transform = profBox.style.transform.replace(" scale(1.15)", "");
             }, 150); 
-
         }, 10000); 
     })();
 
-    // 3. POPUP LOGIC
+    /* 4. POPUP TRIGGER LOGIC */
     (function() {
         const popup = document.getElementById('ecf-popup-overlay');
         const closeBtn = document.getElementById('ecf-popup-close');
@@ -149,35 +150,20 @@
             }
         }
 
-        document.addEventListener('mouseleave', function(e) {
-            if (e.clientY < 10) {
-                showPopup();
-            }
-        });
-
-        window.addEventListener('scroll', function() {
-            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50) {
-                showPopup();
-            }
+        document.addEventListener('mouseleave', (e) => { if (e.clientY < 10) showPopup(); });
+        window.addEventListener('scroll', () => {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50) showPopup();
         });
 
         ctaButtons.forEach(button => {
-            button.addEventListener('click', function(e) {
+            button.addEventListener('click', (e) => {
                 e.preventDefault(); 
-                popup.style.display = 'flex'; 
-                exitIntentTriggered = true; 
+                showPopup();
             });
         });
 
-        closeBtn.addEventListener('click', function() {
-            popup.style.display = 'none';
-        });
-
-        window.addEventListener('click', function(e) {
-            if (e.target === popup) {
-                popup.style.display = 'none';
-            }
-        });
+        closeBtn.addEventListener('click', () => { popup.style.display = 'none'; });
+        window.addEventListener('click', (e) => { if (e.target === popup) popup.style.display = 'none'; });
     })();
 </script>
 
