@@ -1,114 +1,115 @@
 /* ==================================================== */
-/* POPUP OVERLAY SYSTEM                                 */
+/* 1. RESTRICTED PROFESSOR (TOP CORRIDOR NAVIGATION)   */
+/* ==================================================== */
+.float-container {
+    position: fixed;
+    /* Base position anchored near the centered content banner */
+    left: calc(50vw - 390px); top: 115px; 
+    width: 320px; height: 320px; 
+    
+    /* Layering: Character at 10k, Popup at 20k. The Popup Overlay *will* cover her when active. */
+    z-index: 10000; 
+    
+    pointer-events: none; 
+    background-image: var(--prof-1); 
+    background-size: contain; background-repeat: no-repeat; background-position: center;
+    transition: background-image 0.15s ease-in-out; 
+    
+    /* Run cycle often to keep eye at the top of the page */
+    animation: top-corridor-cycle 15s ease-in-out infinite;
+    will-change: transform, filter;
+}
+
+/* Confines movement to "Top boundary" to "Banner boundary" range */
+@keyframes top-corridor-cycle {
+    /* 0-12%: START AT BANNER (Base Position) + INTENSE JITTER */
+    0% { transform: scale(1) translate(0, 0); filter: drop-shadow(0 0 20px #00ff88); opacity: 1; }
+    2% { transform: scale(1.3) translate(-9px, -3px) rotate(-3deg); }
+    5% { transform: scale(1.4) translate(8px, 2px) rotate(3deg); }
+    8% { transform: scale(1.17) translate(-9px, 3px) rotate(-4deg); }
+    11% { transform: scale(1) translate(0, 0); filter: drop-shadow(0 0 36px #00ff88) brightness(1.2); }
+
+    /* 12-40%: SWOOP UP TO THE CREDIT BAR (Absolute Top boundary) */
+    /* She goes UP by translating roughly -110px from her base 115px top position */
+    26% { 
+        transform: translate(25vw, -110px) scale(0.9) rotate(8deg); 
+        filter: drop-shadow(0 0 30px #bc13fe); /* Purple top glow */
+        opacity: 1;
+    }
+    
+    /* 40-50%: MESSING AROUND ALONG THE TOP BOUNDARY */
+    45% {
+        transform: translate(35vw, -100px) scale(1.1) rotate(-6deg);
+        filter: drop-shadow(0 0 40px #ff0000); /* Red top glow */
+    }
+
+    /* 50-70%: LONG SWOOP LEFT ALONG THE TOP CORRIDOR */
+    62% { 
+        transform: translate(-15vw, -110px) scale(1.0) rotate(-12deg); 
+        filter: drop-shadow(0 0 30px #0066ff); /* Blue top glow */
+        opacity: 1;
+    }
+    
+    /* 70-85%: DIP BACK TOWARD BANNER THEN JITTER RIGhT */
+    78% { 
+        transform: translate(40vw, -10px) scale(1.2) rotate(4deg); 
+        filter: drop-shadow(0 0 36px #00ff88);
+        opacity: 1;
+    }
+
+    /* 90-100%: RETURN HOME (Base landing) + JITTER */
+    92%, 99% { transform: translate(0, 0) scale(1); filter: drop-shadow(0 0 20px #00ff88); opacity: 1; }
+}
+
+/* Update Mobile to match the Top Corridor concept */
+@media (max-width: 600px) {
+    .float-container { 
+        width: 170px; height: 170px; 
+        left: calc(50vw - 175px);
+        top: 85px; /* Home base slightly higher on mobile */
+    } 
+    @keyframes top-corridor-cycle {
+        0%, 100% { transform: translate(0,0) scale(1); filter: drop-shadow(0 0 15px #00ff88); }
+        30% { transform: translate(100px, -80px) scale(0.9); filter: drop-shadow(0 0 20px #bc13fe); }
+        60% { transform: translate(-30px, -85px) scale(1.1); filter: drop-shadow(0 0 20px #ff0000); }
+        85% { transform: translate(50px, -10px) scale(1.2); filter: drop-shadow(0 0 20px #0066ff); }
+    }
+}
+
+
+/* ==================================================== */
+/* 2. OPTIMIZED POPUP (Smaller Box, BIGGER Text)      */
 /* ==================================================== */
 #ecf-popup-overlay {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.85);
-    z-index: 20000;
-    justify-content: center;
-    align-items: center;
-    backdrop-filter: blur(5px);
+    /* Keep Z-Index higher than the float-container to obscure it */
+    z-index: 20000; 
 }
 
 .ecf-popup-content-v2 {
-    background: #ffffff;
-    padding: 30px 40px;
-    border-radius: 8px;
-    width: 95%;
-    max-width: 600px;
-    text-align: center;
-    position: relative;
-    box-shadow: 0 15px 50px rgba(0,0,0,0.8);
-    border: 6px solid #cc0000;
-    font-family: 'Arial Black', Gadget, sans-serif;
+    background: #fff; padding: 25px 30px; border-radius: 8px;
+    width: 95%; 
+    
+    /* MODIFIED: Popup footprint is smaller overall */
+    max-width: 480px; 
+    
+    text-align: center; position: relative; border: 6px solid #cc0000;
 }
 
-.popup-headline-red {
-    color: #cc0000;
-    font-size: 55px;
-    font-weight: 900;
-    margin: 0;
-    line-height: 1;
+.popup-headline-red { 
+    color: #cc0000; 
+    /* MODIFIED: Headline is MUCH bigger and bolder within the smaller box */
+    font-size: 65px; line-height: 0.9;
+    font-weight: 900; margin: 0; 
 }
 
-.popup-subheadline {
-    color: #111;
-    font-size: 20px;
-    font-weight: 800;
-    margin: 15px 0;
-    line-height: 1.2;
+.popup-subheadline { 
+    color: #111; 
+    /* MODIFIED: Subheadline bumped up to compensate */
+    font-size: 22px; 
+    font-weight: 800; margin: 15px 0; line-height: 1.1; 
 }
 
-.highlight-green {
-    color: #008800;
-    text-decoration: underline;
+.popup-promise { 
+    /* MODIFIED: Small promise text bumped slightly */
+    font-size: 15px; 
 }
-
-.popup-divider {
-    height: 3px;
-    background: #eee;
-    width: 100%;
-    margin: 20px 0;
-}
-
-.popup-urgency {
-    color: #cc0000;
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-
-.popup-promise {
-    color: #333;
-    font-size: 15px;
-    font-weight: bold;
-    margin-bottom: 20px;
-}
-
-/* FORM STYLING */
-.ecf-optin-form-v2 {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.ecf-optin-form-v2 input {
-    width: 100%;
-    padding: 15px;
-    font-size: 18px;
-    border: 2px solid #bbb;
-    border-radius: 4px;
-    text-align: center;
-    font-weight: bold;
-}
-
-.ecf-submit-btn-v2 {
-    background: #ff6600;
-    color: white;
-    padding: 20px;
-    font-size: 24px;
-    font-weight: 900;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    box-shadow: 0 5px 0 #cc5200;
-    text-transform: uppercase;
-    transition: transform 0.1s;
-}
-
-.ecf-submit-btn-v2:active {
-    transform: translateY(4px);
-    box-shadow: 0 1px 0 #cc5200;
-}
-
-.ecf-popup-close {
-    position: absolute;
-    top: 5px; right: 12px;
-    font-size: 30px;
-    color: #ccc;
-    cursor: pointer;
-}
-
-/* Add your existing CSS below... */
