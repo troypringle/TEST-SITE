@@ -1,357 +1,114 @@
 /* ==================================================== */
-/* VARIABLE STORAGE (IMAGE LINKS HOUSED HERE)           */
+/* POPUP OVERLAY SYSTEM                                 */
 /* ==================================================== */
-:root {
-    --prof-1: url('https://raw.githubusercontent.com/troypringle/images/main/1.png');
-    --prof-2: url('https://raw.githubusercontent.com/troypringle/images/main/2.png');
-    --prof-3: url('https://raw.githubusercontent.com/troypringle/images/main/3.png');
-    --prof-4: url('https://raw.githubusercontent.com/troypringle/images/main/4.png');
-    --prof-5: url('https://raw.githubusercontent.com/troypringle/images/main/5.png');
-    --prof-6: url('https://raw.githubusercontent.com/troypringle/images/main/6.png');
-    --prof-7: url('https://raw.githubusercontent.com/troypringle/images/main/7.png');
+#ecf-popup-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 20000;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
 }
 
-/* ==================================================== */
-/* 1. RESET & CORE LAYOUT                               */
-/* ==================================================== */
-* { box-sizing: border-box; }
+.ecf-popup-content-v2 {
+    background: #ffffff;
+    padding: 30px 40px;
+    border-radius: 8px;
+    width: 95%;
+    max-width: 600px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.8);
+    border: 6px solid #cc0000;
+    font-family: 'Arial Black', Gadget, sans-serif;
+}
 
-body {
-    background: #000000 !important;
-    color: white;
-    margin: 0; 
-    padding: 10px;
-    font-family: Arial, sans-serif;
+.popup-headline-red {
+    color: #cc0000;
+    font-size: 55px;
+    font-weight: 900;
+    margin: 0;
+    line-height: 1;
+}
+
+.popup-subheadline {
+    color: #111;
+    font-size: 20px;
+    font-weight: 800;
+    margin: 15px 0;
+    line-height: 1.2;
+}
+
+.highlight-green {
+    color: #008800;
+    text-decoration: underline;
+}
+
+.popup-divider {
+    height: 3px;
+    background: #eee;
+    width: 100%;
+    margin: 20px 0;
+}
+
+.popup-urgency {
+    color: #cc0000;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.popup-promise {
+    color: #333;
+    font-size: 15px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* FORM STYLING */
+.ecf-optin-form-v2 {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    overflow-x: hidden; /* CRITICAL: Prevents side-scrolling/railing */
-    min-height: 100vh;
+    gap: 12px;
 }
 
-/* ==================================================== */
-/* 2. PROFESSOR FLOATIE (THE BREAK-OUT)                 */
-/* ==================================================== */
-.float-container {
-    position: fixed;
-    /* POSITIONED TO THE LEFT OF THE CENTERED BANNER */
-    left: calc(50vw - 390px); 
-    top: 115px; 
-    
-    width: 320px;   
-    height: 320px;  
-    z-index: 10000;
-    pointer-events: none; 
-    
-    background-image: var(--prof-1); 
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    
-    transition: background-image 0.15s ease-in-out; 
-               
-    /* FASTER CYCLE: Reduced from 33s to 15s */
-    animation: professor-pill-cycle 15s ease-in-out infinite;
-    will-change: transform, filter;
-}
-
-@keyframes professor-pill-cycle {
-    /* 0-10%: GREEN START & FAST JITTER (High Intensity) */
-    0% { 
-        transform: scale(1) translate(0, 0); 
-        filter: drop-shadow(0 0 20px #00ff88);
-        opacity: 1; 
-    }
-    1% { transform: scale(1.3) translate(-9px, -3px) rotate(-3deg); }
-    3% { transform: scale(1.4) translate(8px, 2px) rotate(3deg); }
-    6% { transform: scale(1.17) translate(-9px, 3px) rotate(-4deg); }
-    9% { transform: scale(1.19) translate(9px, -6px) rotate(4deg); }
-    12% { 
-        transform: scale(1) translate(0, 0); 
-        filter: drop-shadow(0 0 36px #00ff88) brightness(1.2);
-    }
-
-    /* 10-35%: PURPLE GLOW & FLY RIGHT */
-    26% { 
-        transform: translate(36vw, -9vh) rotate(13deg); 
-        filter: drop-shadow(0 0 40px #bc13fe) drop-shadow(0 0 11px #00ffff);
-        opacity: 1;
-    }
-
-    /* 35-60%: RED GLOW & SWOOP DOWN */
-    55% { 
-        transform: translate(6vw, 23vh) rotate(-10deg); 
-        filter: drop-shadow(0 0 45px #ff0000) brightness(1.5);
-        opacity: 1;
-    } 
-
-    /* 60-85%: BLUE GLOW & SWOOP UP */
-    75% { 
-        transform: translate(35vw, 4vh) rotate(8deg); 
-        filter: drop-shadow(0 0 45px #0066ff) contrast(1.6);
-        opacity: 1;
-    }
-
-    /* 90-100%: RETURN TO GREEN LANDING */
-    92%, 99% { 
-        transform: translate(0, 0) scale(1); 
-        filter: drop-shadow(0 0 20px #00ff88);
-        opacity: 1;
-    }
-}
-
-/* ==================================================== */
-/* 3. PAGE CONTENT & UI                                 */
-/* ==================================================== */
-.page-border {
+.ecf-optin-form-v2 input {
     width: 100%;
-    max-width: 800px;
-    border: 2px solid #1a1a1a; 
-    border-radius: 13px;
-    padding: 12px;
-    background: #020202; 
-    text-align: center;
-    z-index: 5;
-    position: relative;
-}
-
-.streak-container {
-    display: inline-block;
-    width: 100%;
-    max-width: 900px; 
-    height: 99px;      
-    background: url('https://linkpod.s3.us-east-1.amazonaws.com/uploads/block_images/f3511efd5936e0986b6fb7034cecc2c7.png') center / 100% 100% no-repeat;
-    position: relative;
-    margin-bottom: 11px;
+    padding: 15px;
+    font-size: 18px;
+    border: 2px solid #bbb;
     border-radius: 4px;
-}
-
-.streak-text {
-    font-size: 29px; 
-    color: #ff0000;
-    font-weight: 900;
-    text-transform: uppercase;
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 93%;
-    margin: 0;
-}
-
-.banner-img-container {
-    display: block;
-    margin: 0 auto;
-    max-width: 778px;
-    border: 1px solid rgba(144, 238, 144, 0.2); 
-    box-shadow: 0 0 15px rgba(144, 238, 144, 0.45); 
-    border-radius: 6px;
-    overflow: hidden; 
-}
-
-.banner-img {
-    width: 100%;
-    height: auto;
-    display: block;
-}
-
-.spacer-between { height: 25px; }
-
-.headline {
-    font-size: 29px; 
-    color: #ffffff;
-    font-weight: 800;
-    text-transform: uppercase;
-    margin-bottom: 21px;
-    display: block;
-}
-
-.red-arrow { color: #ff0000; margin-right: 6px; }
-
-/* ==================================================== */
-/* 4. VIDEO CONTAINER SYSTEM                            */
-/* ==================================================== */
-.video-container-box {
-    position: relative;
-    width: 98%;
-    max-width: 780px;
-    margin: 0 auto 10px auto;
-}
-
-.video-wrapper {
-    position: relative;
-    width: 100%;
-    padding-bottom: 56.25%;
-    height: 0;
-    border: 1.5px solid #004d26; 
-    box-shadow: 0 0 20px rgba(0, 255, 136, 0.5); 
-    background: #000;
-    overflow: hidden;
-    border-radius: 4px;
-}
-
-.video-wrapper iframe {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-}
-
-.touch-shield {
-    position: absolute;
-    top: 0; left: 0; right: 0; 
-    height: 38%; 
-    z-index: 10;
-}
-
-.video-cta-overlay {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 53px;
-    background: rgba(255,255,0,0.5);
-    backdrop-filter: blur(6px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 20;
-    border-top: 1px solid rgba(0, 77, 38, 0.4);
-    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.1), inset 0 -1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.video-cta-overlay a {
-    color: #FF0000;
-    font-size: 20px;
-    font-weight: 900;
-    text-decoration: none;
-    width: 99%;
-    text-shadow: 2px 2px 4px #000000;
-}
-
-.yoda-quote {
-    font-size: 16px; 
-    color: #888;    
-    margin-top: 20px;
-    text-transform: uppercase;
-}
-
-/* ==================================================== */
-/* 5. RESPONSIVE / MOBILE                               */
-/* ==================================================== */
-@media (max-width: 600px) {
-    .streak-text { font-size: 23px; } 
-    .headline { font-size: 23px; }   
-    .streak-container { height: 75px; }
-    .spacer-between { height: 15px; }
-    .video-cta-overlay a { font-size: 16px; }
-    
-    .float-container { 
-        width: 170px; 
-        height: 170px; 
-        /* CENTERED ON MOBILE BANNER */
-        left: calc(50vw - 175px);
-        top: 85px;
-    } 
-
-    /* FIXED: Added filters back so the glow shows on mobile */
-    @keyframes professor-pill-cycle {
-        0%, 100% { 
-            transform: translate(0,0); 
-            filter: drop-shadow(0 0 15px #00ff88); 
-        }
-        25% { 
-            transform: translate(140px, -20px); 
-            filter: drop-shadow(0 0 25px #bc13fe); 
-        }
-        50% { 
-            transform: translate(20px, 120px); 
-            filter: drop-shadow(0 0 25px #0066ff); 
-        }
-        75% { 
-            transform: translate(99px, 30px); 
-            filter: drop-shadow(0 0 25px #ff0000); 
-        }
-    }
-}
-/* --- NEW EXIT INTENT POPUP STYLES --- */
-#ecf-popup-overlay {
-    display: none; /* Hidden by default */
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background-color: rgba(0, 0, 0, 0.85); /* Dark transparent background */
-    z-index: 9999; /* Keeps it on top of the video */
-    justify-content: center;
-    align-items: center;
-}
-
-.ecf-popup-content {
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 450px;
     text-align: center;
-    position: relative;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-    font-family: sans-serif;
-    color: #000;
+    font-weight: bold;
+}
+
+.ecf-submit-btn-v2 {
+    background: #ff6600;
+    color: white;
+    padding: 20px;
+    font-size: 24px;
+    font-weight: 900;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 5px 0 #cc5200;
+    text-transform: uppercase;
+    transition: transform 0.1s;
+}
+
+.ecf-submit-btn-v2:active {
+    transform: translateY(4px);
+    box-shadow: 0 1px 0 #cc5200;
 }
 
 .ecf-popup-close {
     position: absolute;
-    top: 10px; right: 15px;
-    font-size: 28px;
-    font-weight: bold;
+    top: 5px; right: 12px;
+    font-size: 30px;
+    color: #ccc;
     cursor: pointer;
-    color: #666;
 }
 
-.ecf-popup-close:hover {
-    color: #cc0000;
-}
-
-.ecf-popup-content h2 {
-    margin-top: 0;
-    color: #cc0000;
-    font-size: 24px;
-}
-
-.ecf-popup-content p {
-    font-size: 16px;
-    margin-bottom: 20px;
-}
-
-.ecf-optin-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    text-align: left;
-}
-
-.ecf-optin-form label {
-    font-weight: bold;
-    font-size: 14px;
-}
-
-.ecf-optin-form input[type="text"], 
-.ecf-optin-form input[type="email"] {
-    width: 100%; 
-    padding: 12px; 
-    border: 1px solid #ccc; 
-    border-radius: 4px; 
-    box-sizing: border-box;
-    font-size: 16px;
-}
-
-.ecf-submit-btn {
-    background-color: #cc0000; 
-    color: white; 
-    padding: 15px; 
-    border: none; 
-    border-radius: 4px;
-    font-size: 18px; 
-    font-weight: bold; 
-    cursor: pointer; 
-    transition: background 0.3s;
-    margin-top: 10px;
-}
-
-.ecf-submit-btn:hover {
-    background-color: #aa0000; 
-}
+/* Add your existing CSS below... */
