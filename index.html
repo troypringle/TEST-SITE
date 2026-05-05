@@ -1,115 +1,413 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script id="counterscale-script" data-site-id="troysmartai.com" src="https://counterscale.pringle-troy.workers.dev/tracker.js" defer></script> 
-    <title>Watch NEW Youtube Video Huge Updates</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Command Center</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.6; margin: 0; padding: 10px; }
+        .container { max-width: 1200px; margin: auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        
+        .section-header { 
+            text-align: center; 
+            color: white; 
+            padding: 8px; 
+            border-radius: 6px; 
+            margin: 25px 0 15px 0; 
+            font-size: 1.1em; 
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .bg-daily { background: #007bff; }
+        .bg-paid { background: #28a745; }
+        .bg-classified { background: #fd7e14; }
+        .bg-secondary { background: #6f42c1; }
+        .bg-social { background: #e83e8c; }
+        .bg-research { background: #17a2b8; }
+        .bg-calendar { background: #343a40; }
+
+        #progress-container { background:#e9ecef; border-radius:10px; margin-bottom:30px; overflow:hidden; border: 1px solid #ccc; }
+        #progress-bar { background:#007bff; width:0%; height:45px; text-align:center; color:white; font-weight:bold; line-height:45px; transition:width 0.5s; font-size: 18px; }
+
+        .task-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .task-item { position: relative; display: flex; align-items: center; background: #fff; padding: 18px; border-radius: 8px; border: 1px solid #eee; transition: all 0.3s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .task-item:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .task-item input[type="checkbox"] { width: 26px; height: 26px; margin-right: 18px; cursor: pointer; flex-shrink: 0; }
+        
+        .link-btn { display: inline-block; padding: 12px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: bold; margin-top: 8px; text-align: center; width: 85%; }
+        .link-btn:hover { background: #0056b3; opacity: 0.9; }
+        
+        .status-badge { font-size: 10px; padding: 4px 10px; border-radius: 12px; font-weight: bold; text-transform: uppercase; color: white; }
+        .status-active { background: #28a745; }
+        .status-testing { background: #ffc107; color: #333; }
+        .status-paused { background: #6c757d; }
+
+        .delete-btn { background: #ff4d4d; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: bold; }
+        .add-task-btn { background: #f8f9fa; color: #333; border: 1px dashed #ccc; padding: 6px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.2s; }
+        .add-task-btn:hover { background: #e2e6ea; border-color: #adb5bd; }
+
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+        .weekday-label { text-align: center; font-weight: bold; padding: 10px 0; background: #007bff; color: white; border-radius: 4px; font-size: 14px; }
+        .cal-box { border: 1px solid #ddd; background: #b1d8b7; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; min-height: 130px; }
+        .cal-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; padding: 6px 10px; background: rgba(0,0,0,0.08); }
+        .cal-check { width: 18px; height: 18px; accent-color: blue; }
+        
+        .cal-note-container { flex-grow: 1; display: flex; flex-direction: column; padding: 5px; }
+        .cal-progress-display { color: #d00000; font-weight: bold; font-size: 12px; margin-bottom: 2px; display: block; }
+        .cal-note { width: 100%; border: none; outline: none; resize: none; padding: 0px; background: transparent; color: #1b4332; font-size: 11px; flex-grow: 1; }
+
+        .editable-text:hover { background: #fffde7; cursor: text; outline: 1px dashed #ccc; border-radius: 2px; }
+    </style>
 </head>
 <body>
 
-<div class="float-container" id="profBox"></div>
-
-<div class="page-border">
-    <div class="streak-container">
-        <p class="streak-text">🚨 See LIVE in Real Time 🚨</p>
+<div class="container">
+    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-bottom: -10px;">
+        <button onclick="exportBackup()" style="background:#28a745; color:white; border:none; padding:8px 15px; border-radius:4px; cursor:pointer; font-weight:bold; font-size:12px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">💾 Backup Data</button>
+        <input type="file" id="importFile" style="display:none;" accept=".json" onchange="importBackup(event)">
+        <button onclick="document.getElementById('importFile').click()" style="background:#ffc107; color:#333; border:none; padding:8px 15px; border-radius:4px; cursor:pointer; font-weight:bold; font-size:12px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">📂 Restore Data</button>
     </div>
 
-    <a href="https://o2s4n.bemobtrcks.com/click" class="banner-img-container" id="popTrigger">
-        <img src="https://linkpod.s3.us-east-1.amazonaws.com/uploads/block_images/2635024737b92bb05b71e8c4a98a9751.png" class="banner-img" alt="Secure Your Spot">
-    </a>
-
-    <div class="spacer-between"></div>
-
-    <span class="headline">
-        <span class="red-arrow">➤</span>“ Most Funnel Builders Are Just Selling ” ❌
-    </span>
-
-    <div class="video-container-box">
-        <div class="video-wrapper">
-            <iframe src="https://www.youtube.com/embed/JcgHf3QjmtQ?rel=0&modestbranding=1&controls=1&showinfo=0&iv_load_policy=3&playsinline=1" frameborder="0" allowfullscreen></iframe>
-        </div>
-        <div class="touch-shield"></div>
-        <div class="video-cta-overlay">
-            <a href="https://o2s4n.bemobtrcks.com/click" target="_blank"> CLICK TO SECURE FREE FUNNEL SYSTEM ✔️</a>
-        </div>
+    <h2 style="text-align: center; color: #2c3e50; margin-bottom: 20px;">Traffic Command Center</h2>
+    
+    <div id="progress-container">
+        <div id="progress-bar">0%</div>
     </div>
 
-    <div class="yoda-quote">"do or do not there is no try" - yoda</div> 
-</div>
+    <div class="section-header bg-daily">Daily Traffic Routine</div>
+    <div id="grid-daily" class="task-grid"></div>
+    <div style="text-align: right; margin-top: 15px;"><button class="add-task-btn" onclick="addNewTask('daily', '#007bff')">+ ADD DAILY TASK</button></div>
 
-<div id="ecf-popup-overlay">
-    <div class="ecf-popup-content">
-        <span class="popup-close" id="close-pop">&times;</span>
-        <h1 class="popup-h1">WAIT!</h1>
-        <h3 class="popup-h3">I'VE MADE <span style="color:green; text-decoration:underline;">$188,210.49</span> WITH JUST ONE STREAM!</h3>
-        <p style="color:#cc0000; font-weight:bold; margin-bottom:10px;">CLONE MY 6-FIGURE FUNNEL 100% FREE.</p>
-        
-        <form onsubmit="handleSiphon(event)" class="popup-form">
-            <input type="hidden" name="AffiliateName" value="troypringle1NLS">
-            <input type="hidden" name="CampaignCode" value="m4FqY1oJQZPO">
-            <input type="hidden" name="FormId" value="25212813">
-            <input type="text" name="FirstName" placeholder="First Name..." required>
-            <input type="email" name="Email" placeholder="Best Email..." required>
-            <button type="submit" class="popup-btn" id="sub-btn">CONTINUE &raquo;</button>
-        </form>
+    <div class="section-header bg-paid">Paid & Hands-Off</div>
+    <div id="grid-paid" class="task-grid"></div>
+    <div style="text-align: right; margin-top: 15px;"><button class="add-task-btn" onclick="addNewTask('paid', '#28a745')">+ ADD PAID TASK</button></div>
+
+    <div class="section-header bg-classified">Classified Ads</div>
+    <div id="grid-classified" class="task-grid"></div>
+    <div style="text-align: right; margin-top: 15px;"><button class="add-task-btn" onclick="addNewTask('classified', '#fd7e14')">+ ADD CLASSIFIED TASK</button></div>
+
+    <div class="section-header bg-secondary">Secondary Mailers</div>
+    <div id="grid-secondary" class="task-grid"></div>
+    <div style="text-align: right; margin-top: 15px;"><button class="add-task-btn" onclick="addNewTask('secondary', '#6f42c1')">+ ADD SECONDARY TASK</button></div>
+
+    <div class="section-header bg-social">Social Media</div>
+    <div id="grid-social" class="task-grid"></div>
+    <div style="text-align: right; margin-top: 15px;"><button class="add-task-btn" onclick="addNewTask('social', '#e83e8c')">+ ADD SOCIAL TASK</button></div>
+
+    <button onclick="resetDailyTasks()" style="width:50%; display: block; margin: 30px auto; padding:10px; background:#dc3545; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-size: 14px;">Reset All Checkmarks</button>
+
+    <div class="section-header bg-research">Link Wheel & Research Hub</div>
+    <div style="background:#f9f9f9; padding:20px; border-radius:10px; border:2px dashed #ccc; margin-bottom:20px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:10px;">
+            <input type="text" id="newLinkName" placeholder="Site Name" style="padding:10px;">
+            <input type="text" id="newLinkUrl" placeholder="https:// (Leave blank for NOTE)" style="padding:10px;">
+            <select id="newLinkStatus" style="padding:10px;">
+                <option value="Active">Active</option>
+                <option value="Testing">Testing</option>
+                <option value="Paused">Paused</option>
+            </select>
+        </div>
+        <input type="text" id="newLinkNote" placeholder="Quick Notes..." style="width:calc(100% - 150px); padding:10px;">
+        <button onclick="saveNewSource()" style="background:#007bff; color:white; padding:10px 20px; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">SAVE SOURCE</button>
+    </div>
+    <div id="research-links-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:20px;"></div>
+
+    <div class="section-header bg-calendar">Marketing Calendar</div>
+    <div class="calendar-section">
+        <div id="cal-title" class="cal-month-title" style="text-align: center; font-size: 1.5em; margin-bottom: 15px;"></div>
+        <div id="calendar-grid" class="calendar-grid"></div>
     </div>
 </div>
 
 <script>
-    // 1. YOUR ORIGINAL ROTATION LOGIC (RE-CONNECTED)
-    (function() {
-        const profBox = document.getElementById('profBox');
-        let count = 1;
-        setInterval(() => {
-            count = (count % 7) + 1;
-            profBox.style.transform += " scale(1.15)";
-            setTimeout(() => {
-                profBox.style.backgroundImage = `var(--prof-${count})`;
-                profBox.style.transform = profBox.style.transform.replace(" scale(1.15)", "");
-            }, 150); 
-        }, 10000); 
-    })();
+    // DEFAULT DATA PRESERVATION
+    const defaultMainTasks = [
+        { id: "t1", category: "daily", name: "1. MLGS — Lead mailer", btnText: "OPEN MLGS", url: "https://troypringle.github.io/MLGS-Page/", color: "#007bff" },
+        { id: "t2", category: "daily", name: "2. Herculist — Credit zone", btnText: "ENTER THE ZONE", url: "http://www.herculist.com/cgi-bin/thezoneadsdisplay.cgi?325hv9d2u65hc2z3w7jo5j&8tmjd4w2k9f6bnh7rew7gkg5", color: "#007bff" },
+        { id: "t3", category: "daily", name: "3. Daily-Ads — Swipes", btnText: "GET DAILY SWIPES", url: "https://daily-ads.com/dashboard", color: "#007bff" },
+        { id: "t4", category: "daily", name: "4. TrafficAdBar — Surfing", btnText: "START SURFING", url: "https://trafficadbar.com/main/surf/", color: "#007bff" },
+        { id: "t5", category: "daily", name: "5. Easy Hits 4 U — Credits", btnText: "BUY CREDITS", url: "https://www.easyhits4u.com/account/", color: "#007bff" },
 
-    // 2. POPUP TRIGGERS
-    const overlay = document.getElementById('ecf-popup-overlay');
-    const closeBtn = document.getElementById('close-pop');
-    const banner = document.getElementById('popTrigger');
-    let hasShown = false;
+        { id: "t6", category: "paid", name: "6. Traffic Zest", btnText: "TRAFFIC ZEST", url: "https://trafficzest.com/login", color: "#28a745" },
+        { id: "t7", category: "paid", name: "7. Udimi", btnText: "UDIMI LOGIN", url: "https://udimi.com/login", color: "#28a745" },
+        { id: "t8", category: "paid", name: "8. $10 Solo Ads", btnText: "$10 SOLO ADS", url: "https://www.10dollarsoloads.com/", color: "#28a745" },
+        { id: "t9", category: "paid", name: "9. Easy Solo Ads", btnText: "EASY SOLO ADS", url: "https://www.easysoloads.com/", color: "#28a745" },
 
-    function openPopup(e) { 
-        if(e) e.preventDefault(); 
-        if(!hasShown) { overlay.style.display = 'flex'; hasShown = true; } 
-    }
+        { id: "t14", category: "classified", name: "10. Craigslist", btnText: "CRAIGSLIST", url: "https://accounts.craigslist.org/login", color: "#008080" },
+        { id: "t10", category: "classified", name: "11. QuickAds.ai", btnText: "QUICKADS.AI", url: "https://quickads.ai/", color: "#fd7e14" },
+        { id: "t11", category: "classified", name: "12. QwikAd", btnText: "QWIKAD POST", url: "https://qwikad.com/", color: "#fd7e14" },
 
-    banner.onclick = openPopup;
-    closeBtn.onclick = () => overlay.style.display = 'none';
-    document.addEventListener('mouseleave', (e) => { if(e.clientY < 10) openPopup(); });
+        { id: "t12", category: "secondary", name: "13. Referral Frenzy", btnText: "REFERRAL FRENZY", url: "https://www.referralfrenzy.com/login.php", color: "#6f42c1" },
+        { id: "t13", category: "secondary", name: "14. SOTAM", btnText: "SOTAM LOGIN", url: "https://sotam.net/login", color: "#6f42c1" },
 
-    // 3. LEAD CAPTURE (SILENT SIPHON)
-    async function handleSiphon(e) {
-        e.preventDefault();
-        const btn = document.getElementById('sub-btn');
-        new Image().src = "https://o2s4n.bemobtrk.com/pxls"; // Track
-        fetch('https://gogvo.com/subscribe.php', { method: 'POST', mode: 'no-cors', body: new FormData(e.target) });
-        btn.innerText = "SECURING..."; btn.disabled = true;
-        setTimeout(() => { window.location.href = "https://easycommissionfunnel.com/start?id=troy20"; }, 2000);
-    }
+        { id: "t15", category: "social", name: "15. Instagram", btnText: "INSTAGRAM", url: "https://www.instagram.com/", color: "#e83e8c" }
+    ];
 
-    // 4. YOUR ORIGINAL URL PARAMETER LOGIC
-    (function() {
-        var params = window.location.search;
-        if (params) {
-            var links = document.getElementsByTagName('a');
-            for (var i = 0; i < links.length; i++) {
-                if(links[i].href.indexOf('aimatrixspillover') !== -1) {
-                    var sep = links[i].href.indexOf('?') !== -1 ? '&' : '?';
-                    links[i].href += sep + params.substring(1);
-                }
-            }
+    // MAIN TASK RENDERER
+    function renderTasks() {
+        if (!localStorage.getItem('mainTasks')) {
+            localStorage.setItem('mainTasks', JSON.stringify(defaultMainTasks));
         }
-    })();
+        const tasks = JSON.parse(localStorage.getItem('mainTasks'));
+
+        // Clear grids
+        ['daily', 'paid', 'classified', 'secondary', 'social'].forEach(cat => {
+            document.getElementById(`grid-${cat}`).innerHTML = '';
+        });
+
+        tasks.forEach(task => {
+            const grid = document.getElementById(`grid-${task.category}`);
+            if (grid) {
+                grid.innerHTML += `
+                    <div class="task-item">
+                        <button class="delete-btn" onclick="deleteTask('${task.id}')" style="position:absolute; top:8px; right:8px;">DEL</button>
+                        <input type="checkbox" id="${task.id}" class="traffic-check" onchange="updateProgress()">
+                        <div style="width: 100%; padding-right: 25px;">
+                            <strong class="editable-text" contenteditable="true" onblur="updateTaskData('${task.id}', 'name', this.innerText)">${task.name}</strong><br>
+                            <a href="${task.url}" target="_blank" class="link-btn" style="background:${task.color}">${task.btnText}</a>
+                            <div style="text-align: center; margin-top: 5px;">
+                                <span class="editable-text" style="font-size: 11px; color: #666; cursor: pointer; text-decoration: underline;" onclick="editTaskUrl('${task.id}')">Edit Link / Text</span>
+                            </div>
+                        </div>
+                    </div>`;
+            }
+        });
+        loadTrafficChecks(); // Ensure checkboxes reload after rendering
+    }
+
+    // MAIN TASK EDITING FUNCTIONS
+    function addNewTask(category, defaultColor) {
+        const name = prompt("Enter task name:");
+        if (!name) return;
+        const url = prompt("Enter task URL (https://...):") || "#";
+        const btnText = prompt("Enter button text (e.g., CLICK HERE):") || "OPEN LINK";
+
+        const tasks = JSON.parse(localStorage.getItem('mainTasks'));
+        tasks.push({
+            id: 't_' + Date.now(),
+            category: category,
+            name: name,
+            btnText: btnText,
+            url: url,
+            color: defaultColor
+        });
+        localStorage.setItem('mainTasks', JSON.stringify(tasks));
+        renderTasks();
+    }
+
+    function deleteTask(id) {
+        if(confirm("Delete this task?")) {
+            let tasks = JSON.parse(localStorage.getItem('mainTasks'));
+            tasks = tasks.filter(t => t.id !== id);
+            localStorage.setItem('mainTasks', JSON.stringify(tasks));
+            renderTasks();
+        }
+    }
+
+    function updateTaskData(id, field, value) {
+        let tasks = JSON.parse(localStorage.getItem('mainTasks'));
+        let task = tasks.find(t => t.id === id);
+        if(task) {
+            task[field] = value;
+            localStorage.setItem('mainTasks', JSON.stringify(tasks));
+        }
+    }
+
+    function editTaskUrl(id) {
+        let tasks = JSON.parse(localStorage.getItem('mainTasks'));
+        let task = tasks.find(t => t.id === id);
+        if(task) {
+            const newUrl = prompt("Update URL:", task.url);
+            if (newUrl !== null) task.url = newUrl;
+            
+            const newBtnText = prompt("Update Button Text:", task.btnText);
+            if (newBtnText !== null) task.btnText = newBtnText;
+
+            localStorage.setItem('mainTasks', JSON.stringify(tasks));
+            renderTasks();
+        }
+    }
+
+    // ORIGINAL PROGRESS & CHECKMARK LOGIC
+    function updateProgress() {
+        const checks = document.querySelectorAll('.traffic-check');
+        const checkedStates = {};
+        checks.forEach(c => checkedStates[c.id] = c.checked);
+        localStorage.setItem('trafficCheckmarks', JSON.stringify(checkedStates));
+        
+        if(checks.length === 0) return; // Prevent divide by zero error
+        
+        const checkedCount = Array.from(checks).filter(c => c.checked).length;
+        const percent = Math.round((checkedCount / checks.length) * 100);
+        const bar = document.getElementById('progress-bar');
+        bar.style.width = percent + '%';
+        bar.innerText = `Daily Goal: ${percent}% (${checkedCount}/${checks.length})`;
+
+        const now = new Date();
+        const dateId = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+        const calProgDisplay = document.getElementById(`cal-prog-${dateId}`);
+        const calCheckField = document.getElementById(`cal-check-${dateId}`);
+        
+        if (calProgDisplay) {
+            calProgDisplay.innerText = `Progress: ${percent}%`;
+            if (percent === 100 && calCheckField) calCheckField.checked = true;
+            saveCalendarData(dateId);
+        }
+    }
+
+    function loadTrafficChecks() {
+        const saved = JSON.parse(localStorage.getItem('trafficCheckmarks') || '{}');
+        document.querySelectorAll('.traffic-check').forEach(c => {
+            if (saved[c.id] !== undefined) c.checked = saved[c.id];
+        });
+        updateProgress();
+    }
+
+    function resetDailyTasks() {
+        if(confirm("Reset all checkmarks?")) {
+            document.querySelectorAll('.traffic-check').forEach(c => c.checked = false);
+            updateProgress();
+        }
+    }
+
+    // LINK WHEEL LOGIC
+    function renderLinks() {
+        const grid = document.getElementById('research-links-grid');
+        const links = JSON.parse(localStorage.getItem('researchLinks') || '[]');
+        grid.innerHTML = '';
+        links.forEach((link, index) => {
+            const hasUrl = link.url && link.url.trim() !== "";
+            const btnStyle = hasUrl ? "background:#007bff;" : "background:linear-gradient(to bottom, #ff8c00, #ff4500);";
+            const btnText = hasUrl ? link.name.toUpperCase() : "VIEW NOTE";
+            const target = hasUrl ? `href="${link.url}" target="_blank"` : `href="javascript:void(0)"`;
+            let statusClass = link.status === "Testing" ? "status-testing" : (link.status === "Paused" ? "status-paused" : "status-active");
+            
+            grid.innerHTML += `
+                <div style="background:#fff; border:1px solid #ddd; padding:15px; border-radius:8px; position:relative;">
+                    <button class="delete-btn" onclick="deleteLink(${index})" style="position:absolute; top:8px; right:8px;">DEL</button>
+                    <strong class="editable-text" contenteditable="true" onblur="updateLinkData(${index}, 'name', this.innerText)">${link.name}</strong><br>
+                    <small class="editable-text" style="display:block; min-height:1.2em; color: #666; margin-top:5px;" contenteditable="true" onblur="updateLinkData(${index}, 'note', this.innerText)">${link.note}</small><br>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
+                        <span class="status-badge ${statusClass}">${link.status}</span>
+                        <a ${target} class="link-btn" style="${btnStyle}; padding: 8px 12px; width: auto; font-size: 11px;">${btnText}</a>
+                    </div>
+                </div>`;
+        });
+    }
+
+    function updateLinkData(index, field, value) {
+        let links = JSON.parse(localStorage.getItem('researchLinks') || '[]');
+        links[index][field] = value;
+        localStorage.setItem('researchLinks', JSON.stringify(links));
+        if(field === 'name') renderLinks(); 
+    }
+
+    function saveNewSource() {
+        const name = document.getElementById('newLinkName').value;
+        const url = document.getElementById('newLinkUrl').value;
+        const status = document.getElementById('newLinkStatus').value;
+        const note = document.getElementById('newLinkNote').value;
+        if(!name) return;
+        const links = JSON.parse(localStorage.getItem('researchLinks') || '[]');
+        links.push({ name, url, status, note });
+        localStorage.setItem('researchLinks', JSON.stringify(links));
+        document.getElementById('newLinkName').value = '';
+        document.getElementById('newLinkUrl').value = '';
+        document.getElementById('newLinkNote').value = '';
+        renderLinks();
+    }
+
+    function deleteLink(index) {
+        if(confirm("Delete this?")) {
+            let links = JSON.parse(localStorage.getItem('researchLinks') || '[]');
+            links.splice(index, 1);
+            localStorage.setItem('researchLinks', JSON.stringify(links));
+            renderLinks();
+        }
+    }
+
+    // CALENDAR LOGIC
+    function saveCalendarData(id) {
+        const savedData = JSON.parse(localStorage.getItem('marketingCalendar') || '{}');
+        const note = document.getElementById(`cal-note-${id}`).value;
+        const checked = document.getElementById(`cal-check-${id}`).checked;
+        const progress = document.getElementById(`cal-prog-${id}`).innerText;
+        savedData[id] = { note, checked, progress };
+        localStorage.setItem('marketingCalendar', JSON.stringify(savedData));
+    }
+
+    function generateCalendar() {
+        const grid = document.getElementById('calendar-grid');
+        const title = document.getElementById('cal-title');
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth();
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        title.innerText = `${monthNames[month]} ${year}`;
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const savedData = JSON.parse(localStorage.getItem('marketingCalendar') || '{}');
+        grid.innerHTML = '';
+        dayNames.forEach(day => grid.innerHTML += `<div class="weekday-label">${day}</div>`);
+        for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div class="cal-box empty"></div>`;
+        for (let d = 1; d <= daysInMonth; d++) {
+            const dateId = `${year}-${month + 1}-${d}`;
+            const dayData = savedData[dateId] || { note: '', checked: false, progress: '' };
+            grid.innerHTML += `
+                <div class="cal-box">
+                    <div class="cal-header"><span>${d}</span><input type="checkbox" class="cal-check" id="cal-check-${dateId}" ${dayData.checked ? 'checked' : ''} onchange="saveCalendarData('${dateId}')"></div>
+                    <div class="cal-note-container">
+                        <span id="cal-prog-${dateId}" class="cal-progress-display">${dayData.progress}</span>
+                        <textarea class="cal-note" id="cal-note-${dateId}" placeholder="Notes..." oninput="saveCalendarData('${dateId}')">${dayData.note}</textarea>
+                    </div>
+                </div>`;
+        }
+    }
+
+    // BACKUP & RESTORE
+    function exportBackup() {
+        const backupData = {
+            mainTasks: localStorage.getItem('mainTasks'),
+            trafficCheckmarks: localStorage.getItem('trafficCheckmarks'),
+            researchLinks: localStorage.getItem('researchLinks'),
+            marketingCalendar: localStorage.getItem('marketingCalendar')
+        };
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData));
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", "Traffic_Command_Backup.json");
+        document.body.appendChild(downloadAnchorNode); 
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+    }
+
+    function importBackup(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const backupData = JSON.parse(e.target.result);
+                if (backupData.mainTasks) localStorage.setItem('mainTasks', backupData.mainTasks);
+                if (backupData.trafficCheckmarks) localStorage.setItem('trafficCheckmarks', backupData.trafficCheckmarks);
+                if (backupData.researchLinks) localStorage.setItem('researchLinks', backupData.researchLinks);
+                if (backupData.marketingCalendar) localStorage.setItem('marketingCalendar', backupData.marketingCalendar);
+                alert("Data restored successfully! The page will now reload.");
+                location.reload();
+            } catch (err) {
+                alert("Error restoring data. Please make sure you selected the correct backup file.");
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    window.onload = function() {
+        renderTasks(); // Note: This handles loading checks natively now
+        renderLinks();
+        generateCalendar();
+    };
 </script>
 </body>
 </html>
