@@ -1,217 +1,253 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Email Swipe Machine</title>
-    <script src="https://js.puter.com/v2/"></script>
+    <script 
+        id="counterscale-script" 
+        data-site-id="troysmartai.com" 
+        src="https://counterscale.pringle-troy.workers.dev/tracker.js" 
+        defer>
+    </script> 
+    <title>🚨 NEW- TRAFFIC Site ☄️☄️ FREE</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    
     <style>
-        :root {
-            --bg: #d4c4a8; --panel: #f5f0e6; --panel2: #efe6d8; --border: #c9b896;
-            --muted: #5c4d3a; --gold: #b8860b; --green: #2e7d32; --blue: #1976d2; --red: #d32f2f;
-            --shadow: 0 4px 0px rgba(0,0,0,0.2);
-            --btn-h: 40px;
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+            justify-content: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #1a1a1a;
+            overflow-x: hidden;
+            font-family: sans-serif;
         }
-        body.theme-slate {
-            --bg: #111827; --panel: #1f2937; --panel2: #243244; --border: #374151;
-            --muted: #cbd5e1; --gold: #fbbf24; --green: #22c55e; --red: #ef4444;
-        }
-        * { box-sizing: border-box; font-size: 16px; }
-        body { margin: 0; font-family: Arial, sans-serif; background: var(--bg); color: #111; line-height: 1.6; }
-        
-        .topbar { background: var(--panel); border-bottom: 3px solid var(--gold); padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .grid { display: grid; grid-template-columns: 240px 1fr 1fr; gap: 16px; padding: 16px; transition: all 0.3s ease; }
-        .grid.sidebar-closed { grid-template-columns: 60px 1fr 1fr; }
-        
-        .card { background: var(--panel); border: 2px solid var(--border); border-radius: 10px; padding: 16px; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        
-        .sidebar-content { transition: opacity 0.2s; }
-        .sidebar-closed .sidebar-content { opacity: 0; visibility: hidden; height: 0; overflow: hidden; }
-        
-        .btn { 
-            border: 2px solid rgba(0,0,0,0.1); background: var(--panel2); color: #111; 
-            height: var(--btn-h); padding: 0 15px; border-radius: 8px; cursor: pointer; 
-            font-weight: 800; display: inline-flex; align-items: center; justify-content: center;
-            white-space: nowrap; transition: all 0.1s ease;
-            box-shadow: var(--shadow);
+
+        .page-border {
+            width: 900px; 
+            max-width: 95vw;
+            margin: 20px auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+            background: #222;
+            padding: 20px;
+            border: 1px solid #444;
+            border-radius: 8px;
             position: relative;
-            top: 0;
+            z-index: 1;
         }
-        .btn:hover { filter: brightness(1.05); top: -2px; box-shadow: 0 6px 0px rgba(0,0,0,0.15); }
-        .btn:active { top: 3px; box-shadow: 0 1px 0px rgba(0,0,0,0.1); transform: scale(0.98); }
-        
-        .btnGreen { background: var(--green); color: #fff; }
-        .btnBlue { background: var(--blue); color: #fff; }
-        .btnRed { background: var(--red); color: #fff; }
-        .btnIcon { padding: 0 10px; font-size: 18px; }
-        .btnSmall { height: 32px; font-size: 13px; }
 
-        input, select, textarea { width: 100%; padding: 10px; border: 2px solid var(--border); border-radius: 8px; margin-bottom: 12px; background: #fff; }
-        .toolbar { display: flex; gap: 6px; background: var(--panel2); padding: 8px; border: 2px solid var(--border); border-bottom: 0; border-radius: 8px 8px 0 0; }
-        
-        #bodyEditor, #sourceEditor { width: 100%; max-width: 600px; min-height: 450px; background: #fff; border: 2px solid var(--border); padding: 15px; outline: none; margin: 0 auto; overflow-y: auto; }
-        #sourceEditor { display: none; font-family: monospace; }
+        /* --- HUMMINGBIRD STYLING --- */
+        #hummingbird-container {
+            position: fixed;
+            width: 120px;
+            height: 120px;
+            z-index: 9999;
+            pointer-events: none; /* Let clicks pass through to buttons */
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+            transition: transform 0.2s ease-out;
+        }
 
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; z-index: 10000; align-items: center; justify-content: center; padding: 20px; }
-        .modal.show { display: flex; }
-        .modalInner { background: var(--panel); border: 4px solid var(--gold); border-radius: 12px; padding: 25px; width: 100%; max-width: 500px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
-        
-        .tag-row { display: flex; gap: 6px; margin-bottom: 12px; }
-        .preview-body-frame { background: #fff; border: 2px solid var(--border); padding: 25px; min-height: 450px; max-width: 600px; margin: 0 auto; }
-        .preview-subject-box { background: #fff; border: 2px solid var(--border); padding: 12px; border-radius: 8px; margin-bottom: 20px; min-height: 50px; }
+        .bird-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Rapid wing flutter */
+        .wing {
+            fill: rgba(100, 100, 100, 0.6);
+            transform-origin: center;
+            animation: flap 0.06s infinite alternate ease-in-out;
+        }
+
+        @keyframes flap {
+            from { transform: rotateX(0deg) skewY(0deg); }
+            to { transform: rotateX(80deg) skewY(20deg); }
+        }
+
+        /* --- PREVIOUS STYLES --- */
+        .subheadline-3 {
+            color: #ffff00;
+            font-size: 1.6rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 15px 0 10px 0;
+            text-transform: uppercase;
+        }
+
+        .readable-white {
+            color: #ffffff;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            text-align: center;
+            max-width: 800px;
+            margin-bottom: 20px;
+        }
+
+        .video-container-box {
+            width: 100%;
+            max-width: 800px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+        }
+
+        .wobble-btn {
+            display: inline-block;
+            background-color: #ffe600;
+            color: #cc0000;
+            font-size: 1.8rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            text-decoration: none;
+            padding: 15px 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 15px rgba(255, 230, 0, 0.3), 0 0 20px rgba(255, 230, 0, 0.6); 
+            border: 2px solid #ffcc00;
+            animation: wobbleJump 2s infinite ease-in-out;
+            transition: transform 0.2s;
+        }
+
+        @keyframes wobbleJump {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            15% { transform: translateY(-12px) rotate(-3deg); }
+            30% { transform: translateY(0) rotate(3deg); }
+            45% { transform: translateY(-6px) rotate(-2deg); }
+        }
+
+        .headline { color: white; font-size: 2rem; font-weight: bold; margin-top: 20px; }
+        .red-arrow { color: red; margin-right: 10px; }
+        .streak-text { color: #aaa; font-style: italic; }
+        .yoda-quote { color: #666; margin-top: 20px; font-family: serif; }
     </style>
 </head>
 <body>
 
-<div id="toast" style="position:fixed; bottom:20px; right:20px; background:#333; color:#fff; padding:12px 24px; display:none; border-radius:8px; z-index:99999; font-weight:bold;"></div>
-
-<div class="modal" id="settingsModal"><div class="modalInner">
-    <h2 style="color:var(--gold); margin-top:0;">UI Settings</h2>
-    <button class="btn btnBlue" style="width:100%;" onclick="document.body.classList.toggle('theme-slate')">Toggle Dark/Light Mode</button>
-    <button class="btn" style="width:100%; margin-top:15px;" onclick="$('settingsModal').classList.remove('show')">Close</button>
-</div></div>
-
-<div class="modal" id="apiModal"><div class="modalInner">
-    <h2 style="color:var(--gold); margin-top:0;">API Keys</h2>
-    <input id="apiKey" type="password" placeholder="Groq Key...">
-    <input id="hfKey" type="password" placeholder="HF Token...">
-    <button class="btn btnGreen" style="width:100%" onclick="saveKeys()">Save Keys</button>
-    <button class="btn" style="width:100%; margin-top:10px;" onclick="$('apiModal').classList.remove('show')">Cancel</button>
-</div></div>
-
-<div class="modal" id="imgMgrModal">
-    <div class="modalInner">
-        <h2 style="color:var(--gold); margin-top:0;">Image Gallery</h2>
-        <label style="font-size:11px; font-weight:800;">GLOBAL AUTO-LINK</label>
-        <input id="globalImgLink" placeholder="https://your-main-offer.com" oninput="saveGlobalLink()">
-        
-        <div id="imgList" style="max-height:150px; overflow-y:auto; margin:10px 0; border:2px solid var(--border); background:#fff; padding:5px;"></div>
-        
-        <label style="font-size:11px; font-weight:800;">ADD NEW IMAGE</label>
-        <input id="imgNewName" placeholder="Label (e.g. Coffee Vibe)">
-        <input id="imgNewUrl" placeholder="Paste Image URL here...">
-        <input id="imgNavLink" placeholder="Specific Link (Optional)...">
-        
-        <button class="btn btnGreen" style="width:100%" onclick="addImgToGallery()">Add to Gallery</button>
-        <button class="btn" style="width:100%; margin-top:10px;" onclick="$('imgMgrModal').classList.remove('show')">Close</button>
-    </div>
+<!-- HUMMINGBIRD HTML -->
+<div id="hummingbird-container">
+    <svg class="bird-svg" viewBox="0 0 100 100">
+        <!-- Back Wing -->
+        <path class="wing" d="M50 45 Q 70 10 90 45 Z" />
+        <!-- Body -->
+        <path fill="#2d5a27" d="M20 55 Q 35 35 60 45 Q 75 55 60 70 Q 30 75 20 55" /> 
+        <!-- Head -->
+        <circle fill="#1e3f1a" cx="65" cy="45" r="8" />
+        <!-- Beak -->
+        <path stroke="#000" stroke-width="1.5" d="M72 45 L 95 48" />
+        <!-- Front Wing -->
+        <path class="wing" d="M50 45 Q 70 10 90 45 Z" style="animation-delay: 0.03s;" />
+        <!-- Eye -->
+        <circle fill="black" cx="68" cy="43" r="1.5" />
+    </svg>
 </div>
 
-<div class="topbar">
-    <div style="font-weight:900; color:var(--gold); font-size:24px;">Email Swipe Machine</div>
-    <div style="display:flex; gap:12px;">
-        <button class="btn btnSmall" onclick="$('apiModal').classList.add('show')">🔑 API Keys</button>
-        <button class="btn btnSmall" onclick="$('settingsModal').classList.add('show')">⚙️ Settings</button>
-        <button class="btn btnBlue btnSmall" onclick="toggleSource()" id="srcBtn">HTML Source</button>
-    </div>
-</div>
+<div class="page-border">
+    <p class="streak-text">🚨 NEW- TRAFFIC Site ☄️☄️ FREE</p>
 
-<div class="grid" id="mainGrid">
-    <div class="card">
-        <button class="btn btnSmall btnBlue" style="width:100%; margin-bottom:15px;" onclick="toggleSidebar()" id="tglBtn">HIDE SIDEBAR</button>
-        <div class="sidebar-content">
-            <label style="font-weight:800; font-size:12px;">OFFER NAME</label>
-            <input id="offerName" type="text" oninput="autoSave()">
-            <label style="font-weight:800; font-size:12px;">BENEFITS</label>
-            <textarea id="benefits" style="min-height:100px;" oninput="autoSave()"></textarea>
-            <label style="font-weight:800; font-size:12px;">CTA TEXT</label>
-            <input id="ctaText" value="Click here to see it" oninput="autoSave()">
+    <span class="headline">
+        <span class="red-arrow">➤</span>" People fail, systems don’t "
+    </span>
+    
+    <div class="subheadline-3">
+        FREE to JOIN & EARN "YES" <br> This Changes Everything!
+    </div>
+    
+    <div class="video-container-box">
+        <div class="video-wrapper">
+            <iframe src="https://www.youtube.com/embed/HW2czMQebPQ?rel=0&modestbranding=1&controls=1" frameborder="0" allowfullscreen></iframe>
         </div>
     </div>
 
-    <div class="card">
-        <div style="display:flex; gap:10px; margin-bottom:12px;">
-            <input id="subject" type="text" placeholder="Subject..." style="margin:0; flex:1; font-weight:bold;" oninput="update(); autoSave();">
-            <button class="btn btnGreen" onclick="generateTitle()">Generate</button>
-        </div>
-
-        <div class="toolbar">
-            <button class="btn btnIcon btnSmall" onclick="exec('bold')">B</button>
-            <button class="btn btnIcon btnSmall" onclick="exec('italic')">I</button>
-            <button class="btn btnSmall" onclick="exec('createLink', prompt('Link:'))">Link</button>
-            <div style="flex:1"></div>
-            <button class="btn btnSmall" onclick="exec('undo')">Undo</button>
-        </div>
-        <div id="bodyEditor" contenteditable="true" oninput="update(); autoSave();"></div>
-        <textarea id="sourceEditor"></textarea>
-
-        <div style="margin-top:15px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-            <button class="btn btnGreen" onclick="generateBody()" style="flex:2">Generate Body</button>
-            <select id="imgGallerySelect" style="width:130px; margin:0; font-size:12px;"><option value="">Pick Image</option></select>
-            <button class="btn btnBlue" onclick="insertGalleryImg()">Insert</button>
-            <button class="btn btnBlue" onclick="insertRandomImg()">🎲 Random</button>
-            <button class="btn btnSmall" onclick="$('imgMgrModal').classList.add('show')">🖼️ Gallery</button>
-            <button class="btn btnRed" onclick="clearBody()">Clear</button>
-        </div>
+    <div style="margin: 30px 0;">
+        <a href="https://troysmartai.com/trafficspacebar.html" class="wobble-btn" target="_blank">JOIN FOR FREE AND EARN TODAY</a>
     </div>
 
-    <div class="card">
-        <div class="preview-subject-box"><span id="prevSub"></span></div>
-        <div class="preview-body-frame" id="prevBody"></div>
-        <button class="btn btnGreen" onclick="copyAll()" style="width:100%; margin-top:15px; height:60px; font-size:20px;">COPY FULL SWIPE</button>
+    <div class="readable-white">
+        Impossible 2 Fail 🐠 In This NEW Matrix TRAFFIC Site each position is a purchase rather than a person.
+        <br><br>
+        🐠 Every pack bought above you has to land in the next available slot. Plenty of those slots end up in your matrix! 🐠
     </div>
+    <div class="yoda-quote">"do or do not there is no try" - yoda</div> 
 </div>
 
 <script>
-    const $ = id => document.getElementById(id);
-    let gallery = JSON.parse(localStorage.getItem("esm_gallery") || "[]");
+    // --- HUMMINGBIRD FLIGHT LOGIC ---
+    const bird = document.getElementById('hummingbird-container');
+    let mouseX = 0, mouseY = 0;
+    let birdX = 0, birdY = 0;
 
-    function showToast(m) { const t=$("toast"); t.textContent=m; t.style.display="block"; setTimeout(()=>t.style.display="none",2500); }
-    function exec(c, v=null) { $("bodyEditor").focus(); document.execCommand(c, false, v); update(); }
-    function update() { $("prevSub").textContent = $("subject").value; $("prevBody").innerHTML = $("bodyEditor").innerHTML; }
+    document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    });
 
-    // --- GALLERY LOGIC ---
-    function saveGlobalLink() { localStorage.setItem("esm_global_link", $("globalImgLink").value); }
-    
-    function renderGallery() {
-        $("globalImgLink").value = localStorage.getItem("esm_global_link") || "";
-        $("imgList").innerHTML = gallery.map((img, i) => `
-            <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #eee; background:#fff;">
-                <span style="font-size:12px;">${img.name}</span>
-                <button class="btnRed" style="height:20px; padding:0 5px;" onclick="delImg(${i})">X</button>
-            </div>`).join('');
-        $("imgGallerySelect").innerHTML = '<option value="">Pick Image</option>' + 
-            gallery.map((img, i) => `<option value="${i}">${img.name}</option>`).join('');
+    function animateBird() {
+        // Follow mouse with a slight delay (easing)
+        birdX += (mouseX - birdX - 60) * 0.05;
+        birdY += (mouseY - birdY - 60) * 0.05;
+        
+        // Add a "hover" wobble
+        const hoverX = Math.sin(Date.now() / 200) * 10;
+        const hoverY = Math.cos(Date.now() / 150) * 10;
+
+        bird.style.transform = `translate(${birdX + hoverX}px, ${birdY + hoverY}px) scaleX(${mouseX > birdX + 60 ? 1 : -1})`;
+        requestAnimationFrame(animateBird);
+    }
+    animateBird();
+
+    // --- WING NOISE ENGINE ---
+    let audioCtx;
+    let oscillator;
+    let gainNode;
+
+    function startHum() {
+        if (audioCtx) return; // Already started
+
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        oscillator = audioCtx.createOscillator();
+        gainNode = audioCtx.createGain();
+
+        // Low frequency hum + "buzz" harmonics
+        oscillator.type = 'triangle'; 
+        oscillator.frequency.setValueAtTime(60, audioCtx.currentTime); // Base hum frequency
+
+        // Volume control
+        gainNode.gain.setValueAtTime(0.02, audioCtx.currentTime); // Keep it subtle
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        oscillator.start();
     }
 
-    function addImgToGallery() {
-        const name = $("imgNewName").value, url = $("imgNewUrl").value, link = $("imgNavLink").value;
-        if(!name || !url) return;
-        gallery.push({name, url, link});
-        localStorage.setItem("esm_gallery", JSON.stringify(gallery));
-        $("imgNewName").value = ""; $("imgNewUrl").value = ""; $("imgNavLink").value = "";
-        renderGallery();
-    }
+    // Start sound on first click
+    document.addEventListener('mousedown', startHum);
 
-    window.delImg = i => { gallery.splice(i, 1); localStorage.setItem("esm_gallery", JSON.stringify(gallery)); renderGallery(); };
-
-    function insertGalleryImg(index = null) {
-        const idx = index !== null ? index : $("imgGallerySelect").value;
-        if(idx === "" || !gallery[idx]) return;
-        const img = gallery[idx];
-        const link = img.link || localStorage.getItem("esm_global_link") || "";
-        let html = `<div style="text-align:center; margin:20px 0;">`;
-        html += link ? `<a href="${link}" target="_blank"><img src="${img.url}" style="max-width:100%; border-radius:10px;"></a>` : `<img src="${img.url}" style="max-width:100%; border-radius:10px;">`;
-        html += `</div><br>`;
-        exec('insertHTML', html);
-    }
-
-    function insertRandomImg() {
-        if(gallery.length === 0) return showToast("Gallery Empty");
-        insertGalleryImg(Math.floor(Math.random() * gallery.length));
-    }
-
-    // --- EXISTING APP LOGIC ---
-    function autoSave() {
-        const data = { sub: $("subject").value, body: $("bodyEditor").innerHTML, offer: $("offerName").value, benefits: $("benefits").value };
-        localStorage.setItem("esm_draft", JSON.stringify(data));
-    }
-
-    window.onload = () => {
-        const d = JSON.parse(localStorage.getItem("esm_draft"));
-        if(d) { $("subject").value=d.sub; $("bodyEditor").innerHTML=d.body; $("offerName").value=d.offer; $("benefits").value=d.benefits; update(); }
-        renderGallery();
-    };
+    // --- PREVIOUS URL PARAM LOGIC ---
+    (function() {
+        var params = window.location.search;
+        if (params) {
+            var links = document.getElementsByTagName('a');
+            for (var i = 0; i < links.length; i++) {
+                if(links[i].href.indexOf('troysmartai') !== -1) {
+                    var sep = links[i].href.indexOf('?') !== -1 ? '&' : '?';
+                    links[i].href += sep + params.substring(1);
+                }
+            }
+        }
+    })();
 </script>
+
 </body>
 </html>
