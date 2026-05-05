@@ -5,8 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Traffic Command Center</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.6; margin: 0; padding: 10px; }
-        .container { max-width: 1200px; margin: auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        /* BASE STYLES */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            color: #333; 
+            line-height: 1.6; 
+            margin: 0; 
+            padding: 10px;
+            /* Alternating Background Glow Animation */
+            animation: backgroundGlow 10s infinite ease-in-out;
+        }
+
+        @keyframes backgroundGlow {
+            0%, 100% { background-color: rgba(255, 214, 0, 0.05); } /* Subtle Yellow */
+            50% { background-color: rgba(111, 66, 193, 0.05); }     /* Subtle Purple */
+        }
+
+        .container { max-width: 1200px; margin: auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; z-index: 1; }
         
         .section-header { 
             text-align: center; 
@@ -58,9 +73,29 @@
         .cal-note { width: 100%; border: none; outline: none; resize: none; padding: 0px; background: transparent; color: #1b4332; font-size: 11px; flex-grow: 1; }
 
         .editable-text:hover { background: #fffde7; cursor: text; outline: 1px dashed #ccc; border-radius: 2px; }
+
+        /* BEE STYLES */
+        #bee { position: fixed; width: 40px; z-index: 9999; pointer-events: none; transition: transform 0.1s linear; }
+        .wing { animation: flap 0.05s infinite alternate; transform-origin: center; }
+        @keyframes flap { from { transform: scaleY(1); } to { transform: scaleY(0.1); } }
     </style>
 </head>
 <body>
+
+<!-- BEE AUDIO & VISUALS -->
+<div id="bee">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <ellipse class="wing" cx="30" cy="35" rx="20" ry="10" fill="#E0F7FA" opacity="0.8" />
+        <ellipse class="wing" cx="70" cy="35" rx="20" ry="10" fill="#E0F7FA" opacity="0.8" />
+        <ellipse cx="50" cy="50" rx="35" ry="25" fill="#FFD600" stroke="#000" stroke-width="2"/>
+        <path d="M30 40 Q 50 32 70 40" fill="none" stroke="#000" stroke-width="3" />
+        <path d="M30 60 Q 50 52 70 60" fill="none" stroke="#000" stroke-width="3" />
+        <circle cx="75" cy="45" r="4" fill="#000" />
+    </svg>
+</div>
+<audio id="bee-buzz" loop preload="auto">
+    <source src="buzz.mp3" type="audio/mpeg">
+</audio>
 
 <div class="container">
     <div style="display: flex; justify-content: flex-end; gap: 10px; margin-bottom: -10px;">
@@ -121,40 +156,78 @@
 </div>
 
 <script>
-    // DEFAULT DATA PRESERVATION
+    // --- BUMBLE BEE LOGIC ---
+    const bee = document.getElementById('bee');
+    const buzz = document.getElementById('bee-buzz');
+    let bX = Math.random() * window.innerWidth;
+    let bY = Math.random() * window.innerHeight;
+    let bVX = 2;
+    let bVY = 2;
+
+    function animateBee() {
+        // Elements to avoid
+        const avoidList = document.querySelectorAll('.task-item, .section-header, h2, .add-task-btn, .link-btn');
+        let emergencyTurn = false;
+
+        avoidList.forEach(el => {
+            const r = el.getBoundingClientRect();
+            const pad = 40;
+            if (bX > r.left - pad && bX < r.right + pad && bY > r.top - pad && bY < r.bottom + pad) {
+                emergencyTurn = true;
+                bVX = (bX < r.left + r.width / 2) ? -6 : 6;
+                bVY = (bY < r.top + r.height / 2) ? -6 : 6;
+            }
+        });
+
+        if (!emergencyTurn) {
+            bVX += (Math.random() - 0.5) * 0.5;
+            bVY += (Math.random() - 0.5) * 0.5;
+            bVX = Math.max(-3, Math.min(3, bVX));
+            bVY = Math.max(-3, Math.min(3, bVY));
+        }
+
+        bX += bVX; bY += bVY;
+
+        if (bX < 0 || bX > window.innerWidth - 40) bVX *= -1;
+        if (bY < 0 || bY > window.innerHeight - 40) bVY *= -1;
+
+        const angle = Math.atan2(bVY, bVX) * (180 / Math.PI);
+        bee.style.transform = `translate3d(${bX}px, ${bY}px, 0) rotate(${angle}deg)`;
+
+        // Proximity Audio Logic (Fades out near edges)
+        const centerX = window.innerWidth / 2;
+        const fade = Math.abs(centerX - bX) / centerX;
+        buzz.volume = Math.max(0.01, 0.15 * (1 - fade));
+
+        requestAnimationFrame(animateBee);
+    }
+
+    document.addEventListener('mouseover', () => { if(buzz.paused) buzz.play(); }, { once: true });
+    animateBee();
+
+    // --- MAIN APP LOGIC ---
     const defaultMainTasks = [
         { id: "t1", category: "daily", name: "1. MLGS — Lead mailer", btnText: "OPEN MLGS", url: "https://troypringle.github.io/MLGS-Page/", color: "#007bff" },
         { id: "t2", category: "daily", name: "2. Herculist — Credit zone", btnText: "ENTER THE ZONE", url: "http://www.herculist.com/cgi-bin/thezoneadsdisplay.cgi?325hv9d2u65hc2z3w7jo5j&8tmjd4w2k9f6bnh7rew7gkg5", color: "#007bff" },
         { id: "t3", category: "daily", name: "3. Daily-Ads — Swipes", btnText: "GET DAILY SWIPES", url: "https://daily-ads.com/dashboard", color: "#007bff" },
         { id: "t4", category: "daily", name: "4. TrafficAdBar — Surfing", btnText: "START SURFING", url: "https://trafficadbar.com/main/surf/", color: "#007bff" },
         { id: "t5", category: "daily", name: "5. Easy Hits 4 U — Credits", btnText: "BUY CREDITS", url: "https://www.easyhits4u.com/account/", color: "#007bff" },
-
         { id: "t6", category: "paid", name: "6. Traffic Zest", btnText: "TRAFFIC ZEST", url: "https://trafficzest.com/login", color: "#28a745" },
         { id: "t7", category: "paid", name: "7. Udimi", btnText: "UDIMI LOGIN", url: "https://udimi.com/login", color: "#28a745" },
         { id: "t8", category: "paid", name: "8. $10 Solo Ads", btnText: "$10 SOLO ADS", url: "https://www.10dollarsoloads.com/", color: "#28a745" },
         { id: "t9", category: "paid", name: "9. Easy Solo Ads", btnText: "EASY SOLO ADS", url: "https://www.easysoloads.com/", color: "#28a745" },
-
         { id: "t14", category: "classified", name: "10. Craigslist", btnText: "CRAIGSLIST", url: "https://accounts.craigslist.org/login", color: "#008080" },
         { id: "t10", category: "classified", name: "11. QuickAds.ai", btnText: "QUICKADS.AI", url: "https://quickads.ai/", color: "#fd7e14" },
         { id: "t11", category: "classified", name: "12. QwikAd", btnText: "QWIKAD POST", url: "https://qwikad.com/", color: "#fd7e14" },
-
         { id: "t12", category: "secondary", name: "13. Referral Frenzy", btnText: "REFERRAL FRENZY", url: "https://www.referralfrenzy.com/login.php", color: "#6f42c1" },
         { id: "t13", category: "secondary", name: "14. SOTAM", btnText: "SOTAM LOGIN", url: "https://sotam.net/login", color: "#6f42c1" },
-
         { id: "t15", category: "social", name: "15. Instagram", btnText: "INSTAGRAM", url: "https://www.instagram.com/", color: "#e83e8c" }
     ];
 
-    // MAIN TASK RENDERER
     function renderTasks() {
-        if (!localStorage.getItem('mainTasks')) {
-            localStorage.setItem('mainTasks', JSON.stringify(defaultMainTasks));
-        }
+        if (!localStorage.getItem('mainTasks')) localStorage.setItem('mainTasks', JSON.stringify(defaultMainTasks));
         const tasks = JSON.parse(localStorage.getItem('mainTasks'));
-
-        // Clear grids
-        ['daily', 'paid', 'classified', 'secondary', 'social'].forEach(cat => {
-            document.getElementById(`grid-${cat}`).innerHTML = '';
-        });
+        ['daily', 'paid', 'classified', 'secondary', 'social'].forEach(cat => { document.getElementById(`grid-${cat}`).innerHTML = ''; });
 
         tasks.forEach(task => {
             const grid = document.getElementById(`grid-${task.category}`);
@@ -173,25 +246,16 @@
                     </div>`;
             }
         });
-        loadTrafficChecks(); // Ensure checkboxes reload after rendering
+        loadTrafficChecks();
     }
 
-    // MAIN TASK EDITING FUNCTIONS
     function addNewTask(category, defaultColor) {
         const name = prompt("Enter task name:");
         if (!name) return;
         const url = prompt("Enter task URL (https://...):") || "#";
-        const btnText = prompt("Enter button text (e.g., CLICK HERE):") || "OPEN LINK";
-
+        const btnText = prompt("Enter button text:") || "OPEN LINK";
         const tasks = JSON.parse(localStorage.getItem('mainTasks'));
-        tasks.push({
-            id: 't_' + Date.now(),
-            category: category,
-            name: name,
-            btnText: btnText,
-            url: url,
-            color: defaultColor
-        });
+        tasks.push({ id: 't_' + Date.now(), category, name, btnText, url, color: defaultColor });
         localStorage.setItem('mainTasks', JSON.stringify(tasks));
         renderTasks();
     }
@@ -208,10 +272,7 @@
     function updateTaskData(id, field, value) {
         let tasks = JSON.parse(localStorage.getItem('mainTasks'));
         let task = tasks.find(t => t.id === id);
-        if(task) {
-            task[field] = value;
-            localStorage.setItem('mainTasks', JSON.stringify(tasks));
-        }
+        if(task) { task[field] = value; localStorage.setItem('mainTasks', JSON.stringify(tasks)); }
     }
 
     function editTaskUrl(id) {
@@ -220,47 +281,38 @@
         if(task) {
             const newUrl = prompt("Update URL:", task.url);
             if (newUrl !== null) task.url = newUrl;
-            
             const newBtnText = prompt("Update Button Text:", task.btnText);
             if (newBtnText !== null) task.btnText = newBtnText;
-
             localStorage.setItem('mainTasks', JSON.stringify(tasks));
             renderTasks();
         }
     }
 
-    // ORIGINAL PROGRESS & CHECKMARK LOGIC
     function updateProgress() {
         const checks = document.querySelectorAll('.traffic-check');
         const checkedStates = {};
         checks.forEach(c => checkedStates[c.id] = c.checked);
         localStorage.setItem('trafficCheckmarks', JSON.stringify(checkedStates));
-        
-        if(checks.length === 0) return; // Prevent divide by zero error
-        
+        if(checks.length === 0) return;
         const checkedCount = Array.from(checks).filter(c => c.checked).length;
         const percent = Math.round((checkedCount / checks.length) * 100);
         const bar = document.getElementById('progress-bar');
         bar.style.width = percent + '%';
         bar.innerText = `Daily Goal: ${percent}% (${checkedCount}/${checks.length})`;
-
+        
         const now = new Date();
         const dateId = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
         const calProgDisplay = document.getElementById(`cal-prog-${dateId}`);
-        const calCheckField = document.getElementById(`cal-check-${dateId}`);
-        
         if (calProgDisplay) {
             calProgDisplay.innerText = `Progress: ${percent}%`;
-            if (percent === 100 && calCheckField) calCheckField.checked = true;
+            if (percent === 100) document.getElementById(`cal-check-${dateId}`).checked = true;
             saveCalendarData(dateId);
         }
     }
 
     function loadTrafficChecks() {
         const saved = JSON.parse(localStorage.getItem('trafficCheckmarks') || '{}');
-        document.querySelectorAll('.traffic-check').forEach(c => {
-            if (saved[c.id] !== undefined) c.checked = saved[c.id];
-        });
+        document.querySelectorAll('.traffic-check').forEach(c => { if (saved[c.id] !== undefined) c.checked = saved[c.id]; });
         updateProgress();
     }
 
@@ -271,18 +323,13 @@
         }
     }
 
-    // LINK WHEEL LOGIC
     function renderLinks() {
         const grid = document.getElementById('research-links-grid');
         const links = JSON.parse(localStorage.getItem('researchLinks') || '[]');
         grid.innerHTML = '';
         links.forEach((link, index) => {
             const hasUrl = link.url && link.url.trim() !== "";
-            const btnStyle = hasUrl ? "background:#007bff;" : "background:linear-gradient(to bottom, #ff8c00, #ff4500);";
-            const btnText = hasUrl ? link.name.toUpperCase() : "VIEW NOTE";
-            const target = hasUrl ? `href="${link.url}" target="_blank"` : `href="javascript:void(0)"`;
             let statusClass = link.status === "Testing" ? "status-testing" : (link.status === "Paused" ? "status-paused" : "status-active");
-            
             grid.innerHTML += `
                 <div style="background:#fff; border:1px solid #ddd; padding:15px; border-radius:8px; position:relative;">
                     <button class="delete-btn" onclick="deleteLink(${index})" style="position:absolute; top:8px; right:8px;">DEL</button>
@@ -290,7 +337,7 @@
                     <small class="editable-text" style="display:block; min-height:1.2em; color: #666; margin-top:5px;" contenteditable="true" onblur="updateLinkData(${index}, 'note', this.innerText)">${link.note}</small><br>
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
                         <span class="status-badge ${statusClass}">${link.status}</span>
-                        <a ${target} class="link-btn" style="${btnStyle}; padding: 8px 12px; width: auto; font-size: 11px;">${btnText}</a>
+                        <a href="${hasUrl ? link.url : 'javascript:void(0)'}" target="_blank" class="link-btn" style="padding: 8px 12px; width: auto; font-size: 11px;">${hasUrl ? 'OPEN' : 'NOTE'}</a>
                     </div>
                 </div>`;
         });
@@ -305,21 +352,15 @@
 
     function saveNewSource() {
         const name = document.getElementById('newLinkName').value;
-        const url = document.getElementById('newLinkUrl').value;
-        const status = document.getElementById('newLinkStatus').value;
-        const note = document.getElementById('newLinkNote').value;
         if(!name) return;
         const links = JSON.parse(localStorage.getItem('researchLinks') || '[]');
-        links.push({ name, url, status, note });
+        links.push({ name, url: document.getElementById('newLinkUrl').value, status: document.getElementById('newLinkStatus').value, note: document.getElementById('newLinkNote').value });
         localStorage.setItem('researchLinks', JSON.stringify(links));
-        document.getElementById('newLinkName').value = '';
-        document.getElementById('newLinkUrl').value = '';
-        document.getElementById('newLinkNote').value = '';
         renderLinks();
     }
 
     function deleteLink(index) {
-        if(confirm("Delete this?")) {
+        if(confirm("Delete?")) {
             let links = JSON.parse(localStorage.getItem('researchLinks') || '[]');
             links.splice(index, 1);
             localStorage.setItem('researchLinks', JSON.stringify(links));
@@ -327,30 +368,23 @@
         }
     }
 
-    // CALENDAR LOGIC
     function saveCalendarData(id) {
         const savedData = JSON.parse(localStorage.getItem('marketingCalendar') || '{}');
-        const note = document.getElementById(`cal-note-${id}`).value;
-        const checked = document.getElementById(`cal-check-${id}`).checked;
-        const progress = document.getElementById(`cal-prog-${id}`).innerText;
-        savedData[id] = { note, checked, progress };
+        savedData[id] = { note: document.getElementById(`cal-note-${id}`).value, checked: document.getElementById(`cal-check-${id}`).checked, progress: document.getElementById(`cal-prog-${id}`).innerText };
         localStorage.setItem('marketingCalendar', JSON.stringify(savedData));
     }
 
     function generateCalendar() {
         const grid = document.getElementById('calendar-grid');
-        const title = document.getElementById('cal-title');
         const now = new Date();
         const year = now.getFullYear();
         const month = now.getMonth();
-        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-        title.innerText = `${monthNames[month]} ${year}`;
+        document.getElementById('cal-title').innerText = `${["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][month]} ${year}`;
         const firstDay = new Date(year, month, 1).getDay();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
         const savedData = JSON.parse(localStorage.getItem('marketingCalendar') || '{}');
         grid.innerHTML = '';
-        dayNames.forEach(day => grid.innerHTML += `<div class="weekday-label">${day}</div>`);
+        ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].forEach(day => grid.innerHTML += `<div class="weekday-label">${day}</div>`);
         for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div class="cal-box empty"></div>`;
         for (let d = 1; d <= daysInMonth; d++) {
             const dateId = `${year}-${month + 1}-${d}`;
@@ -366,48 +400,23 @@
         }
     }
 
-    // BACKUP & RESTORE
     function exportBackup() {
-        const backupData = {
-            mainTasks: localStorage.getItem('mainTasks'),
-            trafficCheckmarks: localStorage.getItem('trafficCheckmarks'),
-            researchLinks: localStorage.getItem('researchLinks'),
-            marketingCalendar: localStorage.getItem('marketingCalendar')
-        };
+        const backupData = { mainTasks: localStorage.getItem('mainTasks'), trafficCheckmarks: localStorage.getItem('trafficCheckmarks'), researchLinks: localStorage.getItem('researchLinks'), marketingCalendar: localStorage.getItem('marketingCalendar') };
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData));
-        const downloadAnchorNode = document.createElement('a');
-        downloadAnchorNode.setAttribute("href", dataStr);
-        downloadAnchorNode.setAttribute("download", "Traffic_Command_Backup.json");
-        document.body.appendChild(downloadAnchorNode); 
-        downloadAnchorNode.click();
-        downloadAnchorNode.remove();
+        const dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", "Traffic_Command_Backup.json"); dl.click();
     }
 
     function importBackup(event) {
-        const file = event.target.files[0];
-        if (!file) return;
         const reader = new FileReader();
         reader.onload = function(e) {
-            try {
-                const backupData = JSON.parse(e.target.result);
-                if (backupData.mainTasks) localStorage.setItem('mainTasks', backupData.mainTasks);
-                if (backupData.trafficCheckmarks) localStorage.setItem('trafficCheckmarks', backupData.trafficCheckmarks);
-                if (backupData.researchLinks) localStorage.setItem('researchLinks', backupData.researchLinks);
-                if (backupData.marketingCalendar) localStorage.setItem('marketingCalendar', backupData.marketingCalendar);
-                alert("Data restored successfully! The page will now reload.");
-                location.reload();
-            } catch (err) {
-                alert("Error restoring data. Please make sure you selected the correct backup file.");
-            }
+            const data = JSON.parse(e.target.result);
+            for(let key in data) localStorage.setItem(key, data[key]);
+            location.reload();
         };
-        reader.readAsText(file);
+        reader.readAsText(event.target.files[0]);
     }
 
-    window.onload = function() {
-        renderTasks(); // Note: This handles loading checks natively now
-        renderLinks();
-        generateCalendar();
-    };
+    window.onload = function() { renderTasks(); renderLinks(); generateCalendar(); };
 </script>
 </body>
 </html>
