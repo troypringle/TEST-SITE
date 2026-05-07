@@ -1,253 +1,340 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script 
-        id="counterscale-script" 
-        data-site-id="troysmartai.com" 
-        src="https://counterscale.pringle-troy.workers.dev/tracker.js" 
-        defer>
-    </script> 
-    <title>🚨 NEW- TRAFFIC Site ☄️☄️ FREE</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Command Center</title>
     <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center; 
-            justify-content: flex-start;
-            min-height: 100vh;
-            margin: 0;
-            background-color: #1a1a1a;
-            overflow-x: hidden;
-            font-family: sans-serif;
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.6; margin: 0; padding: 10px; }
+        .container { max-width: 1200px; margin: auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        
+        /* Drag and Drop & Collapsible Styles */
+        .section-wrapper { margin-bottom: 20px; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; }
+        .section-header { 
+            display: flex; justify-content: space-between; align-items: center;
+            color: white; padding: 12px 20px; cursor: move;
+            font-size: 1.1em; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;
         }
+        .header-controls { display: flex; align-items: center; gap: 10px; }
+        .fold-btn { cursor: pointer; background: rgba(255,255,255,0.2); border: none; color: white; border-radius: 4px; padding: 2px 8px; }
+        .section-content { padding: 15px; transition: max-height 0.3s ease-out; }
+        .collapsed .section-content { display: none; }
 
-        .page-border {
-            width: 900px; 
-            max-width: 95vw;
-            margin: 20px auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center; 
-            background: #222;
-            padding: 20px;
-            border: 1px solid #444;
-            border-radius: 8px;
-            position: relative;
-            z-index: 1;
-        }
+        .bg-daily { background: #007bff; }
+        .bg-paid { background: #28a745; }
+        .bg-classified { background: #fd7e14; }
+        .bg-secondary { background: #6f42c1; }
+        .bg-social { background: #e83e8c; }
+        .bg-research { background: #17a2b8; }
+        .bg-calendar { background: #343a40; }
+        .bg-custom { background: #555; }
 
-        /* --- HUMMINGBIRD STYLING --- */
-        #hummingbird-container {
-            position: fixed;
-            width: 120px;
-            height: 120px;
-            z-index: 9999;
-            pointer-events: none; /* Let clicks pass through to buttons */
-            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
-            transition: transform 0.2s ease-out;
-        }
+        #progress-container { background:#e9ecef; border-radius:10px; margin-bottom:30px; overflow:hidden; border: 1px solid #ccc; }
+        #progress-bar { background:#007bff; width:0%; height:45px; text-align:center; color:white; font-weight:bold; line-height:45px; transition:width 0.5s; font-size: 18px; }
 
-        .bird-svg {
-            width: 100%;
-            height: 100%;
-        }
+        .task-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; min-height: 50px; }
+        .task-item { position: relative; display: flex; align-items: center; background: #fff; padding: 18px; border-radius: 8px; border: 1px solid #eee; cursor: grab; transition: all 0.3s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .task-item:active { cursor: grabbing; }
+        .task-item:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .task-item input[type="checkbox"] { width: 26px; height: 26px; margin-right: 18px; cursor: pointer; flex-shrink: 0; }
+        
+        .link-btn { display: inline-block; padding: 12px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: bold; margin-top: 8px; text-align: center; width: 85%; }
+        
+        .timer-display { display: block; font-size: 11px; color: #d00000; font-weight: bold; margin-top: 5px; text-align: center; }
 
-        /* Rapid wing flutter */
-        .wing {
-            fill: rgba(100, 100, 100, 0.6);
-            transform-origin: center;
-            animation: flap 0.06s infinite alternate ease-in-out;
-        }
+        .delete-btn { background: #ff4d4d; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: bold; }
+        .add-task-btn { background: #f8f9fa; color: #333; border: 1px dashed #ccc; padding: 6px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; }
 
-        @keyframes flap {
-            from { transform: rotateX(0deg) skewY(0deg); }
-            to { transform: rotateX(80deg) skewY(20deg); }
-        }
-
-        /* --- PREVIOUS STYLES --- */
-        .subheadline-3 {
-            color: #ffff00;
-            font-size: 1.6rem;
-            font-weight: bold;
-            text-align: center;
-            margin: 15px 0 10px 0;
-            text-transform: uppercase;
-        }
-
-        .readable-white {
-            color: #ffffff;
-            font-size: 1.2rem;
-            line-height: 1.6;
-            text-align: center;
-            max-width: 800px;
-            margin-bottom: 20px;
-        }
-
-        .video-container-box {
-            width: 100%;
-            max-width: 800px;
-            margin: 20px auto;
-            position: relative;
-        }
-
-        .video-wrapper {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-        }
-
-        .video-wrapper iframe {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-        }
-
-        .wobble-btn {
-            display: inline-block;
-            background-color: #ffe600;
-            color: #cc0000;
-            font-size: 1.8rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            text-decoration: none;
-            padding: 15px 40px;
-            border-radius: 12px;
-            box-shadow: 0 8px 15px rgba(255, 230, 0, 0.3), 0 0 20px rgba(255, 230, 0, 0.6); 
-            border: 2px solid #ffcc00;
-            animation: wobbleJump 2s infinite ease-in-out;
-            transition: transform 0.2s;
-        }
-
-        @keyframes wobbleJump {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            15% { transform: translateY(-12px) rotate(-3deg); }
-            30% { transform: translateY(0) rotate(3deg); }
-            45% { transform: translateY(-6px) rotate(-2deg); }
-        }
-
-        .headline { color: white; font-size: 2rem; font-weight: bold; margin-top: 20px; }
-        .red-arrow { color: red; margin-right: 10px; }
-        .streak-text { color: #aaa; font-style: italic; }
-        .yoda-quote { color: #666; margin-top: 20px; font-family: serif; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+        .weekday-label { text-align: center; font-weight: bold; padding: 10px 0; background: #007bff; color: white; border-radius: 4px; font-size: 14px; }
+        .cal-box { border: 1px solid #ddd; background: #b1d8b7; border-radius: 8px; min-height: 130px; }
+        .editable-text:hover { background: #fffde7; cursor: text; outline: 1px dashed #ccc; }
     </style>
 </head>
 <body>
 
-<!-- HUMMINGBIRD HTML -->
-<div id="hummingbird-container">
-    <svg class="bird-svg" viewBox="0 0 100 100">
-        <!-- Back Wing -->
-        <path class="wing" d="M50 45 Q 70 10 90 45 Z" />
-        <!-- Body -->
-        <path fill="#2d5a27" d="M20 55 Q 35 35 60 45 Q 75 55 60 70 Q 30 75 20 55" /> 
-        <!-- Head -->
-        <circle fill="#1e3f1a" cx="65" cy="45" r="8" />
-        <!-- Beak -->
-        <path stroke="#000" stroke-width="1.5" d="M72 45 L 95 48" />
-        <!-- Front Wing -->
-        <path class="wing" d="M50 45 Q 70 10 90 45 Z" style="animation-delay: 0.03s;" />
-        <!-- Eye -->
-        <circle fill="black" cx="68" cy="43" r="1.5" />
-    </svg>
-</div>
-
-<div class="page-border">
-    <p class="streak-text">🚨 NEW- TRAFFIC Site ☄️☄️ FREE</p>
-
-    <span class="headline">
-        <span class="red-arrow">➤</span>" People fail, systems don’t "
-    </span>
-    
-    <div class="subheadline-3">
-        FREE to JOIN & EARN "YES" <br> This Changes Everything!
-    </div>
-    
-    <div class="video-container-box">
-        <div class="video-wrapper">
-            <iframe src="https://www.youtube.com/embed/HW2czMQebPQ?rel=0&modestbranding=1&controls=1" frameborder="0" allowfullscreen></iframe>
+<div class="container" id="main-container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="color: #2c3e50; margin: 0;">Traffic Command Center</h2>
+        <div style="display: flex; gap: 10px;">
+            <button onclick="exportBackup()" style="background:#28a745; color:white; border:none; padding:8px 15px; border-radius:4px; cursor:pointer; font-weight:bold; font-size:12px;">💾 Backup</button>
+            <button onclick="document.getElementById('importFile').click()" style="background:#ffc107; color:#333; border:none; padding:8px 15px; border-radius:4px; cursor:pointer; font-weight:bold; font-size:12px;">📂 Restore</button>
+            <input type="file" id="importFile" style="display:none;" accept=".json" onchange="importBackup(event)">
         </div>
     </div>
-
-    <div style="margin: 30px 0;">
-        <a href="https://troysmartai.com/trafficspacebar.html" class="wobble-btn" target="_blank">JOIN FOR FREE AND EARN TODAY</a>
+    
+    <div id="progress-container">
+        <div id="progress-bar">0%</div>
     </div>
 
-    <div class="readable-white">
-        Impossible 2 Fail 🐠 In This NEW Matrix TRAFFIC Site each position is a purchase rather than a person.
-        <br><br>
-        🐠 Every pack bought above you has to land in the next available slot. Plenty of those slots end up in your matrix! 🐠
+    <!-- Dynamic Sections Load Here -->
+    <div id="sections-container"></div>
+
+    <div style="margin-top: 30px; text-align: center; border-top: 2px solid #eee; padding-top: 20px;">
+        <button onclick="createNewSection()" style="background:#333; color:white; border:none; padding:10px 25px; border-radius:6px; cursor:pointer; font-weight:bold;">+ CREATE NEW CUSTOM SECTION</button>
     </div>
-    <div class="yoda-quote">"do or do not there is no try" - yoda</div> 
+
+    <div class="section-header bg-calendar" style="margin-top:40px; cursor:default;">Marketing Calendar</div>
+    <div class="calendar-section">
+        <div id="cal-title" style="text-align: center; font-size: 1.5em; margin: 15px 0;"></div>
+        <div id="calendar-grid" class="calendar-grid"></div>
+    </div>
 </div>
 
 <script>
-    // --- HUMMINGBIRD FLIGHT LOGIC ---
-    const bird = document.getElementById('hummingbird-container');
-    let mouseX = 0, mouseY = 0;
-    let birdX = 0, birdY = 0;
+    // INITIAL DATA & CATEGORIES
+    const defaultCategories = [
+        { id: 'daily', name: 'Daily Traffic Routine', color: 'bg-daily' },
+        { id: 'paid', name: 'Paid & Hands-Off', color: 'bg-paid' },
+        { id: 'classified', name: 'Classified Ads', color: 'bg-classified' },
+        { id: 'secondary', name: 'Secondary Mailers', color: 'bg-secondary' },
+        { id: 'social', name: 'Social Media', color: 'bg-social' },
+        { id: 'research', name: 'Link Wheel & Research Hub', color: 'bg-research' }
+    ];
 
-    document.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-    });
+    const defaultTasks = [
+        { id: "t1", category: "daily", name: "1. MLGS — Lead mailer", btnText: "OPEN MLGS", url: "https://troypringle.github.io/MLGS-Page/", color: "#007bff" },
+        { id: "t2", category: "daily", name: "2. Herculist", btnText: "ENTER THE ZONE", url: "http://www.herculist.com/cgi-bin/thezoneadsdisplay.cgi?325hv9d2u65hc2z3w7jo5j&8tmjd4w2k9f6bnh7rew7gkg5", color: "#007bff" },
+        { id: "t3", category: "daily", name: "3. Daily-Ads", btnText: "GET DAILY SWIPES", url: "https://daily-ads.com/dashboard", color: "#007bff" },
+        { id: "t15", category: "social", name: "Instagram", btnText: "INSTAGRAM", url: "https://www.instagram.com/", color: "#e83e8c" }
+    ];
 
-    function animateBird() {
-        // Follow mouse with a slight delay (easing)
-        birdX += (mouseX - birdX - 60) * 0.05;
-        birdY += (mouseY - birdY - 60) * 0.05;
-        
-        // Add a "hover" wobble
-        const hoverX = Math.sin(Date.now() / 200) * 10;
-        const hoverY = Math.cos(Date.now() / 150) * 10;
+    // INITIALIZE STORAGE
+    if (!localStorage.getItem('mainTasks')) localStorage.setItem('mainTasks', JSON.stringify(defaultTasks));
+    if (!localStorage.getItem('categories')) localStorage.setItem('categories', JSON.stringify(defaultCategories));
+    if (!localStorage.getItem('foldedSections')) localStorage.setItem('foldedSections', JSON.stringify({}));
 
-        bird.style.transform = `translate(${birdX + hoverX}px, ${birdY + hoverY}px) scaleX(${mouseX > birdX + 60 ? 1 : -1})`;
-        requestAnimationFrame(animateBird);
+    function renderAll() {
+        const categories = JSON.parse(localStorage.getItem('categories'));
+        const tasks = JSON.parse(localStorage.getItem('mainTasks'));
+        const folded = JSON.parse(localStorage.getItem('foldedSections'));
+        const container = document.getElementById('sections-container');
+        container.innerHTML = '';
+
+        categories.forEach(cat => {
+            const isFolded = folded[cat.id] ? 'collapsed' : '';
+            const sectionHtml = `
+                <div class="section-wrapper ${isFolded}" id="wrapper-${cat.id}" draggable="true" ondragstart="dragSection(event)" ondragover="allowDrop(event)" ondrop="dropSection(event)">
+                    <div class="section-header ${cat.color}" onclick="toggleFold('${cat.id}')">
+                        <span>${cat.name}</span>
+                        <div class="header-controls">
+                            ${cat.id === 'daily' ? '<button onclick="event.stopPropagation(); resetDailyTasks()" style="background:#dc3545; color:white; border:none; border-radius:4px; padding:4px 8px; font-size:10px; font-weight:bold; cursor:pointer;">RESET CHECKS</button>' : ''}
+                            ${cat.id !== 'daily' && cat.id !== 'research' ? `<button onclick="event.stopPropagation(); deleteSection('${cat.id}')" style="background:rgba(0,0,0,0.2); color:white; border:none; border-radius:4px; padding:4px 8px; font-size:10px;">DEL</button>` : ''}
+                            <span class="fold-btn">${folded[cat.id] ? 'Show' : 'Fold'}</span>
+                        </div>
+                    </div>
+                    <div class="section-content">
+                        <div id="grid-${cat.id}" class="task-grid" ondragover="allowDrop(event)" ondrop="dropTask(event, '${cat.id}')">
+                            ${renderTasksForCategory(tasks, cat.id)}
+                        </div>
+                        <div style="text-align: right; margin-top: 15px;">
+                            <button class="add-task-btn" onclick="addNewTask('${cat.id}', '${cat.color}')">+ ADD TASK</button>
+                        </div>
+                    </div>
+                </div>`;
+            container.innerHTML += sectionHtml;
+        });
+        updateProgress();
+        startTimerInterval();
     }
-    animateBird();
 
-    // --- WING NOISE ENGINE ---
-    let audioCtx;
-    let oscillator;
-    let gainNode;
-
-    function startHum() {
-        if (audioCtx) return; // Already started
-
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        oscillator = audioCtx.createOscillator();
-        gainNode = audioCtx.createGain();
-
-        // Low frequency hum + "buzz" harmonics
-        oscillator.type = 'triangle'; 
-        oscillator.frequency.setValueAtTime(60, audioCtx.currentTime); // Base hum frequency
-
-        // Volume control
-        gainNode.gain.setValueAtTime(0.02, audioCtx.currentTime); // Keep it subtle
-
-        oscillator.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        oscillator.start();
+    function renderTasksForCategory(tasks, catId) {
+        return tasks.filter(t => t.category === catId).map(task => `
+            <div class="task-item" id="${task.id}" draggable="true" ondragstart="dragTask(event)">
+                <button class="delete-btn" onclick="deleteTask('${task.id}')" style="position:absolute; top:8px; right:8px;">DEL</button>
+                <input type="checkbox" id="check-${task.id}" class="traffic-check" onchange="updateProgress()">
+                <div style="width: 100%; padding-right: 25px;">
+                    <strong class="editable-text" contenteditable="true" onblur="updateTaskData('${task.id}', 'name', this.innerText)">${task.name}</strong><br>
+                    <a href="${task.url}" target="_blank" class="link-btn" style="background:${task.color}" onclick="handleMLGSClick('${task.id}')">${task.btnText}</a>
+                    ${task.id === 't1' ? `<span id="mlgs-timer" class="timer-display"></span>` : ''}
+                </div>
+            </div>
+        `).join('');
     }
 
-    // Start sound on first click
-    document.addEventListener('mousedown', startHum);
+    // FOLD LOGIC
+    function toggleFold(id) {
+        const folded = JSON.parse(localStorage.getItem('foldedSections'));
+        folded[id] = !folded[id];
+        localStorage.setItem('foldedSections', JSON.stringify(folded));
+        renderAll();
+    }
 
-    // --- PREVIOUS URL PARAM LOGIC ---
-    (function() {
-        var params = window.location.search;
-        if (params) {
-            var links = document.getElementsByTagName('a');
-            for (var i = 0; i < links.length; i++) {
-                if(links[i].href.indexOf('troysmartai') !== -1) {
-                    var sep = links[i].href.indexOf('?') !== -1 ? '&' : '?';
-                    links[i].href += sep + params.substring(1);
-                }
-            }
+    // MLGS TIMER LOGIC (23 Hour Standard AM/PM)
+    function handleMLGSClick(id) {
+        if (id === 't1') {
+            const nextMail = new Date();
+            nextMail.setHours(nextMail.getHours() + 23);
+            localStorage.setItem('mlgsNextTime', nextMail.getTime());
+            updateMLGSTimer();
         }
-    })();
-</script>
+    }
 
+    function updateMLGSTimer() {
+        const timerEl = document.getElementById('mlgs-timer');
+        if (!timerEl) return;
+        
+        const nextTime = localStorage.getItem('mlgsNextTime');
+        if (!nextTime) return;
+
+        const now = new Date().getTime();
+        const diff = nextTime - now;
+
+        if (diff > 0) {
+            const dateObj = new Date(parseInt(nextTime));
+            let hours = dateObj.getHours();
+            const minutes = dateObj.getMinutes().toString().padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12;
+            timerEl.innerText = `NEXT MAIL: ${hours}:${minutes} ${ampm}`;
+        } else {
+            timerEl.innerText = `READY TO MAIL NOW!`;
+        }
+    }
+
+    function startTimerInterval() {
+        updateMLGSTimer();
+        setInterval(updateMLGSTimer, 60000); // Check every minute
+    }
+
+    // DRAG AND DROP LOGIC
+    let draggedId = null;
+
+    function dragTask(e) { draggedId = e.target.id; e.dataTransfer.setData("type", "task"); }
+    function dragSection(e) { draggedId = e.currentTarget.id; e.dataTransfer.setData("type", "section"); }
+    function allowDrop(e) { e.preventDefault(); }
+
+    function dropTask(e, catId) {
+        e.preventDefault();
+        if (e.dataTransfer.getData("type") !== "task") return;
+        const tasks = JSON.parse(localStorage.getItem('mainTasks'));
+        const task = tasks.find(t => t.id === draggedId);
+        if (task) {
+            task.category = catId;
+            localStorage.setItem('mainTasks', JSON.stringify(tasks));
+            renderAll();
+        }
+    }
+
+    function dropSection(e) {
+        e.preventDefault();
+        if (e.dataTransfer.getData("type") !== "section") return;
+        const targetId = e.currentTarget.id;
+        let categories = JSON.parse(localStorage.getItem('categories'));
+        
+        const draggedIdx = categories.findIndex(c => `wrapper-${c.id}` === draggedId);
+        const targetIdx = categories.findIndex(c => `wrapper-${c.id}` === targetId);
+        
+        const [movedSection] = categories.splice(draggedIdx, 1);
+        categories.splice(targetIdx, 0, movedSection);
+        
+        localStorage.setItem('categories', JSON.stringify(categories));
+        renderAll();
+    }
+
+    // NEW SECTION LOGIC
+    function createNewSection() {
+        const name = prompt("New Section Name:");
+        if (!name) return;
+        const id = 'custom_' + Date.now();
+        const categories = JSON.parse(localStorage.getItem('categories'));
+        categories.push({ id, name, color: 'bg-custom' });
+        localStorage.setItem('categories', JSON.stringify(categories));
+        renderAll();
+    }
+
+    function deleteSection(id) {
+        if(confirm("Delete this section and all tasks inside?")) {
+            let categories = JSON.parse(localStorage.getItem('categories'));
+            categories = categories.filter(c => c.id !== id);
+            localStorage.setItem('categories', JSON.stringify(categories));
+            renderAll();
+        }
+    }
+
+    // TASK UTILITIES
+    function addNewTask(category, colorClass) {
+        const name = prompt("Task name:");
+        if (!name) return;
+        const tasks = JSON.parse(localStorage.getItem('mainTasks'));
+        tasks.push({
+            id: 't_' + Date.now(),
+            category: category,
+            name: name,
+            btnText: "OPEN LINK",
+            url: "#",
+            color: "#555"
+        });
+        localStorage.setItem('mainTasks', JSON.stringify(tasks));
+        renderAll();
+    }
+
+    function updateProgress() {
+        const checks = document.querySelectorAll('.traffic-check');
+        const checkedCount = Array.from(checks).filter(c => c.checked).length;
+        const percent = checks.length ? Math.round((checkedCount / checks.length) * 100) : 0;
+        const bar = document.getElementById('progress-bar');
+        bar.style.width = percent + '%';
+        bar.innerText = `Goal: ${percent}% (${checkedCount}/${checks.length})`;
+    }
+
+    function resetDailyTasks() {
+        if(confirm("Reset all checkmarks for today?")) {
+            document.querySelectorAll('.traffic-check').forEach(c => c.checked = false);
+            updateProgress();
+        }
+    }
+
+    function deleteTask(id) {
+        if(confirm("Delete task?")) {
+            let tasks = JSON.parse(localStorage.getItem('mainTasks'));
+            tasks = tasks.filter(t => t.id !== id);
+            localStorage.setItem('mainTasks', JSON.stringify(tasks));
+            renderAll();
+        }
+    }
+
+    // BACKUP/RESTORE (Updated for categories)
+    function exportBackup() {
+        const data = {
+            mainTasks: localStorage.getItem('mainTasks'),
+            categories: localStorage.getItem('categories'),
+            mlgsNextTime: localStorage.getItem('mlgsNextTime')
+        };
+        const blob = new Blob([JSON.stringify(data)], {type: "application/json"});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = "Traffic_Hub_Backup.json";
+        a.click();
+    }
+
+    function importBackup(event) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const data = JSON.parse(e.target.result);
+            if (data.mainTasks) localStorage.setItem('mainTasks', data.mainTasks);
+            if (data.categories) localStorage.setItem('categories', data.categories);
+            location.reload();
+        };
+        reader.readAsText(event.target.files[0]);
+    }
+
+    // CALENDAR (Retained from original)
+    function generateCalendar() {
+        const grid = document.getElementById('calendar-grid');
+        const now = new Date();
+        const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+        document.getElementById('cal-title').innerText = now.toLocaleString('default', { month: 'long' }) + " " + now.getFullYear();
+        grid.innerHTML = '';
+        for (let d = 1; d <= daysInMonth; d++) {
+            grid.innerHTML += `<div class="cal-box" style="padding:5px; font-size:12px;"><strong>${d}</strong><textarea style="width:90%; height:80px; border:none; background:transparent;"></textarea></div>`;
+        }
+    }
+
+    window.onload = function() {
+        renderAll();
+        generateCalendar();
+    };
+</script>
 </body>
 </html>
