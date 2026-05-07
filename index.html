@@ -3,21 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Traffic Command Center</title>
+    <title>Traffic Command Center PRO</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.6; margin: 0; padding: 10px; }
         .container { max-width: 1200px; margin: auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         
-        /* Drag and Drop & Collapsible Styles */
         .section-wrapper { margin-bottom: 20px; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; }
         .section-header { 
             display: flex; justify-content: space-between; align-items: center;
             color: white; padding: 12px 20px; cursor: move;
             font-size: 1.1em; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;
         }
+        .section-header span[contenteditable="true"] { padding: 2px 5px; border-radius: 4px; cursor: text; }
+        .section-header span[contenteditable="true"]:hover { background: rgba(255,255,255,0.1); }
+
         .header-controls { display: flex; align-items: center; gap: 10px; }
-        .fold-btn { cursor: pointer; background: rgba(255,255,255,0.2); border: none; color: white; border-radius: 4px; padding: 2px 8px; }
-        .section-content { padding: 15px; transition: max-height 0.3s ease-out; }
+        .fold-btn { cursor: pointer; background: rgba(255,255,255,0.2); border: none; color: white; border-radius: 4px; padding: 2px 8px; font-size: 10px; }
+        .section-content { padding: 15px; }
         .collapsed .section-content { display: none; }
 
         .bg-daily { background: #007bff; }
@@ -26,34 +28,39 @@
         .bg-secondary { background: #6f42c1; }
         .bg-social { background: #e83e8c; }
         .bg-research { background: #17a2b8; }
-        .bg-calendar { background: #343a40; }
         .bg-custom { background: #555; }
 
         #progress-container { background:#e9ecef; border-radius:10px; margin-bottom:30px; overflow:hidden; border: 1px solid #ccc; }
         #progress-bar { background:#007bff; width:0%; height:45px; text-align:center; color:white; font-weight:bold; line-height:45px; transition:width 0.5s; font-size: 18px; }
 
-        .task-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; min-height: 50px; }
-        .task-item { position: relative; display: flex; align-items: center; background: #fff; padding: 18px; border-radius: 8px; border: 1px solid #eee; cursor: grab; transition: all 0.3s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .task-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; min-height: 50px; }
+        .task-item { position: relative; background: #fff; padding: 18px; border-radius: 8px; border: 1px solid #eee; cursor: grab; transition: all 0.3s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .task-item:active { cursor: grabbing; }
         .task-item:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .task-item input[type="checkbox"] { width: 26px; height: 26px; margin-right: 18px; cursor: pointer; flex-shrink: 0; }
         
-        .link-btn { display: inline-block; padding: 12px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: bold; margin-top: 8px; text-align: center; width: 85%; }
+        .task-main-row { display: flex; align-items: center; margin-bottom: 10px; }
+        .task-item input[type="checkbox"] { width: 24px; height: 24px; margin-right: 15px; cursor: pointer; flex-shrink: 0; }
         
+        .link-btn { display: block; padding: 10px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: bold; text-align: center; margin-top: 10px; }
+        
+        .status-badge { font-size: 9px; padding: 3px 8px; border-radius: 10px; font-weight: bold; text-transform: uppercase; color: white; cursor: pointer; }
+        .status-Active { background: #28a745; }
+        .status-Testing { background: #ffc107; color: #333; }
+        .status-Paused { background: #6c757d; }
+
         .timer-display { display: block; font-size: 11px; color: #d00000; font-weight: bold; margin-top: 5px; text-align: center; }
+        .task-note { font-size: 11px; color: #666; font-style: italic; display: block; margin-top: 5px; border-top: 1px solid #f0f0f0; padding-top: 5px; }
 
         .delete-btn { background: #ff4d4d; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: bold; }
         .add-task-btn { background: #f8f9fa; color: #333; border: 1px dashed #ccc; padding: 6px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; }
 
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
-        .weekday-label { text-align: center; font-weight: bold; padding: 10px 0; background: #007bff; color: white; border-radius: 4px; font-size: 14px; }
-        .cal-box { border: 1px solid #ddd; background: #b1d8b7; border-radius: 8px; min-height: 130px; }
-        .editable-text:hover { background: #fffde7; cursor: text; outline: 1px dashed #ccc; }
+        .cal-box { border: 1px solid #ddd; background: #b1d8b7; border-radius: 8px; min-height: 100px; padding: 5px; }
     </style>
 </head>
 <body>
 
-<div class="container" id="main-container">
+<div class="container">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h2 style="color: #2c3e50; margin: 0;">Traffic Command Center</h2>
         <div style="display: flex; gap: 10px;">
@@ -67,46 +74,60 @@
         <div id="progress-bar">0%</div>
     </div>
 
-    <!-- Dynamic Sections Load Here -->
     <div id="sections-container"></div>
 
-    <div style="margin-top: 30px; text-align: center; border-top: 2px solid #eee; padding-top: 20px;">
-        <button onclick="createNewSection()" style="background:#333; color:white; border:none; padding:10px 25px; border-radius:6px; cursor:pointer; font-weight:bold;">+ CREATE NEW CUSTOM SECTION</button>
+    <div style="margin-top: 30px; text-align: center; padding-top: 20px;">
+        <button onclick="createNewSection()" style="background:#333; color:white; border:none; padding:10px 25px; border-radius:6px; cursor:pointer; font-weight:bold;">+ CREATE NEW SECTION</button>
     </div>
 
     <div class="section-header bg-calendar" style="margin-top:40px; cursor:default;">Marketing Calendar</div>
-    <div class="calendar-section">
-        <div id="cal-title" style="text-align: center; font-size: 1.5em; margin: 15px 0;"></div>
-        <div id="calendar-grid" class="calendar-grid"></div>
-    </div>
+    <div id="calendar-grid" class="calendar-grid"></div>
 </div>
 
 <script>
-    // INITIAL DATA & CATEGORIES
+    // --- DATA MIGRATION LOGIC (RECOVERS LOST LINK WHEEL INFO) ---
+    function migrateOldData() {
+        let currentTasks = JSON.parse(localStorage.getItem('mainTasks') || '[]');
+        let oldLinks = JSON.parse(localStorage.getItem('researchLinks') || '[]');
+        
+        if (oldLinks.length > 0) {
+            oldLinks.forEach(link => {
+                // Check if already migrated
+                if (!currentTasks.find(t => t.name === link.name)) {
+                    currentTasks.push({
+                        id: 'migrated_' + Date.now() + Math.random(),
+                        category: 'research',
+                        name: link.name,
+                        url: link.url || "#",
+                        btnText: link.url ? "OPEN SITE" : "VIEW NOTE",
+                        status: link.status || "Active",
+                        note: link.note || "",
+                        color: "#17a2b8"
+                    });
+                }
+            });
+            localStorage.setItem('mainTasks', JSON.stringify(currentTasks));
+            localStorage.removeItem('researchLinks'); // Clean up after migration
+            console.log("Migration Complete: Old Link Wheel data recovered.");
+        }
+    }
+
+    // --- INITIALIZATION ---
     const defaultCategories = [
         { id: 'daily', name: 'Daily Traffic Routine', color: 'bg-daily' },
         { id: 'paid', name: 'Paid & Hands-Off', color: 'bg-paid' },
         { id: 'classified', name: 'Classified Ads', color: 'bg-classified' },
         { id: 'secondary', name: 'Secondary Mailers', color: 'bg-secondary' },
         { id: 'social', name: 'Social Media', color: 'bg-social' },
-        { id: 'research', name: 'Link Wheel & Research Hub', color: 'bg-research' }
+        { id: 'research', name: 'Research Hub', color: 'bg-research' }
     ];
 
-    const defaultTasks = [
-        { id: "t1", category: "daily", name: "1. MLGS — Lead mailer", btnText: "OPEN MLGS", url: "https://troypringle.github.io/MLGS-Page/", color: "#007bff" },
-        { id: "t2", category: "daily", name: "2. Herculist", btnText: "ENTER THE ZONE", url: "http://www.herculist.com/cgi-bin/thezoneadsdisplay.cgi?325hv9d2u65hc2z3w7jo5j&8tmjd4w2k9f6bnh7rew7gkg5", color: "#007bff" },
-        { id: "t3", category: "daily", name: "3. Daily-Ads", btnText: "GET DAILY SWIPES", url: "https://daily-ads.com/dashboard", color: "#007bff" },
-        { id: "t15", category: "social", name: "Instagram", btnText: "INSTAGRAM", url: "https://www.instagram.com/", color: "#e83e8c" }
-    ];
-
-    // INITIALIZE STORAGE
-    if (!localStorage.getItem('mainTasks')) localStorage.setItem('mainTasks', JSON.stringify(defaultTasks));
     if (!localStorage.getItem('categories')) localStorage.setItem('categories', JSON.stringify(defaultCategories));
     if (!localStorage.getItem('foldedSections')) localStorage.setItem('foldedSections', JSON.stringify({}));
 
     function renderAll() {
         const categories = JSON.parse(localStorage.getItem('categories'));
-        const tasks = JSON.parse(localStorage.getItem('mainTasks'));
+        const tasks = JSON.parse(localStorage.getItem('mainTasks') || '[]');
         const folded = JSON.parse(localStorage.getItem('foldedSections'));
         const container = document.getElementById('sections-container');
         container.innerHTML = '';
@@ -116,11 +137,11 @@
             const sectionHtml = `
                 <div class="section-wrapper ${isFolded}" id="wrapper-${cat.id}" draggable="true" ondragstart="dragSection(event)" ondragover="allowDrop(event)" ondrop="dropSection(event)">
                     <div class="section-header ${cat.color}" onclick="toggleFold('${cat.id}')">
-                        <span>${cat.name}</span>
+                        <span contenteditable="true" onclick="event.stopPropagation()" onblur="updateCategoryName('${cat.id}', this.innerText)">${cat.name}</span>
                         <div class="header-controls">
                             ${cat.id === 'daily' ? '<button onclick="event.stopPropagation(); resetDailyTasks()" style="background:#dc3545; color:white; border:none; border-radius:4px; padding:4px 8px; font-size:10px; font-weight:bold; cursor:pointer;">RESET CHECKS</button>' : ''}
-                            ${cat.id !== 'daily' && cat.id !== 'research' ? `<button onclick="event.stopPropagation(); deleteSection('${cat.id}')" style="background:rgba(0,0,0,0.2); color:white; border:none; border-radius:4px; padding:4px 8px; font-size:10px;">DEL</button>` : ''}
-                            <span class="fold-btn">${folded[cat.id] ? 'Show' : 'Fold'}</span>
+                            <button onclick="event.stopPropagation(); deleteSection('${cat.id}')" style="background:rgba(0,0,0,0.2); color:white; border:none; border-radius:4px; padding:4px 8px; font-size:10px;">DEL</button>
+                            <span class="fold-btn">${folded[cat.id] ? 'EXPAND' : 'FOLD'}</span>
                         </div>
                     </div>
                     <div class="section-content">
@@ -128,78 +149,86 @@
                             ${renderTasksForCategory(tasks, cat.id)}
                         </div>
                         <div style="text-align: right; margin-top: 15px;">
-                            <button class="add-task-btn" onclick="addNewTask('${cat.id}', '${cat.color}')">+ ADD TASK</button>
+                            <button class="add-task-btn" onclick="addNewTask('${cat.id}')">+ ADD NEW ITEM</button>
                         </div>
                     </div>
                 </div>`;
             container.innerHTML += sectionHtml;
         });
         updateProgress();
-        startTimerInterval();
+        updateMLGSTimer();
     }
 
     function renderTasksForCategory(tasks, catId) {
         return tasks.filter(t => t.category === catId).map(task => `
             <div class="task-item" id="${task.id}" draggable="true" ondragstart="dragTask(event)">
                 <button class="delete-btn" onclick="deleteTask('${task.id}')" style="position:absolute; top:8px; right:8px;">DEL</button>
-                <input type="checkbox" id="check-${task.id}" class="traffic-check" onchange="updateProgress()">
-                <div style="width: 100%; padding-right: 25px;">
-                    <strong class="editable-text" contenteditable="true" onblur="updateTaskData('${task.id}', 'name', this.innerText)">${task.name}</strong><br>
-                    <a href="${task.url}" target="_blank" class="link-btn" style="background:${task.color}" onclick="handleMLGSClick('${task.id}')">${task.btnText}</a>
-                    ${task.id === 't1' ? `<span id="mlgs-timer" class="timer-display"></span>` : ''}
+                
+                <div class="task-main-row">
+                    <input type="checkbox" id="check-${task.id}" class="traffic-check" ${task.checked ? 'checked' : ''} onchange="toggleCheck('${task.id}')">
+                    <strong class="editable-text" contenteditable="true" onblur="updateTaskData('${task.id}', 'name', this.innerText)">${task.name}</strong>
                 </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span class="status-badge status-${task.status || 'Active'}" onclick="cycleStatus('${task.id}')">${task.status || 'Active'}</span>
+                    <small style="cursor:pointer; color:#007bff; text-decoration:underline;" onclick="editLinkData('${task.id}')">Edit Link</small>
+                </div>
+
+                <a href="${task.url}" target="_blank" class="link-btn" style="background:${task.id==='t1'?'#007bff':'#444'}" onclick="handleMLGSClick('${task.id}')">${task.btnText || 'OPEN'}</a>
+                
+                ${task.id === 't1' ? `<span id="mlgs-timer" class="timer-display"></span>` : ''}
+                ${task.note ? `<span class="task-note" contenteditable="true" onblur="updateTaskData('${task.id}', 'note', this.innerText)">${task.note}</span>` : `<span class="task-note" contenteditable="true" onblur="updateTaskData('${task.id}', 'note', this.innerText)">Click to add note...</span>`}
             </div>
         `).join('');
     }
 
-    // FOLD LOGIC
+    // --- CORE LOGIC FUNCTIONS ---
+
+    function updateCategoryName(id, newName) {
+        let categories = JSON.parse(localStorage.getItem('categories'));
+        let cat = categories.find(c => c.id === id);
+        if (cat) { cat.name = newName; localStorage.setItem('categories', JSON.stringify(categories)); }
+    }
+
     function toggleFold(id) {
-        const folded = JSON.parse(localStorage.getItem('foldedSections'));
+        let folded = JSON.parse(localStorage.getItem('foldedSections'));
         folded[id] = !folded[id];
         localStorage.setItem('foldedSections', JSON.stringify(folded));
         renderAll();
     }
 
-    // MLGS TIMER LOGIC (23 Hour Standard AM/PM)
-    function handleMLGSClick(id) {
-        if (id === 't1') {
-            const nextMail = new Date();
-            nextMail.setHours(nextMail.getHours() + 23);
-            localStorage.setItem('mlgsNextTime', nextMail.getTime());
-            updateMLGSTimer();
+    function toggleCheck(id) {
+        let tasks = JSON.parse(localStorage.getItem('mainTasks'));
+        let task = tasks.find(t => t.id === id);
+        if (task) { task.checked = !task.checked; localStorage.setItem('mainTasks', JSON.stringify(tasks)); }
+        updateProgress();
+    }
+
+    function cycleStatus(id) {
+        const statuses = ["Active", "Testing", "Paused"];
+        let tasks = JSON.parse(localStorage.getItem('mainTasks'));
+        let task = tasks.find(t => t.id === id);
+        if (task) {
+            let currentIdx = statuses.indexOf(task.status || "Active");
+            task.status = statuses[(currentIdx + 1) % statuses.length];
+            localStorage.setItem('mainTasks', JSON.stringify(tasks));
+            renderAll();
         }
     }
 
-    function updateMLGSTimer() {
-        const timerEl = document.getElementById('mlgs-timer');
-        if (!timerEl) return;
-        
-        const nextTime = localStorage.getItem('mlgsNextTime');
-        if (!nextTime) return;
-
-        const now = new Date().getTime();
-        const diff = nextTime - now;
-
-        if (diff > 0) {
-            const dateObj = new Date(parseInt(nextTime));
-            let hours = dateObj.getHours();
-            const minutes = dateObj.getMinutes().toString().padStart(2, '0');
-            const ampm = hours >= 12 ? 'PM' : 'AM';
-            hours = hours % 12 || 12;
-            timerEl.innerText = `NEXT MAIL: ${hours}:${minutes} ${ampm}`;
-        } else {
-            timerEl.innerText = `READY TO MAIL NOW!`;
+    function editLinkData(id) {
+        let tasks = JSON.parse(localStorage.getItem('mainTasks'));
+        let task = tasks.find(t => t.id === id);
+        if (task) {
+            task.url = prompt("URL:", task.url);
+            task.btnText = prompt("Button Text:", task.btnText);
+            localStorage.setItem('mainTasks', JSON.stringify(tasks));
+            renderAll();
         }
     }
 
-    function startTimerInterval() {
-        updateMLGSTimer();
-        setInterval(updateMLGSTimer, 60000); // Check every minute
-    }
-
-    // DRAG AND DROP LOGIC
+    // --- DRAG AND DROP ---
     let draggedId = null;
-
     function dragTask(e) { draggedId = e.target.id; e.dataTransfer.setData("type", "task"); }
     function dragSection(e) { draggedId = e.currentTarget.id; e.dataTransfer.setData("type", "section"); }
     function allowDrop(e) { e.preventDefault(); }
@@ -207,66 +236,62 @@
     function dropTask(e, catId) {
         e.preventDefault();
         if (e.dataTransfer.getData("type") !== "task") return;
-        const tasks = JSON.parse(localStorage.getItem('mainTasks'));
-        const task = tasks.find(t => t.id === draggedId);
-        if (task) {
-            task.category = catId;
-            localStorage.setItem('mainTasks', JSON.stringify(tasks));
-            renderAll();
-        }
+        let tasks = JSON.parse(localStorage.getItem('mainTasks'));
+        let task = tasks.find(t => t.id === draggedId);
+        if (task) { task.category = catId; localStorage.setItem('mainTasks', JSON.stringify(tasks)); renderAll(); }
     }
 
     function dropSection(e) {
         e.preventDefault();
         if (e.dataTransfer.getData("type") !== "section") return;
-        const targetId = e.currentTarget.id;
         let categories = JSON.parse(localStorage.getItem('categories'));
-        
         const draggedIdx = categories.findIndex(c => `wrapper-${c.id}` === draggedId);
-        const targetIdx = categories.findIndex(c => `wrapper-${c.id}` === targetId);
-        
-        const [movedSection] = categories.splice(draggedIdx, 1);
-        categories.splice(targetIdx, 0, movedSection);
-        
+        const targetIdx = categories.findIndex(c => `wrapper-${c.id}` === e.currentTarget.id);
+        const [moved] = categories.splice(draggedIdx, 1);
+        categories.splice(targetIdx, 0, moved);
         localStorage.setItem('categories', JSON.stringify(categories));
         renderAll();
     }
 
-    // NEW SECTION LOGIC
-    function createNewSection() {
-        const name = prompt("New Section Name:");
+    // --- UTILITIES ---
+    function addNewTask(catId) {
+        const name = prompt("Name:");
         if (!name) return;
-        const id = 'custom_' + Date.now();
-        const categories = JSON.parse(localStorage.getItem('categories'));
-        categories.push({ id, name, color: 'bg-custom' });
+        let tasks = JSON.parse(localStorage.getItem('mainTasks'));
+        tasks.push({ id: 't_' + Date.now(), category: catId, name, url: "#", btnText: "OPEN", status: "Active", note: "" });
+        localStorage.setItem('mainTasks', JSON.stringify(tasks));
+        renderAll();
+    }
+
+    function createNewSection() {
+        const name = prompt("Section Name:");
+        if (!name) return;
+        let categories = JSON.parse(localStorage.getItem('categories'));
+        categories.push({ id: 'custom_' + Date.now(), name, color: 'bg-custom' });
         localStorage.setItem('categories', JSON.stringify(categories));
         renderAll();
+    }
+
+    function updateTaskData(id, field, value) {
+        let tasks = JSON.parse(localStorage.getItem('mainTasks'));
+        let task = tasks.find(t => t.id === id);
+        if (task) { task[field] = value; localStorage.setItem('mainTasks', JSON.stringify(tasks)); }
     }
 
     function deleteSection(id) {
-        if(confirm("Delete this section and all tasks inside?")) {
+        if(confirm("Delete section?")) {
             let categories = JSON.parse(localStorage.getItem('categories'));
-            categories = categories.filter(c => c.id !== id);
-            localStorage.setItem('categories', JSON.stringify(categories));
+            localStorage.setItem('categories', JSON.stringify(categories.filter(c => c.id !== id)));
             renderAll();
         }
     }
 
-    // TASK UTILITIES
-    function addNewTask(category, colorClass) {
-        const name = prompt("Task name:");
-        if (!name) return;
-        const tasks = JSON.parse(localStorage.getItem('mainTasks'));
-        tasks.push({
-            id: 't_' + Date.now(),
-            category: category,
-            name: name,
-            btnText: "OPEN LINK",
-            url: "#",
-            color: "#555"
-        });
-        localStorage.setItem('mainTasks', JSON.stringify(tasks));
-        renderAll();
+    function deleteTask(id) {
+        if(confirm("Delete?")) {
+            let tasks = JSON.parse(localStorage.getItem('mainTasks'));
+            localStorage.setItem('mainTasks', JSON.stringify(tasks.filter(t => t.id !== id)));
+            renderAll();
+        }
     }
 
     function updateProgress() {
@@ -279,32 +304,48 @@
     }
 
     function resetDailyTasks() {
-        if(confirm("Reset all checkmarks for today?")) {
-            document.querySelectorAll('.traffic-check').forEach(c => c.checked = false);
-            updateProgress();
+        let tasks = JSON.parse(localStorage.getItem('mainTasks'));
+        tasks.forEach(t => t.checked = false);
+        localStorage.setItem('mainTasks', JSON.stringify(tasks));
+        renderAll();
+    }
+
+    // --- MLGS TIMER ---
+    function handleMLGSClick(id) {
+        if (id === 't1') {
+            const nextMail = new Date();
+            nextMail.setHours(nextMail.getHours() + 23);
+            localStorage.setItem('mlgsNextTime', nextMail.getTime());
+            updateMLGSTimer();
         }
     }
 
-    function deleteTask(id) {
-        if(confirm("Delete task?")) {
-            let tasks = JSON.parse(localStorage.getItem('mainTasks'));
-            tasks = tasks.filter(t => t.id !== id);
-            localStorage.setItem('mainTasks', JSON.stringify(tasks));
-            renderAll();
-        }
+    function updateMLGSTimer() {
+        const timerEl = document.getElementById('mlgs-timer');
+        if (!timerEl) return;
+        const nextTime = localStorage.getItem('mlgsNextTime');
+        if (!nextTime) return;
+        const now = new Date().getTime();
+        if (nextTime - now > 0) {
+            const d = new Date(parseInt(nextTime));
+            let h = d.getHours();
+            const m = d.getMinutes().toString().padStart(2, '0');
+            const p = h >= 12 ? 'PM' : 'AM';
+            h = h % 12 || 12;
+            timerEl.innerText = `NEXT MAIL: ${h}:${m} ${p}`;
+        } else { timerEl.innerText = `READY!`; }
     }
 
-    // BACKUP/RESTORE (Updated for categories)
+    // --- BACKUP/RESTORE ---
     function exportBackup() {
         const data = {
             mainTasks: localStorage.getItem('mainTasks'),
             categories: localStorage.getItem('categories'),
-            mlgsNextTime: localStorage.getItem('mlgsNextTime')
+            marketingCalendar: localStorage.getItem('marketingCalendar')
         };
         const blob = new Blob([JSON.stringify(data)], {type: "application/json"});
-        const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = url; a.download = "Traffic_Hub_Backup.json";
+        a.href = URL.createObjectURL(blob); a.download = "Traffic_Hub_Final.json";
         a.click();
     }
 
@@ -312,6 +353,11 @@
         const reader = new FileReader();
         reader.onload = function(e) {
             const data = JSON.parse(e.target.result);
+            // Support for OLD backup format
+            if (data.researchLinks) {
+                localStorage.setItem('researchLinks', data.researchLinks);
+                migrateOldData();
+            }
             if (data.mainTasks) localStorage.setItem('mainTasks', data.mainTasks);
             if (data.categories) localStorage.setItem('categories', data.categories);
             location.reload();
@@ -319,21 +365,10 @@
         reader.readAsText(event.target.files[0]);
     }
 
-    // CALENDAR (Retained from original)
-    function generateCalendar() {
-        const grid = document.getElementById('calendar-grid');
-        const now = new Date();
-        const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-        document.getElementById('cal-title').innerText = now.toLocaleString('default', { month: 'long' }) + " " + now.getFullYear();
-        grid.innerHTML = '';
-        for (let d = 1; d <= daysInMonth; d++) {
-            grid.innerHTML += `<div class="cal-box" style="padding:5px; font-size:12px;"><strong>${d}</strong><textarea style="width:90%; height:80px; border:none; background:transparent;"></textarea></div>`;
-        }
-    }
-
     window.onload = function() {
+        migrateOldData();
         renderAll();
-        generateCalendar();
+        setInterval(updateMLGSTimer, 60000);
     };
 </script>
 </body>
