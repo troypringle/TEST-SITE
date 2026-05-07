@@ -3,25 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Traffic Command Center PRO</title>
+    <title>Traffic Command Center Ultra</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; line-height: 1.6; margin: 0; padding: 10px; }
-        .container { max-width: 1200px; margin: auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; color: #1c1e21; margin: 0; padding: 15px; }
+        .container { max-width: 1600px; margin: auto; background: #fff; padding: 30px; border-radius: 15px; box-shadow: 0 12px 40px rgba(0,0,0,0.12); }
         
-        .section-wrapper { margin-bottom: 20px; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; }
+        /* Layout & Grid */
+        #progress-container { background:#e4e6eb; border-radius:12px; margin-bottom:25px; overflow:hidden; border: 1px solid #ced4da; }
+        #progress-bar { background: linear-gradient(90deg, #007bff, #00c6ff); width:0%; height:40px; text-align:center; color:white; font-weight:bold; line-height:40px; transition:width 0.4s ease; font-size: 16px; }
+
+        .section-wrapper { margin-bottom: 25px; border-radius: 10px; border: 1px solid #ddd; background: #fff; transition: box-shadow 0.2s; }
         .section-header { 
             display: flex; justify-content: space-between; align-items: center;
-            color: white; padding: 12px 20px; cursor: move;
-            font-size: 1.1em; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;
+            color: white; padding: 12px 20px; cursor: grab; font-weight: bold; text-transform: uppercase;
         }
-        .section-header span[contenteditable="true"] { padding: 2px 5px; border-radius: 4px; cursor: text; }
-        .section-header span[contenteditable="true"]:hover { background: rgba(255,255,255,0.1); }
+        .section-header:active { cursor: grabbing; }
 
-        .header-controls { display: flex; align-items: center; gap: 10px; }
-        .fold-btn { cursor: pointer; background: rgba(255,255,255,0.2); border: none; color: white; border-radius: 4px; padding: 2px 8px; font-size: 10px; }
-        .section-content { padding: 15px; }
-        .collapsed .section-content { display: none; }
+        /* 4-Column Grid Logic */
+        .task-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(23%, 1fr)); 
+            gap: 15px; padding: 15px; min-height: 80px; 
+        }
+        @media (max-width: 1100px) { .task-grid { grid-template-columns: repeat(auto-fill, minmax(45%, 1fr)); } }
+        @media (max-width: 600px) { .task-grid { grid-template-columns: 1fr; } }
 
+        /* Task Cards */
+        .task-item { 
+            position: relative; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e4e6eb; 
+            cursor: grab; display: flex; flex-direction: column; gap: 8px; transition: 0.2s;
+        }
+        .task-item:hover { border-color: #007bff; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        
+        .task-top { display: flex; align-items: flex-start; justify-content: space-between; }
+        .task-check { width: 22px; height: 22px; cursor: pointer; }
+        
+        .link-btn { 
+            display: block; width: 100%; padding: 8px; color: white; text-decoration: none; 
+            border-radius: 5px; font-size: 12px; font-weight: bold; text-align: center; margin-top: 5px;
+        }
+        
+        /* Sidebar/Move Menu Style */
+        .move-select { font-size: 10px; padding: 2px; border-radius: 4px; border: 1px solid #ccc; width: 100%; margin-top: 5px; background: #fff; }
+        
         .bg-daily { background: #007bff; }
         .bg-paid { background: #28a745; }
         .bg-classified { background: #fd7e14; }
@@ -30,90 +54,37 @@
         .bg-research { background: #17a2b8; }
         .bg-custom { background: #555; }
 
-        #progress-container { background:#e9ecef; border-radius:10px; margin-bottom:30px; overflow:hidden; border: 1px solid #ccc; }
-        #progress-bar { background:#007bff; width:0%; height:45px; text-align:center; color:white; font-weight:bold; line-height:45px; transition:width 0.5s; font-size: 18px; }
-
-        .task-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; min-height: 50px; }
-        .task-item { position: relative; background: #fff; padding: 18px; border-radius: 8px; border: 1px solid #eee; cursor: grab; transition: all 0.3s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .task-item:active { cursor: grabbing; }
-        .task-item:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        
-        .task-main-row { display: flex; align-items: center; margin-bottom: 10px; }
-        .task-item input[type="checkbox"] { width: 24px; height: 24px; margin-right: 15px; cursor: pointer; flex-shrink: 0; }
-        
-        .link-btn { display: block; padding: 10px; background: #007bff; color: white; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: bold; text-align: center; margin-top: 10px; }
-        
-        .status-badge { font-size: 9px; padding: 3px 8px; border-radius: 10px; font-weight: bold; text-transform: uppercase; color: white; cursor: pointer; }
+        .collapsed .task-grid, .collapsed .add-task-btn-wrap { display: none; }
+        .status-badge { font-size: 9px; padding: 2px 6px; border-radius: 4px; color: white; font-weight: bold; cursor: pointer; display: inline-block; }
         .status-Active { background: #28a745; }
         .status-Testing { background: #ffc107; color: #333; }
         .status-Paused { background: #6c757d; }
-
-        .timer-display { display: block; font-size: 11px; color: #d00000; font-weight: bold; margin-top: 5px; text-align: center; }
-        .task-note { font-size: 11px; color: #666; font-style: italic; display: block; margin-top: 5px; border-top: 1px solid #f0f0f0; padding-top: 5px; }
-
-        .delete-btn { background: #ff4d4d; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: bold; }
-        .add-task-btn { background: #f8f9fa; color: #333; border: 1px dashed #ccc; padding: 6px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; }
-
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
-        .cal-box { border: 1px solid #ddd; background: #b1d8b7; border-radius: 8px; min-height: 100px; padding: 5px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2 style="color: #2c3e50; margin: 0;">Traffic Command Center</h2>
-        <div style="display: flex; gap: 10px;">
-            <button onclick="exportBackup()" style="background:#28a745; color:white; border:none; padding:8px 15px; border-radius:4px; cursor:pointer; font-weight:bold; font-size:12px;">💾 Backup</button>
-            <button onclick="document.getElementById('importFile').click()" style="background:#ffc107; color:#333; border:none; padding:8px 15px; border-radius:4px; cursor:pointer; font-weight:bold; font-size:12px;">📂 Restore</button>
-            <input type="file" id="importFile" style="display:none;" accept=".json" onchange="importBackup(event)">
+        <h2 style="margin: 0; color: #1a1a1a;">Traffic Command Center</h2>
+        <div>
+            <button onclick="exportBackup()" style="background:#28a745; color:white; border:none; padding:8px 12px; border-radius:5px; cursor:pointer;">Backup</button>
+            <button onclick="document.getElementById('importFile').click()" style="background:#ffc107; border:none; padding:8px 12px; border-radius:5px; cursor:pointer;">Restore</button>
+            <input type="file" id="importFile" style="display:none;" onchange="importBackup(event)">
         </div>
     </div>
     
-    <div id="progress-container">
-        <div id="progress-bar">0%</div>
-    </div>
-
+    <div id="progress-container"><div id="progress-bar">0%</div></div>
     <div id="sections-container"></div>
 
-    <div style="margin-top: 30px; text-align: center; padding-top: 20px;">
-        <button onclick="createNewSection()" style="background:#333; color:white; border:none; padding:10px 25px; border-radius:6px; cursor:pointer; font-weight:bold;">+ CREATE NEW SECTION</button>
+    <div style="text-align: center; margin-top: 30px;">
+        <button onclick="createNewSection()" style="background:#1c1e21; color:white; border:none; padding:12px 30px; border-radius:8px; cursor:pointer; font-weight:bold;">+ ADD NEW SECTION</button>
     </div>
-
-    <div class="section-header bg-calendar" style="margin-top:40px; cursor:default;">Marketing Calendar</div>
-    <div id="calendar-grid" class="calendar-grid"></div>
 </div>
 
 <script>
-    // --- DATA MIGRATION LOGIC (RECOVERS LOST LINK WHEEL INFO) ---
-    function migrateOldData() {
-        let currentTasks = JSON.parse(localStorage.getItem('mainTasks') || '[]');
-        let oldLinks = JSON.parse(localStorage.getItem('researchLinks') || '[]');
-        
-        if (oldLinks.length > 0) {
-            oldLinks.forEach(link => {
-                // Check if already migrated
-                if (!currentTasks.find(t => t.name === link.name)) {
-                    currentTasks.push({
-                        id: 'migrated_' + Date.now() + Math.random(),
-                        category: 'research',
-                        name: link.name,
-                        url: link.url || "#",
-                        btnText: link.url ? "OPEN SITE" : "VIEW NOTE",
-                        status: link.status || "Active",
-                        note: link.note || "",
-                        color: "#17a2b8"
-                    });
-                }
-            });
-            localStorage.setItem('mainTasks', JSON.stringify(currentTasks));
-            localStorage.removeItem('researchLinks'); // Clean up after migration
-            console.log("Migration Complete: Old Link Wheel data recovered.");
-        }
-    }
-
-    // --- INITIALIZATION ---
-    const defaultCategories = [
+    // --- STATE MANAGEMENT ---
+    let tasks = JSON.parse(localStorage.getItem('mainTasks')) || [];
+    let categories = JSON.parse(localStorage.getItem('categories')) || [
         { id: 'daily', name: 'Daily Traffic Routine', color: 'bg-daily' },
         { id: 'paid', name: 'Paid & Hands-Off', color: 'bg-paid' },
         { id: 'classified', name: 'Classified Ads', color: 'bg-classified' },
@@ -121,113 +92,134 @@
         { id: 'social', name: 'Social Media', color: 'bg-social' },
         { id: 'research', name: 'Research Hub', color: 'bg-research' }
     ];
+    let folded = JSON.parse(localStorage.getItem('foldedSections')) || {};
 
-    if (!localStorage.getItem('categories')) localStorage.setItem('categories', JSON.stringify(defaultCategories));
-    if (!localStorage.getItem('foldedSections')) localStorage.setItem('foldedSections', JSON.stringify({}));
+    function save() {
+        localStorage.setItem('mainTasks', JSON.stringify(tasks));
+        localStorage.setItem('categories', JSON.stringify(categories));
+        localStorage.setItem('foldedSections', JSON.stringify(folded));
+        updateProgress();
+    }
 
-    function renderAll() {
-        const categories = JSON.parse(localStorage.getItem('categories'));
-        const tasks = JSON.parse(localStorage.getItem('mainTasks') || '[]');
-        const folded = JSON.parse(localStorage.getItem('foldedSections'));
+    function render() {
         const container = document.getElementById('sections-container');
         container.innerHTML = '';
 
         categories.forEach(cat => {
             const isFolded = folded[cat.id] ? 'collapsed' : '';
-            const sectionHtml = `
-                <div class="section-wrapper ${isFolded}" id="wrapper-${cat.id}" draggable="true" ondragstart="dragSection(event)" ondragover="allowDrop(event)" ondrop="dropSection(event)">
+            const sectionTasks = tasks.filter(t => t.category === cat.id);
+            
+            let html = `
+                <div class="section-wrapper ${isFolded}" id="wrap-${cat.id}" draggable="true" ondragstart="dragSection(event)" ondragover="allowDrop(event)" ondrop="dropSection(event)">
                     <div class="section-header ${cat.color}" onclick="toggleFold('${cat.id}')">
-                        <span contenteditable="true" onclick="event.stopPropagation()" onblur="updateCategoryName('${cat.id}', this.innerText)">${cat.name}</span>
-                        <div class="header-controls">
-                            ${cat.id === 'daily' ? '<button onclick="event.stopPropagation(); resetDailyTasks()" style="background:#dc3545; color:white; border:none; border-radius:4px; padding:4px 8px; font-size:10px; font-weight:bold; cursor:pointer;">RESET CHECKS</button>' : ''}
-                            <button onclick="event.stopPropagation(); deleteSection('${cat.id}')" style="background:rgba(0,0,0,0.2); color:white; border:none; border-radius:4px; padding:4px 8px; font-size:10px;">DEL</button>
-                            <span class="fold-btn">${folded[cat.id] ? 'EXPAND' : 'FOLD'}</span>
+                        <span contenteditable="true" onclick="event.stopPropagation()" onblur="updateCatName('${cat.id}', this.innerText)">${cat.name}</span>
+                        <div style="display:flex; gap:8px;">
+                            ${cat.id === 'daily' ? '<button onclick="event.stopPropagation(); resetChecks()" style="font-size:10px; cursor:pointer;">RESET</button>' : ''}
+                            <button onclick="event.stopPropagation(); deleteSection('${cat.id}')" style="font-size:10px; cursor:pointer;">DEL</button>
                         </div>
                     </div>
-                    <div class="section-content">
-                        <div id="grid-${cat.id}" class="task-grid" ondragover="allowDrop(event)" ondrop="dropTask(event, '${cat.id}')">
-                            ${renderTasksForCategory(tasks, cat.id)}
-                        </div>
-                        <div style="text-align: right; margin-top: 15px;">
-                            <button class="add-task-btn" onclick="addNewTask('${cat.id}')">+ ADD NEW ITEM</button>
-                        </div>
+                    <div class="task-grid" ondragover="allowDrop(event)" ondrop="dropTask(event, '${cat.id}')">
+                        ${sectionTasks.map(t => renderTask(t)).join('')}
+                    </div>
+                    <div class="add-task-btn-wrap" style="padding: 10px; text-align: right;">
+                        <button onclick="addTask('${cat.id}')" style="background:none; border:1px dashed #ccc; cursor:pointer; font-size:11px;">+ Add Task</button>
                     </div>
                 </div>`;
-            container.innerHTML += sectionHtml;
+            container.innerHTML += html;
         });
         updateProgress();
         updateMLGSTimer();
     }
 
-    function renderTasksForCategory(tasks, catId) {
-        return tasks.filter(t => t.category === catId).map(task => `
-            <div class="task-item" id="${task.id}" draggable="true" ondragstart="dragTask(event)">
-                <button class="delete-btn" onclick="deleteTask('${task.id}')" style="position:absolute; top:8px; right:8px;">DEL</button>
-                
-                <div class="task-main-row">
-                    <input type="checkbox" id="check-${task.id}" class="traffic-check" ${task.checked ? 'checked' : ''} onchange="toggleCheck('${task.id}')">
-                    <strong class="editable-text" contenteditable="true" onblur="updateTaskData('${task.id}', 'name', this.innerText)">${task.name}</strong>
+    function renderTask(t) {
+        const moveOptions = categories.map(c => `<option value="${c.id}" ${t.category === c.id ? 'selected' : ''}>${c.name}</option>`).join('');
+        
+        return `
+            <div class="task-item" id="${t.id}" draggable="true" ondragstart="dragTask(event)">
+                <div class="task-top">
+                    <input type="checkbox" class="task-check" ${t.checked ? 'checked' : ''} onchange="toggleTask('${t.id}')">
+                    <strong contenteditable="true" onblur="updateTask('${t.id}', 'name', this.innerText)" style="flex-grow:1; margin-left:10px; font-size:13px;">${t.name}</strong>
+                    <button onclick="deleteTask('${t.id}')" style="border:none; background:none; cursor:pointer; color:#999;">✕</button>
                 </div>
-
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span class="status-badge status-${task.status || 'Active'}" onclick="cycleStatus('${task.id}')">${task.status || 'Active'}</span>
-                    <small style="cursor:pointer; color:#007bff; text-decoration:underline;" onclick="editLinkData('${task.id}')">Edit Link</small>
+                    <span class="status-badge status-${t.status || 'Active'}" onclick="cycleStatus('${t.id}')">${t.status || 'Active'}</span>
+                    <small style="font-size:9px; color:#007bff; cursor:pointer;" onclick="editLink('${t.id}')">Edit URL</small>
                 </div>
-
-                <a href="${task.url}" target="_blank" class="link-btn" style="background:${task.id==='t1'?'#007bff':'#444'}" onclick="handleMLGSClick('${task.id}')">${task.btnText || 'OPEN'}</a>
+                <a href="${t.url}" target="_blank" class="link-btn" style="background:${t.id==='t1'?'#007bff':'#444'}" onclick="handleMLGS('${t.id}')">${t.btnText || 'OPEN'}</a>
+                ${t.id === 't1' ? '<span id="mlgs-timer" style="font-size:10px; text-align:center; color:red;"></span>' : ''}
+                <div style="font-size:10px; color:#777; border-top:1px solid #eee; padding-top:5px;" contenteditable="true" onblur="updateTask('${t.id}', 'note', this.innerText)">${t.note || 'Notes...'}</div>
                 
-                ${task.id === 't1' ? `<span id="mlgs-timer" class="timer-display"></span>` : ''}
-                ${task.note ? `<span class="task-note" contenteditable="true" onblur="updateTaskData('${task.id}', 'note', this.innerText)">${task.note}</span>` : `<span class="task-note" contenteditable="true" onblur="updateTaskData('${task.id}', 'note', this.innerText)">Click to add note...</span>`}
-            </div>
-        `).join('');
+                <select class="move-select" onchange="moveTaskTo('${t.id}', this.value)">
+                    <option disabled selected>Move to section...</option>
+                    ${moveOptions}
+                </select>
+            </div>`;
     }
 
-    // --- CORE LOGIC FUNCTIONS ---
+    // --- ACTIONS ---
+    function moveTaskTo(taskId, newCatId) {
+        const task = tasks.find(t => t.id === taskId);
+        if (task) {
+            task.category = newCatId;
+            save();
+            render();
+        }
+    }
 
-    function updateCategoryName(id, newName) {
-        let categories = JSON.parse(localStorage.getItem('categories'));
-        let cat = categories.find(c => c.id === id);
-        if (cat) { cat.name = newName; localStorage.setItem('categories', JSON.stringify(categories)); }
+    function toggleTask(id) {
+        const task = tasks.find(t => t.id === id);
+        if (task) task.checked = !task.checked;
+        save();
+    }
+
+    function updateTask(id, field, val) {
+        const task = tasks.find(t => t.id === id);
+        if (task) task[field] = val;
+        save();
+    }
+
+    function addTask(catId) {
+        const name = prompt("Task Name:");
+        if (!name) return;
+        tasks.push({ id: 't' + Date.now(), category: catId, name, url: '#', btnText: 'OPEN', status: 'Active', checked: false, note: '' });
+        save();
+        render();
     }
 
     function toggleFold(id) {
-        let folded = JSON.parse(localStorage.getItem('foldedSections'));
         folded[id] = !folded[id];
-        localStorage.setItem('foldedSections', JSON.stringify(folded));
-        renderAll();
-    }
-
-    function toggleCheck(id) {
-        let tasks = JSON.parse(localStorage.getItem('mainTasks'));
-        let task = tasks.find(t => t.id === id);
-        if (task) { task.checked = !task.checked; localStorage.setItem('mainTasks', JSON.stringify(tasks)); }
-        updateProgress();
+        save();
+        render();
     }
 
     function cycleStatus(id) {
-        const statuses = ["Active", "Testing", "Paused"];
-        let tasks = JSON.parse(localStorage.getItem('mainTasks'));
-        let task = tasks.find(t => t.id === id);
-        if (task) {
-            let currentIdx = statuses.indexOf(task.status || "Active");
-            task.status = statuses[(currentIdx + 1) % statuses.length];
-            localStorage.setItem('mainTasks', JSON.stringify(tasks));
-            renderAll();
+        const s = ["Active", "Testing", "Paused"];
+        const task = tasks.find(t => t.id === id);
+        task.status = s[(s.indexOf(task.status || "Active") + 1) % 3];
+        save();
+        render();
+    }
+
+    function createNewSection() {
+        const n = prompt("Section Name:");
+        if (n) { categories.push({ id: 'c'+Date.now(), name: n, color: 'bg-custom' }); save(); render(); }
+    }
+
+    function deleteSection(id) {
+        if (confirm("Delete this section?")) {
+            categories = categories.filter(c => c.id !== id);
+            save();
+            render();
         }
     }
 
-    function editLinkData(id) {
-        let tasks = JSON.parse(localStorage.getItem('mainTasks'));
-        let task = tasks.find(t => t.id === id);
-        if (task) {
-            task.url = prompt("URL:", task.url);
-            task.btnText = prompt("Button Text:", task.btnText);
-            localStorage.setItem('mainTasks', JSON.stringify(tasks));
-            renderAll();
-        }
+    function deleteTask(id) {
+        tasks = tasks.filter(t => t.id !== id);
+        save();
+        render();
     }
 
-    // --- DRAG AND DROP ---
+    // --- DRAG & DROP LOGIC ---
     let draggedId = null;
     function dragTask(e) { draggedId = e.target.id; e.dataTransfer.setData("type", "task"); }
     function dragSection(e) { draggedId = e.currentTarget.id; e.dataTransfer.setData("type", "section"); }
@@ -236,140 +228,72 @@
     function dropTask(e, catId) {
         e.preventDefault();
         if (e.dataTransfer.getData("type") !== "task") return;
-        let tasks = JSON.parse(localStorage.getItem('mainTasks'));
-        let task = tasks.find(t => t.id === draggedId);
-        if (task) { task.category = catId; localStorage.setItem('mainTasks', JSON.stringify(tasks)); renderAll(); }
+        const task = tasks.find(t => t.id === draggedId);
+        if (task) { task.category = catId; save(); render(); }
     }
 
     function dropSection(e) {
         e.preventDefault();
         if (e.dataTransfer.getData("type") !== "section") return;
-        let categories = JSON.parse(localStorage.getItem('categories'));
-        const draggedIdx = categories.findIndex(c => `wrapper-${c.id}` === draggedId);
-        const targetIdx = categories.findIndex(c => `wrapper-${c.id}` === e.currentTarget.id);
-        const [moved] = categories.splice(draggedIdx, 1);
-        categories.splice(targetIdx, 0, moved);
-        localStorage.setItem('categories', JSON.stringify(categories));
-        renderAll();
+        const targetId = e.currentTarget.id;
+        const dIdx = categories.findIndex(c => `wrap-${c.id}` === draggedId);
+        const tIdx = categories.findIndex(c => `wrap-${c.id}` === targetId);
+        const [moved] = categories.splice(dIdx, 1);
+        categories.splice(tIdx, 0, moved);
+        save();
+        render();
     }
 
-    // --- UTILITIES ---
-    function addNewTask(catId) {
-        const name = prompt("Name:");
-        if (!name) return;
-        let tasks = JSON.parse(localStorage.getItem('mainTasks'));
-        tasks.push({ id: 't_' + Date.now(), category: catId, name, url: "#", btnText: "OPEN", status: "Active", note: "" });
-        localStorage.setItem('mainTasks', JSON.stringify(tasks));
-        renderAll();
-    }
-
-    function createNewSection() {
-        const name = prompt("Section Name:");
-        if (!name) return;
-        let categories = JSON.parse(localStorage.getItem('categories'));
-        categories.push({ id: 'custom_' + Date.now(), name, color: 'bg-custom' });
-        localStorage.setItem('categories', JSON.stringify(categories));
-        renderAll();
-    }
-
-    function updateTaskData(id, field, value) {
-        let tasks = JSON.parse(localStorage.getItem('mainTasks'));
-        let task = tasks.find(t => t.id === id);
-        if (task) { task[field] = value; localStorage.setItem('mainTasks', JSON.stringify(tasks)); }
-    }
-
-    function deleteSection(id) {
-        if(confirm("Delete section?")) {
-            let categories = JSON.parse(localStorage.getItem('categories'));
-            localStorage.setItem('categories', JSON.stringify(categories.filter(c => c.id !== id)));
-            renderAll();
-        }
-    }
-
-    function deleteTask(id) {
-        if(confirm("Delete?")) {
-            let tasks = JSON.parse(localStorage.getItem('mainTasks'));
-            localStorage.setItem('mainTasks', JSON.stringify(tasks.filter(t => t.id !== id)));
-            renderAll();
-        }
-    }
-
+    // --- PROGRESS & HELPERS ---
     function updateProgress() {
-        const checks = document.querySelectorAll('.traffic-check');
-        const checkedCount = Array.from(checks).filter(c => c.checked).length;
-        const percent = checks.length ? Math.round((checkedCount / checks.length) * 100) : 0;
+        const total = tasks.length;
+        const done = tasks.filter(t => t.checked).length;
+        const pct = total ? Math.round((done/total)*100) : 0;
         const bar = document.getElementById('progress-bar');
-        bar.style.width = percent + '%';
-        bar.innerText = `Goal: ${percent}% (${checkedCount}/${checks.length})`;
+        if(bar) { bar.style.width = pct+'%'; bar.innerText = `Daily Goal: ${pct}% (${done}/${total})`; }
     }
 
-    function resetDailyTasks() {
-        let tasks = JSON.parse(localStorage.getItem('mainTasks'));
-        tasks.forEach(t => t.checked = false);
-        localStorage.setItem('mainTasks', JSON.stringify(tasks));
-        renderAll();
-    }
-
-    // --- MLGS TIMER ---
-    function handleMLGSClick(id) {
+    function handleMLGS(id) {
         if (id === 't1') {
-            const nextMail = new Date();
-            nextMail.setHours(nextMail.getHours() + 23);
-            localStorage.setItem('mlgsNextTime', nextMail.getTime());
+            const next = new Date();
+            next.setHours(next.getHours() + 23);
+            localStorage.setItem('mlgsNextTime', next.getTime());
             updateMLGSTimer();
         }
     }
 
     function updateMLGSTimer() {
-        const timerEl = document.getElementById('mlgs-timer');
-        if (!timerEl) return;
-        const nextTime = localStorage.getItem('mlgsNextTime');
-        if (!nextTime) return;
-        const now = new Date().getTime();
-        if (nextTime - now > 0) {
-            const d = new Date(parseInt(nextTime));
+        const el = document.getElementById('mlgs-timer');
+        if (!el) return;
+        const next = localStorage.getItem('mlgsNextTime');
+        if (!next) return;
+        const diff = next - new Date().getTime();
+        if (diff > 0) {
+            const d = new Date(parseInt(next));
             let h = d.getHours();
-            const m = d.getMinutes().toString().padStart(2, '0');
+            const m = d.getMinutes().toString().padStart(2,'0');
             const p = h >= 12 ? 'PM' : 'AM';
-            h = h % 12 || 12;
-            timerEl.innerText = `NEXT MAIL: ${h}:${m} ${p}`;
-        } else { timerEl.innerText = `READY!`; }
+            el.innerText = `NEXT: ${h%12||12}:${m} ${p}`;
+        } else { el.innerText = "READY!"; }
     }
 
-    // --- BACKUP/RESTORE ---
     function exportBackup() {
-        const data = {
-            mainTasks: localStorage.getItem('mainTasks'),
-            categories: localStorage.getItem('categories'),
-            marketingCalendar: localStorage.getItem('marketingCalendar')
-        };
-        const blob = new Blob([JSON.stringify(data)], {type: "application/json"});
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob); a.download = "Traffic_Hub_Final.json";
-        a.click();
+        const blob = new Blob([JSON.stringify({tasks, categories})], {type:"application/json"});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download="Traffic_Hub_v3.json"; a.click();
     }
 
-    function importBackup(event) {
+    function importBackup(e) {
         const reader = new FileReader();
-        reader.onload = function(e) {
-            const data = JSON.parse(e.target.result);
-            // Support for OLD backup format
-            if (data.researchLinks) {
-                localStorage.setItem('researchLinks', data.researchLinks);
-                migrateOldData();
-            }
-            if (data.mainTasks) localStorage.setItem('mainTasks', data.mainTasks);
-            if (data.categories) localStorage.setItem('categories', data.categories);
-            location.reload();
+        reader.onload = (ev) => {
+            const d = JSON.parse(ev.target.result);
+            if(d.tasks) tasks = d.tasks;
+            if(d.categories) categories = d.categories;
+            save(); render();
         };
-        reader.readAsText(event.target.files[0]);
+        reader.readAsText(e.target.files[0]);
     }
 
-    window.onload = function() {
-        migrateOldData();
-        renderAll();
-        setInterval(updateMLGSTimer, 60000);
-    };
+    window.onload = () => { render(); setInterval(updateMLGSTimer, 60000); };
 </script>
 </body>
 </html>
