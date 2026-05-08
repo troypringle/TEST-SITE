@@ -103,9 +103,10 @@
     let folded = {};
 
     function migrateData() {
-        const oldTasks = JSON.parse(localStorage.getItem('tasks_v4') || localStorage.getItem('mainTasks') || localStorage.getItem('tasks_elite') || '[]');
-        const oldCats = JSON.parse(localStorage.getItem('cats_v4') || localStorage.getItem('categories') || localStorage.getItem('cats_elite') || '[]');
-        const oldFolded = JSON.parse(localStorage.getItem('foldedSections') || localStorage.getItem('folded_elite') || '{}');
+        // FIXED: Prioritize Elite saves so old V1 data doesn't overwrite your colors
+        const oldTasks = JSON.parse(localStorage.getItem('tasks_elite') || localStorage.getItem('tasks_v4') || localStorage.getItem('mainTasks') || '[]');
+        const oldCats = JSON.parse(localStorage.getItem('cats_elite') || localStorage.getItem('cats_v4') || localStorage.getItem('categories') || '[]');
+        const oldFolded = JSON.parse(localStorage.getItem('folded_elite') || localStorage.getItem('foldedSections') || '{}');
 
         if (oldTasks.length > 0) tasks = oldTasks;
         if (oldCats.length > 0) categories = oldCats;
@@ -140,8 +141,9 @@
             const collapsed = folded[cat.id] ? 'collapsed' : '';
             const catTasks = tasks.filter(t => t.catId === cat.id || t.category === cat.id);
 
+            // FIXED: Added missing ondragover and ondrop to section-wrapper
             const html = `
-                <div class="section-wrapper ${collapsed}" id="sec-${cat.id}" draggable="true" ondragstart="dragSection(event)">
+                <div class="section-wrapper ${collapsed}" id="sec-${cat.id}" draggable="true" ondragstart="dragSection(event)" ondragover="allowDrop(event)" ondrop="dropSection(event)">
                     <div class="section-header" style="background:${cat.color}" onclick="toggleFold('${cat.id}')">
                         <span contenteditable="true" onclick="event.stopPropagation()" onblur="updateCatName('${cat.id}', this.innerText)">${cat.name}</span>
                         <div class="header-btns">
@@ -203,7 +205,6 @@
         return "#28a745";
     }
 
-    // ==================== NEW: Edit Link ====================
     function editLink(id) {
         const task = tasks.find(t => t.id === id);
         if (!task) return;
@@ -227,7 +228,6 @@
         }
     }
 
-    // Rest of functions (same as previous)
     function toggleCheck(id) {
         const task = tasks.find(t => t.id === id);
         if (task) task.checked = !task.checked;
@@ -307,14 +307,15 @@
         save(); render();
     }
 
-    // Drag & Drop + Progress + MLGS (unchanged from last version)
+    // FIXED: Added dataTransfer object to drag functions to satisfy MIME types for GitHub Pages
     let draggedId = null, draggedType = null;
-    function dragTask(e) { draggedId = e.target.id; draggedType = "task"; }
-    function dragSection(e) { draggedId = e.currentTarget.id; draggedType = "section"; }
+    function dragTask(e) { draggedId = e.target.id; draggedType = "task"; e.dataTransfer.setData("text/plain", "task"); }
+    function dragSection(e) { draggedId = e.currentTarget.id; draggedType = "section"; e.dataTransfer.setData("text/plain", "section"); }
     function allowDrop(e) { e.preventDefault(); }
 
     function dropTask(e, targetCatId) {
         e.preventDefault();
+        e.stopPropagation(); // FIXED: Prevents dropping a task from moving a section at the same time
         if (draggedType !== "task") return;
         const task = tasks.find(t => t.id === draggedId);
         if (task) task.catId = targetCatId;
