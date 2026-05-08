@@ -15,49 +15,60 @@
         #progress-container { background:#e9ecef; border-radius:12px; margin-bottom:25px; overflow:hidden; border:1px solid #ccc; }
         #progress-bar { background: linear-gradient(90deg, #28a745, #218838); height:42px; width:0%; text-align:center; color:white; font-weight:bold; line-height:42px; transition:width 0.5s; }
 
-        .section-wrapper { margin-bottom: 28px; border-radius: 12px; border: 1px solid #ddd; background:#fff; overflow:hidden; transition:0.2s; }
+        .section-wrapper { margin-bottom: 28px; border-radius: 12px; border: 1px solid #ddd; background:#fff; overflow:hidden; }
         .section-wrapper.collapsed .task-grid { display: none; }
 
         .section-header {
             display: flex; justify-content: space-between; align-items: center;
             color: white; padding: 14px 20px; cursor: grab; font-weight: bold; text-transform: uppercase;
         }
+        .header-btns button {
+            padding: 5px 11px; font-size: 11px; border: none; border-radius: 5px; cursor: pointer;
+        }
+
         .task-grid {
             display: grid;
             grid-template-columns: repeat(var(--cols), 1fr);
-            gap: 16px; padding: 16px; background: #fdfdfd;
+            gap: 18px; padding: 16px; background: #fdfdfd;
         }
         @media (max-width: 1200px) {
-            .task-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+            .task-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
         }
 
         .task-item {
-            background: #fff; padding: 14px; border-radius: 10px; border: 2px solid #eee;
+            background: #fff; padding: 16px; border-radius: 10px; border: 2px solid #eee;
             position: relative; transition: all 0.2s; cursor: grab;
+            display: flex; flex-direction: column; gap: 12px;
         }
-        .task-item:hover { border-color: #007bff; box-shadow: 0 6px 16px rgba(0,123,255,0.1); }
+        .task-item:hover { border-color: #007bff; box-shadow: 0 6px 16px rgba(0,123,255,0.12); }
         .task-item.dragging { opacity: 0.45; border: 2px dashed #007bff; }
 
         .task-top { display: flex; align-items: flex-start; gap: 10px; }
-        .task-name { font-weight: bold; flex-grow: 1; outline: none; font-size: 14px; }
-        .task-check { width: 24px; height: 24px; cursor: pointer; }
+        .task-name { font-weight: bold; flex-grow: 1; outline: none; font-size: 14.5px; }
+
+        .task-check { width: 24px; height: 24px; cursor: pointer; margin-top: 2px; }
 
         .link-btn {
-            display: block; padding: 10px; color: white; text-decoration: none;
-            border-radius: 6px; font-weight: bold; text-align: center; margin: 6px 0;
+            display: block; padding: 11px; color: white; text-decoration: none;
+            border-radius: 6px; font-weight: bold; text-align: center;
         }
 
         .task-note {
-            font-size: 12px; background: #fffde7; padding: 10px; border-radius: 6px;
-            border: 1px solid #ffe57f; min-height: 48px; outline: none;
+            font-size: 12.5px; background: #fffde7; padding: 10px; border-radius: 6px;
+            border: 1px solid #ffe57f; min-height: 50px; outline: none;
         }
 
-        .move-menu { width: 100%; font-size: 11px; padding: 5px; border-radius: 4px; }
-        .del-task { position: absolute; top: 8px; right: 8px; background: none; border: none; color: #aaa; font-size: 20px; cursor: pointer; }
+        .status-badge {
+            font-size: 12px; padding: 6px 12px; border-radius: 6px; color: white; 
+            font-weight: bold; cursor: pointer; display: inline-block;
+        }
+
+        .move-menu { width: 100%; font-size: 12px; padding: 6px; border-radius: 5px; }
+        .del-task { position: absolute; top: 10px; right: 10px; background: none; border: none; color: #aaa; font-size: 22px; cursor: pointer; }
         .del-task:hover { color: #e74c3c; }
 
-        .status-badge {
-            font-size: 10px; padding: 2px 8px; border-radius: 4px; color: white; font-weight: bold; cursor: pointer;
+        .edit-link-btn {
+            font-size: 11px; color: #0066cc; cursor: pointer; text-decoration: underline;
         }
     </style>
 </head>
@@ -87,26 +98,23 @@
 </div>
 
 <script>
-    // ====================== DATA MIGRATION ======================
     let tasks = [];
     let categories = [];
     let folded = {};
 
     function migrateData() {
-        // Try all old keys
-        const oldTasks = JSON.parse(localStorage.getItem('tasks_v4') || localStorage.getItem('mainTasks') || '[]');
-        const oldCats = JSON.parse(localStorage.getItem('cats_v4') || localStorage.getItem('categories') || '[]');
-        const oldFolded = JSON.parse(localStorage.getItem('foldedSections') || '{}');
+        const oldTasks = JSON.parse(localStorage.getItem('tasks_v4') || localStorage.getItem('mainTasks') || localStorage.getItem('tasks_elite') || '[]');
+        const oldCats = JSON.parse(localStorage.getItem('cats_v4') || localStorage.getItem('categories') || localStorage.getItem('cats_elite') || '[]');
+        const oldFolded = JSON.parse(localStorage.getItem('foldedSections') || localStorage.getItem('folded_elite') || '{}');
 
         if (oldTasks.length > 0) tasks = oldTasks;
         if (oldCats.length > 0) categories = oldCats;
         if (Object.keys(oldFolded).length > 0) folded = oldFolded;
 
-        // Default categories if none exist
         if (categories.length === 0) {
             categories = [
                 { id: 'c1', name: 'Daily Traffic Routine', color: '#007bff' },
-                { id: 'c2', name: 'Research Hub', color: '#17a2b8' }
+                { id: 'c2', name: 'Research Hub', color: '#0066cc' }
             ];
         }
     }
@@ -118,7 +126,6 @@
         updateProgress();
     }
 
-    // ====================== RENDER ======================
     function updateCols(val) {
         document.documentElement.style.setProperty('--cols', val);
         document.getElementById('colVal').innerText = val + " Columns";
@@ -137,10 +144,11 @@
                 <div class="section-wrapper ${collapsed}" id="sec-${cat.id}" draggable="true" ondragstart="dragSection(event)">
                     <div class="section-header" style="background:${cat.color}" onclick="toggleFold('${cat.id}')">
                         <span contenteditable="true" onclick="event.stopPropagation()" onblur="updateCatName('${cat.id}', this.innerText)">${cat.name}</span>
-                        <div style="display:flex; gap:8px;">
-                            <input type="color" value="${cat.color}" onchange="updateCatColor('${cat.id}', this.value)" style="width:28px;height:28px;border:none;border-radius:50%;cursor:pointer;">
-                            <button onclick="event.stopPropagation();addTask('${cat.id}')" style="background:white;color:black;border:none;padding:4px 10px;border-radius:4px;font-size:11px;">+ Task</button>
-                            <button onclick="event.stopPropagation();deleteSection('${cat.id}')" style="background:rgba(0,0,0,0.3);color:white;border:none;padding:4px 10px;border-radius:4px;font-size:11px;">DEL</button>
+                        <div class="header-btns">
+                            <input type="color" value="${cat.color}" onchange="updateCatColor('${cat.id}', this.value)" style="width:30px;height:30px;border:none;border-radius:50%;cursor:pointer;">
+                            <button onclick="event.stopPropagation();addTask('${cat.id}')" style="background:white;color:black;">+ Task</button>
+                            ${cat.id === categories[0].id ? `<button onclick="event.stopPropagation();resetChecks()" style="background:#ffc107;color:black;">RESET</button>` : ''}
+                            <button onclick="event.stopPropagation();deleteSection('${cat.id}')" style="background:rgba(0,0,0,0.3);color:white;">DEL</button>
                         </div>
                     </div>
                     <div class="task-grid" ondragover="allowDrop(event)" ondrop="dropTask(event, '${cat.id}')">
@@ -155,27 +163,32 @@
     }
 
     function renderTask(t) {
-        const moveOptions = categories.map(c => `<option value="${c.id}" ${ (t.catId === c.id || t.category === c.id) ? 'selected' : ''}>→ ${c.name}</option>`).join('');
+        const moveOptions = categories.map(c => `<option value="${c.id}" ${(t.catId === c.id || t.category === c.id) ? 'selected' : ''}>→ ${c.name}</option>`).join('');
 
         return `
             <div class="task-item" id="${t.id}" draggable="true" ondragstart="dragTask(event)">
                 <button class="del-task" onclick="deleteTask('${t.id}')">×</button>
+                
                 <div class="task-top">
                     <input type="checkbox" class="task-check" ${t.checked ? 'checked' : ''} onchange="toggleCheck('${t.id}')">
                     <div class="task-name" contenteditable="true" onblur="updateTask('${t.id}', 'name', this.innerText)">${t.name}</div>
                 </div>
 
                 <a href="${t.url || '#'}" target="_blank" class="link-btn" 
-                   style="background:${t.id==='t1'?'#007bff':'#28a745'}" 
+                   style="background:${t.btnColor || (t.id==='t1' ? '#007bff' : '#28a745')}" 
                    onclick="handleMLGSClick('${t.id}')">${t.btnText || 'OPEN LINK'}</a>
+
+                <small class="edit-link-btn" onclick="editLink('${t.id}')">✏️ Edit URL & Button</small>
 
                 ${t.id === 't1' ? '<div id="mlgs-timer" style="font-size:11px;text-align:center;font-weight:bold;color:red;"></div>' : ''}
 
                 <div class="task-note" contenteditable="true" onblur="updateTask('${t.id}', 'note', this.innerText)">${t.note || 'Add notes here...'}</div>
 
-                <span class="status-badge" style="background:${getStatusColor(t.status)}" onclick="cycleStatus('${t.id}')">
-                    ${t.status || 'Active'}
-                </span>
+                <div>
+                    <span class="status-badge" style="background:${getStatusColor(t.status)}" onclick="cycleStatus('${t.id}')">
+                        ${t.status || 'Active'}
+                    </span>
+                </div>
 
                 <select class="move-menu" onchange="moveTask('${t.id}', this.value)">
                     <option disabled selected>Quick Move...</option>
@@ -190,7 +203,31 @@
         return "#28a745";
     }
 
-    // ====================== ACTIONS ======================
+    // ==================== NEW: Edit Link ====================
+    function editLink(id) {
+        const task = tasks.find(t => t.id === id);
+        if (!task) return;
+
+        const newUrl = prompt("Enter full URL:", task.url || "https://");
+        if (newUrl === null) return;
+
+        const newBtnText = prompt("Button text:", task.btnText || "OPEN LINK");
+        if (newBtnText === null) return;
+
+        task.url = newUrl;
+        task.btnText = newBtnText;
+        save();
+        render();
+    }
+
+    function resetChecks() {
+        if (confirm("Reset all checkboxes in this section?")) {
+            tasks.forEach(t => { if (t.catId === categories[0].id || t.category === categories[0].id) t.checked = false; });
+            save(); render();
+        }
+    }
+
+    // Rest of functions (same as previous)
     function toggleCheck(id) {
         const task = tasks.find(t => t.id === id);
         if (task) task.checked = !task.checked;
@@ -211,22 +248,26 @@
 
     function updateCatColor(id, color) {
         const cat = categories.find(c => c.id === id);
-        if (cat) cat.color = color;
-        save(); render();
+        if (cat) {
+            cat.color = color;
+            save();
+            render();
+        }
     }
 
     function addTask(catId) {
         const name = prompt("Enter task name:");
         if (!name) return;
-        tasks.push({
-            id: 't' + Date.now(),
-            catId: catId,
-            name: name,
-            url: '#',
-            btnText: 'OPEN LINK',
-            checked: false,
-            note: '',
-            status: 'Active'
+        tasks.push({ 
+            id: 't' + Date.now(), 
+            catId, 
+            name, 
+            url: 'https://', 
+            btnText: 'OPEN LINK', 
+            btnColor: '#007bff',
+            checked: false, 
+            note: '', 
+            status: 'Active' 
         });
         save(); render();
     }
@@ -234,40 +275,30 @@
     function createNewSection() {
         const name = prompt("New category name:");
         if (!name) return;
-        categories.push({ id: 'c' + Date.now(), name, color: '#555555' });
+        categories.push({ id: 'c' + Date.now(), name, color: '#007bff' });
         save(); render();
     }
 
-    function deleteTask(id) {
-        if (confirm("Delete this task?")) {
-            tasks = tasks.filter(t => t.id !== id);
-            save(); render();
-        }
-    }
-
-    function deleteSection(id) {
-        if (confirm("Delete this section and all tasks inside?")) {
-            categories = categories.filter(c => c.id !== id);
-            tasks = tasks.filter(t => t.catId !== id && t.category !== id);
-            save(); render();
+    function deleteTask(id) { if(confirm("Delete task?")) { tasks = tasks.filter(t => t.id !== id); save(); render(); }}
+    function deleteSection(id) { 
+        if(confirm("Delete section and all tasks?")) { 
+            categories = categories.filter(c => c.id !== id); 
+            tasks = tasks.filter(t => t.catId !== id && t.category !== id); 
+            save(); render(); 
         }
     }
 
     function moveTask(taskId, newCatId) {
         const task = tasks.find(t => t.id === taskId);
-        if (task) {
-            task.catId = newCatId;
-            if (task.category) delete task.category; // normalize
-        }
+        if (task) task.catId = newCatId;
         save(); render();
     }
 
     function cycleStatus(id) {
         const task = tasks.find(t => t.id === id);
         if (!task) return;
-        const statuses = ["Active", "Testing", "Paused"];
-        const current = statuses.indexOf(task.status || "Active");
-        task.status = statuses[(current + 1) % 3];
+        const s = ["Active","Testing","Paused"];
+        task.status = s[(s.indexOf(task.status||"Active")+1)%3];
         save(); render();
     }
 
@@ -276,10 +307,8 @@
         save(); render();
     }
 
-    // ====================== DRAG & DROP ======================
-    let draggedId = null;
-    let draggedType = null;
-
+    // Drag & Drop + Progress + MLGS (unchanged from last version)
+    let draggedId = null, draggedType = null;
     function dragTask(e) { draggedId = e.target.id; draggedType = "task"; }
     function dragSection(e) { draggedId = e.currentTarget.id; draggedType = "section"; }
     function allowDrop(e) { e.preventDefault(); }
@@ -288,11 +317,8 @@
         e.preventDefault();
         if (draggedType !== "task") return;
         const task = tasks.find(t => t.id === draggedId);
-        if (task) {
-            task.catId = targetCatId;
-            if (task.category) delete task.category;
-            save(); render();
-        }
+        if (task) task.catId = targetCatId;
+        save(); render();
     }
 
     function dropSection(e) {
@@ -307,7 +333,6 @@
         save(); render();
     }
 
-    // ====================== PROGRESS & MLGS ======================
     function updateProgress() {
         const total = tasks.length;
         const done = tasks.filter(t => t.checked).length;
@@ -319,8 +344,7 @@
 
     function handleMLGSClick(id) {
         if (id === 't1') {
-            const next = Date.now() + 23 * 60 * 60 * 1000;
-            localStorage.setItem('mlgs_time', next);
+            localStorage.setItem('mlgs_time', Date.now() + 23*60*60*1000);
             updateMLGS();
         }
     }
@@ -336,12 +360,9 @@
             const h = d.getHours();
             const m = d.getMinutes().toString().padStart(2,'0');
             el.innerText = `NEXT MAIL: ${h%12||12}:${m} ${h>=12?'PM':'AM'}`;
-        } else {
-            el.innerText = "READY!";
-        }
+        } else { el.innerText = "READY!"; }
     }
 
-    // ====================== BACKUP ======================
     function exportBackup() {
         const data = { tasks, categories, folded };
         const blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"});
@@ -361,14 +382,11 @@
                 if (d.folded) folded = d.folded;
                 save(); render();
                 alert("✅ Restore successful!");
-            } catch(err) {
-                alert("Invalid backup file");
-            }
+            } catch(err) { alert("Invalid backup file"); }
         };
         reader.readAsText(e.target.files[0]);
     }
 
-    // ====================== INIT ======================
     window.onload = () => {
         migrateData();
         const savedCols = localStorage.getItem('pref_cols') || 4;
