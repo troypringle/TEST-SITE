@@ -2,27 +2,24 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Troy's Pro Editor - Dynamic Sync</title>
+  <title>Troy's Fail-Safe Editor</title>
   <script src="https://cdn.tiny.cloud/1/ed1qn0rblik03emio7c5mhchq47pdzm2c0o39so0n7d8veyu/tinymce/7/tinymce.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dropbox.js/10.11.0/Dropbox-sdk.min.js"></script>
   <style>
     body { font-family: 'Segoe UI', sans-serif; background-color: #121212; margin: 0; display: flex; height: 100vh; overflow: hidden; color: white; }
     .sidebar { width: 300px; background: #1e1e1e; padding: 20px; display: flex; flex-direction: column; gap: 10px; border-right: 1px solid #333; overflow-y: auto; }
-    .main-content { flex-grow: 1; display: flex; align-items: center; justify-content: center; padding: 20px; background: #121212; }
+    .main-content { flex-grow: 1; display: flex; align-items: center; justify-content: center; padding: 20px; }
     label { font-size: 10px; color: #888; font-weight: bold; text-transform: uppercase; margin-top: 5px; }
     input, select, button { padding: 10px; border: 1px solid #333; border-radius: 4px; font-size: 14px; width: 100%; box-sizing: border-box; background: #2a2a2a; color: white; }
     button { cursor: pointer; font-weight: bold; border: none; transition: 0.2s; }
     .btn-save { background-color: #007bff; }
-    .btn-save:hover { background-color: #0056b3; }
-    .btn-delete { background-color: #c0392b; font-size: 12px; }
-    .btn-action { background-color: #444; font-size: 12px; }
     .btn-sync { background-color: #27ae60; margin-top: auto; padding: 15px; }
+    .btn-del { background-color: #c0392b; font-size: 12px; margin-top: 5px; }
     .editor-wrapper { width: 950px; height: 90vh; background: white; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
     .status-bar { font-size: 12px; padding: 5px; display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
     .dot { width: 8px; height: 8px; border-radius: 50%; }
     .red { background: #ff4757; }
     .green { background: #2ed573; }
-    hr { border: 0; border-top: 1px solid #333; margin: 10px 0; }
   </style>
 </head>
 <body>
@@ -30,122 +27,110 @@
   <div class="sidebar">
     <div class="status-bar">
       <div id="statusDot" class="dot green"></div>
-      <span id="statusText">Synced</span>
+      <span id="statusText">Ready</span>
     </div>
 
     <label>Dropbox Token</label>
     <input type="password" id="dbToken" placeholder="Paste Token..." onchange="saveToken()">
 
-    <hr>
+    <hr style="border:0; border-top:1px solid #333;">
 
     <label>Categories</label>
     <div style="display:flex; gap:5px;">
         <select id="catDropdown" onchange="switchCategory()"></select>
-        <button class="btn-action" style="width:40px;" onclick="addCategory()">+</button>
-        <button class="btn-action" style="width:40px;" onclick="renameCategory()">✎</button>
+        <button style="width:40px; background:#444;" onclick="addCategory()">+</button>
     </div>
-    <button class="btn-delete" style="padding:4px;" onclick="deleteCategory()">Delete Category</button>
+    <button class="btn-del" onclick="deleteCategory()">Delete Category</button>
 
-    <label>Templates</label>
+    <label>Emails</label>
     <select id="templateDropdown" onchange="loadTemplate()"></select>
 
-    <hr>
+    <hr style="border:0; border-top:1px solid #333;">
 
-    <label>Template Name</label>
+    <label>Email Name</label>
     <input type="text" id="targetName" placeholder="Name...">
     
-    <button class="btn-save" onclick="saveCurrent()">Save / Update Email</button>
-    <button class="btn-action" onclick="deleteTemplate()">Delete Selected Email</button>
+    <button class="btn-save" onclick="saveCurrent()">SAVE & SYNC</button>
+    <button class="btn-del" onclick="deleteTemplate()">Delete Email</button>
 
-    <button class="btn-action" style="margin-top:10px; background:#28a745;" onclick="copyHtml()">Copy HTML to Clipboard</button>
+    <button style="margin-top:10px; background:#28a745;" onclick="copyHtml()">Copy HTML</button>
     
-    <button class="btn-sync" onclick="pullFromCloud()">Sync from Dropbox</button>
+    <button class="btn-sync" onclick="pullFromCloud()">Force Refresh From Cloud</button>
   </div>
 
   <div class="main-content">
     <div class="editor-wrapper">
-      <textarea id="editor"></textarea>
+        <textarea id="editor"></textarea>
     </div>
   </div>
 
   <script>
+    // CORE DATA STRUCTURE
     let dbData = { categories: { "HBA": {}, "MLGS": {} } };
+    const storageKey = "TROY_EDITOR_DATA_V4";
     const tokenKey = "DB_ACCESS_TOKEN";
-    let isDirty = false;
+    let isTinyMceReady = false;
 
-    function setStatus(clean) {
-        isDirty = !clean;
-        document.getElementById("statusDot").className = clean ? "dot green" : "dot red";
-        document.getElementById("statusText").innerText = clean ? "Synced" : "Unsaved Changes";
+    function setStatus(msg, colorClass) {
+        document.getElementById("statusDot").className = `dot ${colorClass}`;
+        document.getElementById("statusText").innerText = msg;
     }
 
-    // --- DROPBOX CORE ---
+    // 1. LOCAL PERSISTENCE (Saves immediately to browser)
+    function saveLocal() {
+        localStorage.setItem(storageKey, JSON.stringify(dbData));
+    }
+
+    function loadLocal() {
+        const local = localStorage.getItem(storageKey);
+        if (local) {
+            dbData = JSON.parse(local);
+            refreshUI();
+        }
+    }
+
+    // 2. DROPBOX SYNC
     function saveToken() { localStorage.setItem(tokenKey, document.getElementById("dbToken").value); }
 
     async function pushToCloud() {
         const token = localStorage.getItem(tokenKey);
-        if (!token) return;
+        if (!token) return setStatus("No Token - Local Only", "red");
+        
+        setStatus("Syncing...", "red");
         const dbx = new Dropbox.Dropbox({ accessToken: token });
         try {
             await dbx.filesUpload({ path: '/email_backups.json', contents: JSON.stringify(dbData), mode: 'overwrite' });
-            setStatus(true);
-        } catch (e) { console.error("Upload failed", e); }
+            setStatus("Synced to Cloud", "green");
+        } catch (e) { 
+            console.error(e);
+            setStatus("Cloud Sync Error", "red"); 
+        }
     }
 
     async function pullFromCloud() {
         const token = localStorage.getItem(tokenKey);
         if (!token) return;
+        
         const dbx = new Dropbox.Dropbox({ accessToken: token });
         try {
             const response = await dbx.filesDownload({ path: '/email_backups.json' });
             const text = await response.result.fileBlob.text();
             dbData = JSON.parse(text);
+            saveLocal(); // Keep local in sync with cloud
             refreshUI();
-            setStatus(true);
-        } catch (e) { console.error("No cloud file found or pull failed"); }
+            setStatus("Cloud Data Loaded", "green");
+        } catch (e) { console.log("Cloud file empty or missing."); }
     }
 
-    // --- CATEGORY LOGIC ---
-    function addCategory() {
-        const name = prompt("New Category Name:");
-        if (name && !dbData.categories[name]) {
-            dbData.categories[name] = {};
-            refreshUI();
-            document.getElementById("catDropdown").value = name;
-            switchCategory();
-        }
-    }
-
-    function renameCategory() {
-        const oldName = document.getElementById("catDropdown").value;
-        const newName = prompt("Rename category to:", oldName);
-        if (newName && newName !== oldName) {
-            dbData.categories[newName] = dbData.categories[oldName];
-            delete dbData.categories[oldName];
-            refreshUI();
-            document.getElementById("catDropdown").value = newName;
-            pushToCloud();
-        }
-    }
-
-    function deleteCategory() {
-        const name = document.getElementById("catDropdown").value;
-        if (confirm(`Delete entire category "${name}" and all its emails?`)) {
-            delete dbData.categories[name];
-            refreshUI();
-            pushToCloud();
-        }
-    }
-
-    // --- UI RENDER ---
+    // 3. UI & CATEGORY MANAGEMENT
     function refreshUI() {
         const catDrop = document.getElementById("catDropdown");
-        const currentCat = catDrop.value;
+        const currentCat = catDrop.value || "HBA";
         catDrop.innerHTML = "";
         Object.keys(dbData.categories).sort().forEach(cat => {
             catDrop.add(new Option(cat, cat));
         });
-        if (dbData.categories[currentCat]) catDrop.value = currentCat;
+        catDrop.value = dbData.categories[currentCat] ? currentCat : Object.keys(dbData.categories)[0];
         switchCategory();
     }
 
@@ -160,21 +145,35 @@
         }
     }
 
-    // --- EMAIL LOGIC ---
-    function loadTemplate() {
-        const cat = document.getElementById("catDropdown").value;
-        const name = document.getElementById("templateDropdown").value;
-        if (!name) return;
-        tinymce.get("editor").setContent(dbData.categories[cat][name] || "");
-        document.getElementById("targetName").value = name;
-        setStatus(true);
+    function addCategory() {
+        const name = prompt("New Category Name:");
+        if (name) {
+            dbData.categories[name] = {};
+            saveLocal();
+            refreshUI();
+            document.getElementById("catDropdown").value = name;
+            switchCategory();
+        }
     }
 
+    function deleteCategory() {
+        const name = document.getElementById("catDropdown").value;
+        if (confirm(`Delete Category "${name}"?`)) {
+            delete dbData.categories[name];
+            saveLocal();
+            refreshUI();
+            pushToCloud();
+        }
+    }
+
+    // 4. EMAIL SAVE/LOAD
     function saveCurrent() {
         const cat = document.getElementById("catDropdown").value;
         const name = document.getElementById("targetName").value.trim();
-        if (!name) return alert("Email name required");
+        if (!name) return alert("Enter a name first!");
+
         dbData.categories[cat][name] = tinymce.get("editor").getContent();
+        saveLocal();
         refreshUI();
         document.getElementById("catDropdown").value = cat;
         switchCategory();
@@ -182,12 +181,20 @@
         pushToCloud();
     }
 
+    function loadTemplate() {
+        const cat = document.getElementById("catDropdown").value;
+        const name = document.getElementById("templateDropdown").value;
+        if (!name || !isTinyMceReady) return;
+        tinymce.get("editor").setContent(dbData.categories[cat][name] || "");
+        document.getElementById("targetName").value = name;
+    }
+
     function deleteTemplate() {
         const cat = document.getElementById("catDropdown").value;
         const name = document.getElementById("templateDropdown").value;
-        if (!name || !confirm("Delete this email?")) return;
+        if (!name || !confirm("Delete email?")) return;
         delete dbData.categories[cat][name];
-        tinymce.get("editor").setContent("");
+        saveLocal();
         refreshUI();
         pushToCloud();
     }
@@ -197,21 +204,24 @@
         alert("HTML Copied!");
     }
 
-    window.onbeforeunload = (e) => { if (isDirty) return "Unsaved changes!"; };
-
-    tinymce.init({
-        selector: "#editor",
-        plugins: "lists link image table code fullscreen",
-        toolbar: "undo redo | bold italic underline | forecolor backcolor | alignleft aligncenter alignright | bullist numlist | link image code",
-        height: "100%",
-        setup: (ed) => {
-            ed.on('init', () => {
-                document.getElementById("dbToken").value = localStorage.getItem(tokenKey) || "";
-                pullFromCloud(); 
-            });
-            ed.on('change keyup', () => setStatus(false));
-        }
-    });
+    // 5. INITIALIZATION (The "Common Sense" Sequence)
+    window.onload = () => {
+        loadLocal(); // Load local data FIRST so the UI isn't empty
+        document.getElementById("dbToken").value = localStorage.getItem(tokenKey) || "";
+        
+        tinymce.init({
+            selector: "#editor",
+            plugins: "lists link image table code fullscreen",
+            toolbar: "undo redo | bold italic underline | forecolor backcolor | alignleft aligncenter alignright | bullist numlist | link image code",
+            height: "100%",
+            setup: (ed) => {
+                ed.on('init', () => {
+                    isTinyMceReady = true;
+                    pullFromCloud(); // Now that editor is ready, try to get fresh cloud data
+                });
+            }
+        });
+    };
   </script>
 </body>
 </html>
